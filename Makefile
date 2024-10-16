@@ -4,9 +4,6 @@ MAKEFLAGS= --no-print-directory
 
 INCLUDES = includes
 
-SRCS= srcs/main.cpp
-
-
 CC= c++
 
 CFLAGS= -Wall -Wextra -Werror -I$(INCLUDES) -std=c++98
@@ -18,6 +15,36 @@ UNAME_S := $(shell uname -s)
 #else ifeq ($(UNAME_S),Darwin)
 #	SRCS+= ...
 #endif
+
+# Source File names:
+MAIN = main
+PARSING = 
+SERVER = Eventloop
+CONFIG = 
+
+# Source directory
+SRCS_DIR = srcs
+
+# Source Subdirectories:
+PARS_DIR = parsing
+SERVER_DIR = server
+CONFIG_DIR = config
+
+# Source Files
+SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, $(addsuffix .cpp, $(UTILS)))\
+	$(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(MAIN)))\
+	$(addprefix $(SRCS_DIR)/$(PARS_DIR)/, $(addsuffix .cpp, $(PARSING)))\
+	$(addprefix $(SRCS_DIR)/$(SERVER_DIR)/, $(addsuffix .cpp, $(SERVER))) \
+	$(addprefix $(SRCS_DIR)/$(CONFIG_DIR)/, $(addsuffix .cpp, $(CONFIG)))
+
+
+# Convert source file names to object file names in the OBJ_DIRS directory
+OBJ_DIR = obj
+OBJ_DIRS = $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(PARS_DIR)) \
+	$(addprefix $(OBJ_DIR)/, $(SERVER_DIR)) \
+	$(addprefix $(OBJ_DIR)/, $(CONFIG_DIR)) \
+
+OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJ_DIR)/%.o) 
 
 # SANITIZE= -g3 -fsanitize=address
 SANITIZE= -g
@@ -34,7 +61,25 @@ RESET=\033[0m
 
 .PHONY: all clean fclean re header
 
-all: $(NAME)
+all: header $(NAME)
+
+# Compilation rule for the final executable
+$(NAME): $(OBJ_DIRS) $(OBJS)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(SANITIZE)
+	@echo "$(YELLOW)\no------------------------------------o$(RESET)"
+	@echo "$(GREEN)|           WEBSERV COMPILED          |$(RESET)"
+	@echo "$(YELLOW)o------------------------------------o\n$(RESET)"
+
+# Create object directories if they do not exist
+$(OBJ_DIRS):
+	@mkdir -p $(OBJ_DIR) \
+		$(addprefix $(OBJ_DIR)/, $(PARS_DIR)) \
+		$(addprefix $(OBJ_DIR)/, $(SERVER_DIR)) \
+		$(addprefix $(OBJ_DIR)/, $(CONFIG_DIR))
+
+# Rule to compile object files from source files
+$(OBJ_DIR)/%.o: $(SRCS_DIR)/%.cpp | $(OBJ_DIRS)
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 header:
 
@@ -62,25 +107,17 @@ header:
 		@echo "$(CYAN)| SSSS_  SSSS| SSSSSSSS| SS  \ SS|  SSSSSS | SSSSSSSS| SS  \__/ \  SS/SS/";
 		@echo "$(RED)| SSS/ \  SSS| SS_____/| SS  | SS \____  SS| SS_____/| SS        \  SSS/";
 		@echo "$(CYAN)| SS/   \  SS|  SSSSSSS| SSSSSSS/ /SSSSSSS/|  SSSSSSS| SS         \  S/";
-		@echo "$(RED)|__/     \__/ \_______/|_______/ |_______/  \_______/|__/          \_/$(RESET)";
-
-
-$(NAME) : $(SRCS)
-			@$(MAKE) header
-			@$(CC) $(CFLAGS) -o $@ $^ $(SANITIZE)
-			@echo "$(YELLOW)\no------------------------------------o$(RESET)"
-			@echo "$(GREEN)|           WEBSERV COMPILED          |$(RESET)"
-			@echo "$(YELLOW)o------------------------------------o\n$(RESET)"
+		@echo "$(RED)|__/     \__/ \_______/|_______/ |_______/  \_______/|__/          \_/$(RESET)"
+		@echo "\n\n";
 
 clean:
-	@$(MAKE) header
 	@echo "${RED}\nCleaning up...${RESET}"
-	@rm -f $(NAME)
+	@rm -f $(OBJS)
 	@echo "${GREEN}Cleanup done.${RESET}"
 
 fclean: 	clean
 		@rm -f $(NAME)
-		@rm -rf objs
+		@rm -rf $(OBJ_DIR)
 		@echo "$(YELLOW)\no------------------------------------o$(RESET)"
 		@echo "$(RED)|           WEBSERV CLEARED           |$(RESET)"
 		@echo "$(YELLOW)o------------------------------------o\n$(RESET)"
