@@ -9,12 +9,14 @@
 # include <netinet/in.h>
 # include <unistd.h>
 # include <cstdlib>
+# include <map>
+# include <vector>
+# include <poll.h>
 
 // Our HPP files
 # include "colors.hpp"
 # include "defines.hpp"
 # include "EventLoop.hpp"
 # include "ClientConnection.hpp"
-
 
 #endif
