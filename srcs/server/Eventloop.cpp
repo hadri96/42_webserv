@@ -9,7 +9,7 @@ void    EventLoop::run()
 
     // Socket creation: 
     // AF_INET means we're using an IPv4 address, SOCK_STREAM means its a TCP socket, 0 = TCP/IP protocol
-    if (server_fd = socket(AF_INET, SOCK_STREAM, 0) == 0 )
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0 )
     {
         std::cerr << "Socket failed" << std::endl;
         exit(EXIT_FAILURE);
@@ -50,14 +50,14 @@ void    EventLoop::run()
 
     std::cout << "Connection accepted" << std::endl;
 
-    // Read data from the client 
+    // Read data from client 
     char        buffer[1024] = {0}; // sets all bytes to 0 (bzero equivalent in c++)
     int         bytes_read = read(clientSocket, buffer, 1024);
     
     if (bytes_read > 0)
         std::cout << "Received: " << buffer << std::endl;
 
-    // Send a response
+    // Send response
     const char*     http_response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 13\r\n\r\nCiao ragazzi!";
     
     send(clientSocket, http_response, strlen(http_response), 0);
@@ -66,6 +66,5 @@ void    EventLoop::run()
     // Close the connection
     close(clientSocket);
     std::cout << "Connection closed" << std::endl;
-
 
 }
