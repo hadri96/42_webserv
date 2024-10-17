@@ -134,8 +134,15 @@ void    EventLoop::run()
                         closeClient(&i);
                         std::cout << "Client disconnected." << std::endl;
                     } 
-                    else // Process the data received from the client
+                    else // Process the data received from the client and send basic response
+                    {
                         std::cout << "Received data from client " << pollRequests[i].fd << " : " << buffer << std::endl;
+                            // Send response
+                        const char*     http_response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 13\r\n\r\nCiao ragazzi!";
+    
+                        send(pollRequests[i].fd, http_response, strlen(http_response), 0);
+                        std::cout << "Response sent" << std::endl;
+                    }
                 }
             }
             if (pollRequests[i].revents & POLLHUP) // if one fd has the POLL HANG UP flag 
