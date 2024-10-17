@@ -12,6 +12,7 @@
 # include <map>
 # include <vector>
 # include <poll.h>
+# include <fcntl.h>
 
 // Our HPP files
 # include "colors.hpp"
