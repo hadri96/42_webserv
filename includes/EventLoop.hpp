@@ -1,17 +1,12 @@
 #ifndef EVENTLOOP_HPP
 #define EVENTLOOP_HPP
 
+class ClientConnection;
+
 class EventLoop
 {
     public:
-        // Variables 
-        int                                             server_fd; // fd for listening socket
-        int                                             port;
-        std::map<int, std::string>                      clientMap; // client fds mapped to client request objs
-        std::vector<pollfd>                             pollRequests;
-        fd_set                                          read_fds; // set of fds to mnitor for reading
-        fd_set                                          write_fds; // set of fds to mnitor for writing
-
+        
         // Constructors / destructors
         EventLoop(int port) : port(port) {}
 
@@ -19,9 +14,21 @@ class EventLoop
         void    setupServer();
         void    bindSocket();
         void    listenOnPort();
-        void    connectNewClientToServer(std::size_t *i);
-        void    closeClient(std::size_t *i);
+        void    connectNewClientToServer();
+        void    closeClient(std::size_t *i, std::string message);
+        void    handleClientRead(std::size_t *i);
+        void    handleClientWrite(std::size_t *i);
         void    run();
+    
+    private: 
+        // Variables 
+        int                                             server_fd; // fd for listening socket
+        int                                             port;
+        std::map<int, ClientConnection>                 clientMap; // client fds mapped to client request objs
+        std::vector<pollfd>                             pollRequests;
+        fd_set                                          read_fds; // set of fds to mnitor for reading
+        fd_set                                          write_fds; // set of fds to mnitor for writing
+
 };
 
 #endif

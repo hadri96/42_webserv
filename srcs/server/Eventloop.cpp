@@ -1,13 +1,15 @@
 #include "../../includes/webserv.hpp"
 
+
+// Links the socket to an IP address and port
 void    EventLoop::bindSocket()
 {
     struct sockaddr_in      serverAddress; // struct defined in <netinet/in.h>
     int                     temp = 1;
 
-    // Bind Socket (link it to an IP address and port)
-    serverAddress.sin_family = AF_INET; // use IPv4
-    serverAddress.sin_addr.s_addr = INADDR_ANY;  // Bind to any available network interface
+    // Bind Socket (tells it which IP address family the socket will use)
+    serverAddress.sin_family = AF_INET; // use IPv4 (Address Family: Internet)
+    serverAddress.sin_addr.s_addr = INADDR_ANY;  // Bind to all available network interfaces
     serverAddress.sin_port = htons(port); // convert port number from machine byte order to network byte order 
 
     // the following code block makes sure that the connection can be made
@@ -27,6 +29,10 @@ void    EventLoop::bindSocket()
     }
 }
 
+
+
+
+// Makes the server listen for connections on the given port
 void    EventLoop::listenOnPort()
 {
     // Listen for connections: second parameter = backlog size (max number of incoming queued connections)
@@ -37,6 +43,9 @@ void    EventLoop::listenOnPort()
     }
     std::cout << "Server listening on port : " << port << std::endl;
 }
+
+
+
 
 // This function creates the server's listening socket, binds it to the given port
 // and configures it to listen for incoming connections.
@@ -60,15 +69,21 @@ void    EventLoop::setupServer()
     server_pollfd.events = POLLIN; // POLLIN means that there is data to read on this fd
     pollRequests.push_back(server_pollfd);
 
-    // Set server to non blocking 
-    int     flags = fcntl(server_fd, F_GETFL, 0);
-
-    fcntl(server_fd, F_SETFL, flags | O_NONBLOCK);
-
+    // Set server to non blocking:
+    // Set O_NONBLOCK and FD_CLOEXEC (close on exec) flags at the same time using F_SETFL
+    if (fcntl(server_fd, F_SETFL, O_NONBLOCK | FD_CLOEXEC) == -1) 
+    {
+        std::cerr << "fcntl failed" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    // the bitwise OR operator makes sure that the existing flags are not modified, just the O_NONBLOCK and FD_CLOEXEC added.
 }
 
+
+
+
 // Launches accept function and connects client if socket connection is accepted
-void    EventLoop::connectNewClientToServer(std::size_t *i)
+void    EventLoop::connectNewClientToServer()
 {
     int                     clientSocket;
     struct  sockaddr_in     clientAddress;
@@ -81,24 +96,86 @@ void    EventLoop::connectNewClientToServer(std::size_t *i)
         std::cerr << "Failed to accept client connection" << std::endl;
     else // if accepted, add new client to pollRequests
     {
-        pollfd      clientPollRequest;
+        pollfd              clientPollRequest;
+        ClientConnection    clientObj(clientSocket);
 
         clientPollRequest.fd = clientSocket;
         clientPollRequest.events = POLLIN;
         pollRequests.push_back(clientPollRequest);
-        // add new client fd to map (to be changed when other Classes are created)
-        clientMap[clientSocket] = "Client " + (*i + '0');
+        clientMap.insert(std::make_pair(clientSocket, clientObj));
         std::cout << "New client connected" << std::endl;
     }
 }
 
-void    EventLoop::closeClient(std::size_t *i)
+
+
+// This function closes the fd of the given client and erases it from the pollRequest list. 
+void    EventLoop::closeClient(std::size_t *i, std::string message)
 {
     close(pollRequests[(*i)].fd);
     pollRequests.erase(pollRequests.begin() + *i);
     --(*i);
+    std::cerr << message << std::endl;
 }
 
+
+
+// (CLIENT --> SERVER)  : HTTP Request 
+// Function Handles what happens when a client connects with a POLLIN request (i.e client sends a request to server)
+void    EventLoop::handleClientRead(std::size_t *i)
+{
+    char    buffer[1024] = {0};
+    int     bytes_read = read(pollRequests[(*i)].fd, buffer, 1024);
+
+    if (bytes_read <= 0)
+        closeClient(i, "Client disconnected: No bytes read");
+    else // Process the data received from the client and send basic response
+    {
+        const char*     http_response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 13\r\n\r\nCiao ragazzi!";
+        
+        std::cout << "Received data from client " << pollRequests[(*i)].fd << " : " << buffer << std::endl;
+        // Here I need to implement a for loop that repeatedly sends the content of a buffer
+        // which reads from a given example.html file. For this I need to use a filestream 
+        // Also need to work out how to link requests to responses
+
+        send(pollRequests[(*i)].fd, http_response, strlen(http_response), 0);
+        std::cout << "Response sent" << std::endl;
+    }
+}
+
+// (SERVER --> CLIENT ) : HTTP Response 
+// Access the correct clientConnection object 
+// in order to send the message that lies in its' write_buffer 
+// over the connection of its socket (client_fd) to the server. 
+void    EventLoop::handleClientWrite(std::size_t *i)
+{
+    int                                         client_fd = pollRequests[(*i)].fd;
+    ssize_t                                     bytes_sent;
+    
+    // Find clientConnection object in clientMap according to client_fd:
+    std::map<int, ClientConnection>::iterator   it = clientMap.find(client_fd);
+    if (it == clientMap.end())
+    {
+        std::cerr << "client fd " << client_fd << " not found in clientMap" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    ClientConnection*   clientObj = &it->second;
+    
+    // Send the bytes contained in the write_buffer to client_fd socket
+    bytes_sent = send(client_fd, clientObj->write_buffer.c_str(), clientObj->write_buffer.size(), 0);
+    if (bytes_sent > 0)
+        clientObj->write_buffer.erase(0, bytes_sent);
+    if  (bytes_sent < 0)
+        return ;
+    if (clientObj->write_buffer.empty())
+        pollRequests[(*i)].events &= ~POLLOUT; // bitwise AND operation with opposite of POLLOUT (~ = NOT)
+}
+
+
+// The EventLoop::run() function serves as the main server event loop. 
+// It first sets up the server and then continuously waits for events on a set of file descriptors using the poll() system call. 
+// The function processes incoming connections and data from clients by iterating over the array of pollfd structures, 
+// checking the revents field to determine if a file descriptor is ready for reading, has been disconnected, or encountered an error.
 void    EventLoop::run()
 {
     setupServer();
@@ -122,39 +199,16 @@ void    EventLoop::run()
                 // if the fd currently being processed is the server socket (listening for new clients)
                 // it means a new client is trying to connect to the server
                 if (pollRequests[i].fd == server_fd) 
-                   connectNewClientToServer(&i);
-                else
-                {
-                    // Else it's a client fd that is ready for reading
-                    char    buffer[1024] = {0};
-                    int     bytes_read = read(pollRequests[i].fd, buffer, 1024);
-
-                    if (bytes_read <= 0)
-                    {
-                        closeClient(&i);
-                        std::cout << "Client disconnected." << std::endl;
-                    } 
-                    else // Process the data received from the client and send basic response
-                    {
-                        std::cout << "Received data from client " << pollRequests[i].fd << " : " << buffer << std::endl;
-                            // Send response
-                        const char*     http_response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 13\r\n\r\nCiao ragazzi!";
-    
-                        send(pollRequests[i].fd, http_response, strlen(http_response), 0);
-                        std::cout << "Response sent" << std::endl;
-                    }
-                }
+                   connectNewClientToServer();
+                else // Else it's a client fd that is ready for reading ==> Read the data into a buffer 
+                    handleClientRead(&i);
             }
+            if (pollRequests[i].revents & POLLOUT)
+                handleClientWrite(&i);
             if (pollRequests[i].revents & POLLHUP) // if one fd has the POLL HANG UP flag 
-            {
-                closeClient(&i);
-                std::cout << "Client disconnecter (hang-up)" << std::endl;
-            }
+                closeClient(&i,"Client disconnected (POLLHUP)");
             if (pollRequests[i].revents & POLLERR) // if one fd has the POLL ERROR flag
-            {
-                std::cerr << "Error in socket (pollfd[" << i << "])" << std::endl;
-                closeClient(&i);
-            } 
+                closeClient(&i, "Error in socket (POLLERR)");
         }
     }
 }

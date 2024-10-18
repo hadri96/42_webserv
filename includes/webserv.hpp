@@ -4,6 +4,7 @@
 // External libraries
 # include <cstring>
 # include <iostream>
+# include <fstream>
 # include <iomanip>
 # include <sys/socket.h>
 # include <netinet/in.h>
