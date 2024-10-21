@@ -2,7 +2,7 @@
 
 int	main(int argc, char **argv)
 {
-	int			port = 8090;
+	int			port = 8080;
 	EventLoop	server(port);
 
 	(void) argc;

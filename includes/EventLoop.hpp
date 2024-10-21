@@ -9,6 +9,7 @@ class EventLoop
         
         // Constructors / destructors
         EventLoop(int port) : port(port) {}
+        ~EventLoop() {};
 
         // Methods:
         void    setupServer();

@@ -20,5 +20,6 @@
 # include "defines.hpp"
 # include "EventLoop.hpp"
 # include "ClientConnection.hpp"
+# include "HTTPResponse.hpp"
 
 #endif

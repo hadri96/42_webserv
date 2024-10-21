@@ -103,7 +103,7 @@ void    EventLoop::connectNewClientToServer()
         clientPollRequest.events = POLLIN;
         pollRequests.push_back(clientPollRequest);
         clientMap.insert(std::make_pair(clientSocket, clientObj));
-        std::cout << "New client connected" << std::endl;
+        std::cout << "New client (fd: " << clientSocket << ") connected" << std::endl;
     }
 }
 
@@ -119,7 +119,6 @@ void    EventLoop::closeClient(std::size_t *i, std::string message)
 }
 
 
-
 // (CLIENT --> SERVER)  : HTTP Request 
 // Function Handles what happens when a client connects with a POLLIN request (i.e client sends a request to server)
 void    EventLoop::handleClientRead(std::size_t *i)
@@ -129,19 +128,74 @@ void    EventLoop::handleClientRead(std::size_t *i)
 
     if (bytes_read <= 0)
         closeClient(i, "Client disconnected: No bytes read");
-    else // Process the data received from the client and send basic response
-    {
-        const char*     http_response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 13\r\n\r\nCiao ragazzi!";
-        
-        std::cout << "Received data from client " << pollRequests[(*i)].fd << " : " << buffer << std::endl;
-        // Here I need to implement a for loop that repeatedly sends the content of a buffer
-        // which reads from a given example.html file. For this I need to use a filestream 
-        // Also need to work out how to link requests to responses
+    else
+    {        
+        HTTPResponse    HTTPResponse;
+        std::string     parsed_string = HTTPResponse.getParsedResponse();
+        size_t          bufferSize = 1024;
+        size_t          total_size = parsed_string.size();
+        size_t          bytes_sent = 0;
 
-        send(pollRequests[(*i)].fd, http_response, strlen(http_response), 0);
-        std::cout << "Response sent" << std::endl;
+        while (bytes_sent < total_size) 
+        {
+            size_t      chunk_size = std::min(bufferSize, total_size - bytes_sent);
+            int         sent;
+            
+            sent = send(pollRequests[(*i)].fd, (parsed_string.c_str() + bytes_sent), chunk_size, 0);
+            if (sent < 0) 
+            {
+                std::cerr << "Error sending response" << std::endl;
+                closeClient(i, "Client disconnected: Error sending response");
+                return;
+            }
+            bytes_sent += sent;
+        }
+        std::cout << "Response sent in chunks." << std::endl;
     }
 }
+
+
+/*
+void EventLoop::handleClientRead(std::size_t *i)
+{
+    char buffer[1024] = {0};
+    int bytes_read = read(pollRequests[(*i)].fd, buffer, 1024);
+
+    if (bytes_read <= 0) {
+        closeClient(i, "Client disconnected: No bytes read");
+    } else {
+        HTTPResponse HTTPResponse;
+        std::string parsed_string = HTTPResponse.getParsedResponse();
+
+        std::cout << "Parsed string: " << parsed_string << std::endl;
+        std::cout << "Received data from client " << pollRequests[(*i)].fd << " : " << buffer << std::endl;
+
+        // Define the buffer size for sending data in chunks
+        const int bufferSize = 1024; // You can adjust the size based on your system and network performance
+        size_t total_size = parsed_string.size();
+        size_t bytes_sent = 0;
+
+        // Loop through the string in chunks
+        while (bytes_sent < total_size) {
+            // Calculate the size of the current chunk to send
+            size_t chunk_size = std::min(bufferSize, total_size - bytes_sent);
+
+            // Use send() to send a chunk of the response
+            int sent = send(pollRequests[(*i)].fd, parsed_string.c_str() + bytes_sent, chunk_size, 0);
+            if (sent < 0) {
+                std::cerr << "Error sending response" << std::endl;
+                closeClient(i, "Client disconnected: Error sending response");
+                return;
+            }
+
+            // Update the total number of bytes sent
+            bytes_sent += sent;
+        }
+
+    }
+}
+*/
+
 
 // (SERVER --> CLIENT ) : HTTP Response 
 // Access the correct clientConnection object 
@@ -175,7 +229,7 @@ void    EventLoop::handleClientWrite(std::size_t *i)
 // The EventLoop::run() function serves as the main server event loop. 
 // It first sets up the server and then continuously waits for events on a set of file descriptors using the poll() system call. 
 // The function processes incoming connections and data from clients by iterating over the array of pollfd structures, 
-// checking the revents field to determine if a file descriptor is ready for reading, has been disconnected, or encountered an error.
+// checking the revents field to determine if a file descriptor is ready for reading / writing, has been disconnected, or encountered an error.
 void    EventLoop::run()
 {
     setupServer();
