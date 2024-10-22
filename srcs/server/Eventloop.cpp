@@ -118,6 +118,30 @@ void    EventLoop::closeClient(std::size_t *i, std::string message)
     std::cerr << message << std::endl;
 }
 
+// Sends resource to client via a buffer. Resource comes from HTTPResponse object
+void    EventLoop::sendResponseBuffer(std::size_t *i, HTTPResponse &response)
+{
+    std::string     parsed_string = response.getParsedResponse();
+    size_t          buffer_size = 1024;
+    size_t          total_size = parsed_string.size();
+    size_t          bytes_sent = 0;
+
+    while (bytes_sent < total_size) 
+    {
+        size_t      chunk_size = std::min(buffer_size, total_size - bytes_sent);
+        int         sent;
+        
+        sent = send(pollRequests[(*i)].fd, (parsed_string.c_str() + bytes_sent), chunk_size, 0);
+        if (sent < 0) 
+        {
+            closeClient(i, "Client disconnected: Error sending response");
+            return;
+        }
+        bytes_sent += sent;
+    }
+    std::cout << "Response sent in chunks." << std::endl;
+}
+
 
 // (CLIENT --> SERVER)  : HTTP Request 
 // Function Handles what happens when a client connects with a POLLIN request (i.e client sends a request to server)
@@ -130,71 +154,15 @@ void    EventLoop::handleClientRead(std::size_t *i)
         closeClient(i, "Client disconnected: No bytes read");
     else
     {        
+        /*
+        Here the HTTP response should be created based on the HTTPRequest
+        Which can be found by going through the ClientConnection in the ClientMap 
+        */
         HTTPResponse    HTTPResponse;
-        std::string     parsed_string = HTTPResponse.getParsedResponse();
-        size_t          bufferSize = 1024;
-        size_t          total_size = parsed_string.size();
-        size_t          bytes_sent = 0;
 
-        while (bytes_sent < total_size) 
-        {
-            size_t      chunk_size = std::min(bufferSize, total_size - bytes_sent);
-            int         sent;
-            
-            sent = send(pollRequests[(*i)].fd, (parsed_string.c_str() + bytes_sent), chunk_size, 0);
-            if (sent < 0) 
-            {
-                std::cerr << "Error sending response" << std::endl;
-                closeClient(i, "Client disconnected: Error sending response");
-                return;
-            }
-            bytes_sent += sent;
-        }
-        std::cout << "Response sent in chunks." << std::endl;
+        sendResponseBuffer(i, HTTPResponse);
     }
 }
-
-
-/*
-void EventLoop::handleClientRead(std::size_t *i)
-{
-    char buffer[1024] = {0};
-    int bytes_read = read(pollRequests[(*i)].fd, buffer, 1024);
-
-    if (bytes_read <= 0) {
-        closeClient(i, "Client disconnected: No bytes read");
-    } else {
-        HTTPResponse HTTPResponse;
-        std::string parsed_string = HTTPResponse.getParsedResponse();
-
-        std::cout << "Parsed string: " << parsed_string << std::endl;
-        std::cout << "Received data from client " << pollRequests[(*i)].fd << " : " << buffer << std::endl;
-
-        // Define the buffer size for sending data in chunks
-        const int bufferSize = 1024; // You can adjust the size based on your system and network performance
-        size_t total_size = parsed_string.size();
-        size_t bytes_sent = 0;
-
-        // Loop through the string in chunks
-        while (bytes_sent < total_size) {
-            // Calculate the size of the current chunk to send
-            size_t chunk_size = std::min(bufferSize, total_size - bytes_sent);
-
-            // Use send() to send a chunk of the response
-            int sent = send(pollRequests[(*i)].fd, parsed_string.c_str() + bytes_sent, chunk_size, 0);
-            if (sent < 0) {
-                std::cerr << "Error sending response" << std::endl;
-                closeClient(i, "Client disconnected: Error sending response");
-                return;
-            }
-
-            // Update the total number of bytes sent
-            bytes_sent += sent;
-        }
-
-    }
-}
-*/
 
 
 // (SERVER --> CLIENT ) : HTTP Response 
@@ -203,8 +171,8 @@ void EventLoop::handleClientRead(std::size_t *i)
 // over the connection of its socket (client_fd) to the server. 
 void    EventLoop::handleClientWrite(std::size_t *i)
 {
-    int                                         client_fd = pollRequests[(*i)].fd;
-    ssize_t                                     bytes_sent;
+    int             client_fd = pollRequests[(*i)].fd;
+    ssize_t         bytes_sent;
     
     // Find clientConnection object in clientMap according to client_fd:
     std::map<int, ClientConnection>::iterator   it = clientMap.find(client_fd);
@@ -218,11 +186,20 @@ void    EventLoop::handleClientWrite(std::size_t *i)
     // Send the bytes contained in the write_buffer to client_fd socket
     bytes_sent = send(client_fd, clientObj->write_buffer.c_str(), clientObj->write_buffer.size(), 0);
     if (bytes_sent > 0)
+    {
+        std::cerr << "bytes_sent > 0 " << std::endl;
         clientObj->write_buffer.erase(0, bytes_sent);
+    }
     if  (bytes_sent < 0)
+    {   
+        std::cerr << "bytes_sent < 0" << std::endl; 
         return ;
+    }
     if (clientObj->write_buffer.empty())
-        pollRequests[(*i)].events &= ~POLLOUT; // bitwise AND operation with opposite of POLLOUT (~ = NOT)
+        {
+            std::cerr << "write buffer is empty" << std::endl;
+            pollRequests[(*i)].events &= ~POLLOUT;
+        } // bitwise AND operation with opposite of POLLOUT (~ = NOT)
 }
 
 
@@ -315,42 +292,13 @@ Otherwise, it processes the received data and displays it.
     (example: POLLOUT = 0010 and POLLIN = 0100)
     We have to use bitwise operations to detect them. 
 
+GET: Used to retrieve data from the server. It is safe (does not alter the server state), idempotent (same result for multiple identical requests), cacheable, and can be bookmarked and recorded in browser history.
 
-void    EventLoop::run()
-{
-    setupServer();
-    // Accept a Client Connection (need to calculate client address size and again cast it to a generic pointer)
-    int                     clientSocket;
-    struct sockaddr_in      clientAddress;
-    unsigned int            addrLen = sizeof(clientAddress);
+POST: Used to send data to the server to create a new resource. It is non-idempotent (each request can create a unique resource), not cacheable, and cannot be bookmarked.
 
-    if ((clientSocket = accept(server_fd, (struct sockaddr *)&clientAddress, (socklen_t*)&addrLen)) < 0) 
-    {
-        std::cerr << "Accept failed" << std::endl;
-        exit(EXIT_FAILURE);
-    }
+PUT: Used to update or replace an existing resource. It is idempotent (repeating the same request has the same effect), not typically cacheable, and cannot be bookmarked.
 
-    std::cout << "Connection accepted on fd: " << clientSocket << std::endl;
+DELETE: Used to remove a resource from the server. It is idempotent (repeating the request has the same effect), not cacheable, and typically returns an acknowledgment.
 
-    // Read data from client 
-    char        buffer[2048] = {0}; // sets all bytes to 0 (bzero equivalent in c++)
-
-    std::cerr << buffer << std::endl;
-    int         bytes_read = read(clientSocket, buffer, 2048);
-    
-    if (bytes_read > 0)
-        std::cout << "Received: " << buffer << std::endl;
-
-    // Send response
-    const char*     http_response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 13\r\n\r\nCiao ragazzi!";
-    
-    send(clientSocket, http_response, strlen(http_response), 0);
-    std::cout << "Response sent" << std::endl;
-
-    // Close the connection
-    close(clientSocket);
-    std::cout << "Connection closed" << std::endl;
-
-}
 
 */

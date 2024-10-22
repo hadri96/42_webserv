@@ -1,6 +1,9 @@
 #ifndef CLIENTCONNECTION_HPP
 #define CLIENTCONNECTION_HPP
 
+#include "HTTPRequest.hpp"
+// class HTTPResponse;
+
 class ClientConnection
 {
     public:
@@ -23,7 +26,7 @@ class ClientConnection
         int             client_fd;
         bool            is_reading;
         bool            is_writing;
-        // HTTPRequest     current_request;
+        HTTPRequest     current_request;
         // HTTPResponse    current_response;
 
 };

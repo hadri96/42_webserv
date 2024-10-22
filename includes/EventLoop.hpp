@@ -3,6 +3,8 @@
 
 class ClientConnection;
 
+class HTTPResponse;
+
 class EventLoop
 {
     public:
@@ -19,6 +21,7 @@ class EventLoop
         void    closeClient(std::size_t *i, std::string message);
         void    handleClientRead(std::size_t *i);
         void    handleClientWrite(std::size_t *i);
+        void    sendResponseBuffer(std::size_t *i, HTTPResponse &response);
         void    run();
     
     private: 

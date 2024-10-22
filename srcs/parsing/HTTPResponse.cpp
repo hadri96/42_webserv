@@ -28,3 +28,9 @@ std::string     HTTPResponse::getParsedResponse()
 {
     return (this->parsed_response);
 }
+
+
+void     getRequestedFile(std::string uri)
+{
+    std::cout << "get requested file : " << uri  << std::endl;
+}
