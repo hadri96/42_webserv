@@ -108,7 +108,6 @@ void    EventLoop::connectNewClientToServer()
 }
 
 
-
 // This function closes the fd of the given client and erases it from the pollRequest list. 
 void    EventLoop::closeClient(std::size_t *i, std::string message)
 {
@@ -121,9 +120,9 @@ void    EventLoop::closeClient(std::size_t *i, std::string message)
 // Sends resource to client via a buffer. Resource comes from HTTPResponse object
 void    EventLoop::sendResponseBuffer(std::size_t *i, HTTPResponse &response)
 {
-    std::string     parsed_string = response.getParsedResponse();
+    std::string     body = response.getResponse("example_response.html");
     size_t          buffer_size = 1024;
-    size_t          total_size = parsed_string.size();
+    size_t          total_size = body.size();
     size_t          bytes_sent = 0;
 
     while (bytes_sent < total_size) 
@@ -131,7 +130,7 @@ void    EventLoop::sendResponseBuffer(std::size_t *i, HTTPResponse &response)
         size_t      chunk_size = std::min(buffer_size, total_size - bytes_sent);
         int         sent;
         
-        sent = send(pollRequests[(*i)].fd, (parsed_string.c_str() + bytes_sent), chunk_size, 0);
+        sent = send(pollRequests[(*i)].fd, (body.c_str() + bytes_sent), chunk_size, 0);
         if (sent < 0) 
         {
             closeClient(i, "Client disconnected: Error sending response");
@@ -150,17 +149,28 @@ void    EventLoop::handleClientRead(std::size_t *i)
     char    buffer[1024] = {0};
     int     bytes_read = read(pollRequests[(*i)].fd, buffer, 1024);
 
+    std::cout << buffer << std::endl;
+
     if (bytes_read <= 0)
         closeClient(i, "Client disconnected: No bytes read");
     else
-    {        
-        /*
-        Here the HTTP response should be created based on the HTTPRequest
-        Which can be found by going through the ClientConnection in the ClientMap 
-        */
-        HTTPResponse    HTTPResponse;
+    {
+        // Here we create the request and response
+        // then we link them to the ClientConnection so they are in the map
+        // then we send the response through a buffer
+        std::map<int, ClientConnection>::iterator   it = clientMap.find((pollRequests[(*i)].fd));
 
-        sendResponseBuffer(i, HTTPResponse);
+        ClientConnection    *client_ref = &it->second;
+
+        HTTPRequest         HTTPRequest;
+        HTTPResponse        HTTPResponse;
+
+        // Here we need a function that creates the response based on the request. 
+
+        client_ref->assignRequest(&HTTPRequest);
+        client_ref->assignResponse(&HTTPResponse);
+
+        sendResponseBuffer(i, client_ref->getCurrentResponse());
     }
 }
 
@@ -196,10 +206,10 @@ void    EventLoop::handleClientWrite(std::size_t *i)
         return ;
     }
     if (clientObj->write_buffer.empty())
-        {
-            std::cerr << "write buffer is empty" << std::endl;
-            pollRequests[(*i)].events &= ~POLLOUT;
-        } // bitwise AND operation with opposite of POLLOUT (~ = NOT)
+    {
+        std::cerr << "write buffer is empty" << std::endl;
+        pollRequests[(*i)].events &= ~POLLOUT;
+    } // bitwise AND operation with opposite of POLLOUT (~ = NOT)
 }
 
 
@@ -225,7 +235,7 @@ void    EventLoop::run()
         {
             // check revents field of this pollfd 
             // to check if this fd is ready for reading
-            if (pollRequests[i].revents & POLLIN) 
+            if (pollRequests[i].revents & POLLIN)
             {
                 // if the fd currently being processed is the server socket (listening for new clients)
                 // it means a new client is trying to connect to the server

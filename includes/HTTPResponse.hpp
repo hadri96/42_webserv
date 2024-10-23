@@ -9,15 +9,18 @@ class HTTPResponse
     ~HTTPResponse();
 
     // Methods
-    std::string     getParsedResponse();
-    void            getRequestedFile(std::string uri);
+    // std::string     getParsedResponse();
+    std::string         getResponse(std::string uri);
+    void                getBodyFromFile(std::string uri);
+    void                getHeaderFromBody();
 
     private:
     // std::string     status;
-    // std::string     header;
     // std::string     body;
-    std::string     parsed_response;
-    // std::string     parsed_file;
+    // std::string     parsed_response;
+    std::string     fileHeader;
+    std::string     fileBody;
+    std::string     fullResponse;
 };
 
 #endif

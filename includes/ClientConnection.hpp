@@ -2,7 +2,7 @@
 #define CLIENTCONNECTION_HPP
 
 #include "HTTPRequest.hpp"
-// class HTTPResponse;
+#include "HTTPResponse.hpp"
 
 class ClientConnection
 {
@@ -12,14 +12,18 @@ class ClientConnection
         // std::string     read_buffer; // stores data that client wants to send to server (probably not necessary)
 
         // Constructors / destructors 
-        ClientConnection(int fd) : client_fd(fd), is_reading(true), is_writing(false) {}
+        ClientConnection(int fd); //: client_fd(fd), is_reading(true), is_writing(false) {}
+        ~ClientConnection();
 
         // Methods: 
-        
-        ssize_t     readFromClient();
-        ssize_t     writeToClient();
-        void        closeConnection();
-        void        handleRequest();
+        ssize_t             readFromClient();
+        ssize_t             writeToClient();
+        void                closeConnection();
+        void                handleRequest();
+        void                assignRequest(HTTPRequest *request_ptr);
+        void                assignResponse(HTTPResponse *response_ptr);
+        HTTPRequest&        getCurrentRequest();
+        HTTPResponse&       getCurrentResponse();
     
     private:
         // Private Variables:
@@ -27,7 +31,7 @@ class ClientConnection
         bool            is_reading;
         bool            is_writing;
         HTTPRequest     current_request;
-        // HTTPResponse    current_response;
+        HTTPResponse    current_response;
 
 };
 

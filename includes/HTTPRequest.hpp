@@ -4,7 +4,9 @@
 class HTTPRequest 
 {
     public:
-
+        //constructors // destructors 
+        HTTPRequest();
+        ~HTTPRequest();
 
     private:
         std::string     method; // GET, POST, PUT, DELETE

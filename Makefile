@@ -18,8 +18,8 @@ UNAME_S := $(shell uname -s)
 
 # Source File names:
 MAIN = main
-PARSING = HTTPResponse
-SERVER = Eventloop
+PARSING = HTTPResponse HTTPRequest
+SERVER = Eventloop ClientConnection
 CONFIG = 
 
 # Source directory
