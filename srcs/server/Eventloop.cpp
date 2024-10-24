@@ -29,9 +29,6 @@ void    EventLoop::bindSocket()
     }
 }
 
-
-
-
 // Makes the server listen for connections on the given port
 void    EventLoop::listenOnPort()
 {
@@ -43,9 +40,6 @@ void    EventLoop::listenOnPort()
     }
     std::cout << "Server listening on port : " << port << std::endl;
 }
-
-
-
 
 // This function creates the server's listening socket, binds it to the given port
 // and configures it to listen for incoming connections.
@@ -80,8 +74,6 @@ void    EventLoop::setupServer()
 }
 
 
-
-
 // Launches accept function and connects client if socket connection is accepted
 void    EventLoop::connectNewClientToServer()
 {
@@ -108,7 +100,6 @@ void    EventLoop::connectNewClientToServer()
 }
 
 
-
 // This function closes the fd of the given client and erases it from the pollRequest list. 
 void    EventLoop::closeClient(std::size_t *i, std::string message)
 {
@@ -118,84 +109,72 @@ void    EventLoop::closeClient(std::size_t *i, std::string message)
     std::cerr << message << std::endl;
 }
 
+// Sends resource to client via a buffer. Resource comes from HTTPResponse object
+void    EventLoop::sendResponseBuffer(std::size_t *i, HTTPResponse &response)
+{
+    std::string     body = response.getResponse("example_response.html");
+    size_t          buffer_size = 1024;
+    size_t          total_size = body.size();
+    size_t          bytes_sent = 0;
+
+    while (bytes_sent < total_size) 
+    {
+        size_t      chunk_size = std::min(buffer_size, total_size - bytes_sent);
+        int         sent;
+        
+        sent = send(pollRequests[(*i)].fd, (body.c_str() + bytes_sent), chunk_size, 0);
+        if (sent < 0) 
+        {
+            closeClient(i, "Client disconnected: Error sending response");
+            return;
+        }
+        bytes_sent += sent;
+    }
+    std::cout << "Response sent in chunks." << std::endl;
+}
+
 
 // (CLIENT --> SERVER)  : HTTP Request 
-// Function Handles what happens when a client connects with a POLLIN request (i.e client sends a request to server)
-void    EventLoop::handleClientRead(std::size_t *i)
-{
-    char    buffer[1024] = {0};
-    int     bytes_read = read(pollRequests[(*i)].fd, buffer, 1024);
-
-    if (bytes_read <= 0)
-        closeClient(i, "Client disconnected: No bytes read");
-    else
-    {        
-        HTTPResponse    HTTPResponse;
-        std::string     parsed_string = HTTPResponse.getParsedResponse();
-        size_t          bufferSize = 1024;
-        size_t          total_size = parsed_string.size();
-        size_t          bytes_sent = 0;
-
-        while (bytes_sent < total_size) 
-        {
-            size_t      chunk_size = std::min(bufferSize, total_size - bytes_sent);
-            int         sent;
-            
-            sent = send(pollRequests[(*i)].fd, (parsed_string.c_str() + bytes_sent), chunk_size, 0);
-            if (sent < 0) 
-            {
-                std::cerr << "Error sending response" << std::endl;
-                closeClient(i, "Client disconnected: Error sending response");
-                return;
-            }
-            bytes_sent += sent;
-        }
-        std::cout << "Response sent in chunks." << std::endl;
-    }
-}
-
-
-/*
+// Function Handles what happens when a socket presents a POLLIN flag 
+// indicating that there is data available to read on the file descriptor.
 void EventLoop::handleClientRead(std::size_t *i)
 {
-    char buffer[1024] = {0};
-    int bytes_read = read(pollRequests[(*i)].fd, buffer, 1024);
+    char    buffer[1024] = {0};
+    int     bytes_read;
 
-    if (bytes_read <= 0) {
-        closeClient(i, "Client disconnected: No bytes read");
-    } else {
-        HTTPResponse HTTPResponse;
-        std::string parsed_string = HTTPResponse.getParsedResponse();
+    std::map<int, ClientConnection>::iterator it = clientMap.find(pollRequests[(*i)].fd);
+    ClientConnection    *client_ptr = &it->second;
+    HTTPRequest         request;
+    
+    client_ptr->assignRequest(&request); // creates a ptr to the request within the ClientConnection
+    
+    while ((bytes_read = read(pollRequests[(*i)].fd, buffer, sizeof(buffer))) > 0)
+    {
+        request.appendRequest(buffer);
 
-        std::cout << "Parsed string: " << parsed_string << std::endl;
-        std::cout << "Received data from client " << pollRequests[(*i)].fd << " : " << buffer << std::endl;
+        if (request.getRawRequest().find("\r\n\r\n") != std::string::npos) // Find end of request string
+        {
+            std::cout << "HTTP Request saved here:\n" << request.getRawRequest() << "\nEND OF REQUEST" << std::endl;
+            HTTPResponse    response;
+            /*
+            Here we need a series of functions that parse the request 
+            then create a response based on the request 
+            (according to method type, error response codes etc.)
 
-        // Define the buffer size for sending data in chunks
-        const int bufferSize = 1024; // You can adjust the size based on your system and network performance
-        size_t total_size = parsed_string.size();
-        size_t bytes_sent = 0;
-
-        // Loop through the string in chunks
-        while (bytes_sent < total_size) {
-            // Calculate the size of the current chunk to send
-            size_t chunk_size = std::min(bufferSize, total_size - bytes_sent);
-
-            // Use send() to send a chunk of the response
-            int sent = send(pollRequests[(*i)].fd, parsed_string.c_str() + bytes_sent, chunk_size, 0);
-            if (sent < 0) {
-                std::cerr << "Error sending response" << std::endl;
-                closeClient(i, "Client disconnected: Error sending response");
-                return;
-            }
-
-            // Update the total number of bytes sent
-            bytes_sent += sent;
+            something like:
+                request.parsing();
+                response.generateResponse(&request);
+            */
+            client_ptr->assignResponse(&response);
+            sendResponseBuffer(i, client_ptr->getCurrentResponse());
+            break;
         }
-
     }
+    if (bytes_read == 0)
+        closeClient(i, "Client disconnected: bytes_read = 0");
+    else if (bytes_read < 0)
+        closeClient(i, "Client disconnected due to read error (bytes_read = -1)");
 }
-*/
-
 
 // (SERVER --> CLIENT ) : HTTP Response 
 // Access the correct clientConnection object 
@@ -203,8 +182,8 @@ void EventLoop::handleClientRead(std::size_t *i)
 // over the connection of its socket (client_fd) to the server. 
 void    EventLoop::handleClientWrite(std::size_t *i)
 {
-    int                                         client_fd = pollRequests[(*i)].fd;
-    ssize_t                                     bytes_sent;
+    int             client_fd = pollRequests[(*i)].fd;
+    ssize_t         bytes_sent;
     
     // Find clientConnection object in clientMap according to client_fd:
     std::map<int, ClientConnection>::iterator   it = clientMap.find(client_fd);
@@ -218,13 +197,22 @@ void    EventLoop::handleClientWrite(std::size_t *i)
     // Send the bytes contained in the write_buffer to client_fd socket
     bytes_sent = send(client_fd, clientObj->write_buffer.c_str(), clientObj->write_buffer.size(), 0);
     if (bytes_sent > 0)
+    {
+        std::cerr << "bytes_sent > 0 " << std::endl;
         clientObj->write_buffer.erase(0, bytes_sent);
+    }
     if  (bytes_sent < 0)
+    {   
+        std::cerr << "bytes_sent < 0" << std::endl; 
         return ;
+    }
     if (clientObj->write_buffer.empty())
-        pollRequests[(*i)].events &= ~POLLOUT; // bitwise AND operation with opposite of POLLOUT (~ = NOT)
+    {
+        std::cerr << "write buffer is empty" << std::endl;
+        pollRequests[(*i)].events &= ~POLLOUT; 
+        // bitwise AND operation with opposite of POLLOUT (~ = NOT)
+    } 
 }
-
 
 // The EventLoop::run() function serves as the main server event loop. 
 // It first sets up the server and then continuously waits for events on a set of file descriptors using the poll() system call. 
@@ -248,7 +236,7 @@ void    EventLoop::run()
         {
             // check revents field of this pollfd 
             // to check if this fd is ready for reading
-            if (pollRequests[i].revents & POLLIN) 
+            if (pollRequests[i].revents & POLLIN)
             {
                 // if the fd currently being processed is the server socket (listening for new clients)
                 // it means a new client is trying to connect to the server
@@ -315,42 +303,13 @@ Otherwise, it processes the received data and displays it.
     (example: POLLOUT = 0010 and POLLIN = 0100)
     We have to use bitwise operations to detect them. 
 
+GET: Used to retrieve data from the server. It is safe (does not alter the server state), idempotent (same result for multiple identical requests), cacheable, and can be bookmarked and recorded in browser history.
 
-void    EventLoop::run()
-{
-    setupServer();
-    // Accept a Client Connection (need to calculate client address size and again cast it to a generic pointer)
-    int                     clientSocket;
-    struct sockaddr_in      clientAddress;
-    unsigned int            addrLen = sizeof(clientAddress);
+POST: Used to send data to the server to create a new resource. It is non-idempotent (each request can create a unique resource), not cacheable, and cannot be bookmarked.
 
-    if ((clientSocket = accept(server_fd, (struct sockaddr *)&clientAddress, (socklen_t*)&addrLen)) < 0) 
-    {
-        std::cerr << "Accept failed" << std::endl;
-        exit(EXIT_FAILURE);
-    }
+PUT: Used to update or replace an existing resource. It is idempotent (repeating the same request has the same effect), not typically cacheable, and cannot be bookmarked.
 
-    std::cout << "Connection accepted on fd: " << clientSocket << std::endl;
+DELETE: Used to remove a resource from the server. It is idempotent (repeating the request has the same effect), not cacheable, and typically returns an acknowledgment.
 
-    // Read data from client 
-    char        buffer[2048] = {0}; // sets all bytes to 0 (bzero equivalent in c++)
-
-    std::cerr << buffer << std::endl;
-    int         bytes_read = read(clientSocket, buffer, 2048);
-    
-    if (bytes_read > 0)
-        std::cout << "Received: " << buffer << std::endl;
-
-    // Send response
-    const char*     http_response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 13\r\n\r\nCiao ragazzi!";
-    
-    send(clientSocket, http_response, strlen(http_response), 0);
-    std::cout << "Response sent" << std::endl;
-
-    // Close the connection
-    close(clientSocket);
-    std::cout << "Connection closed" << std::endl;
-
-}
 
 */
