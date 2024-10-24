@@ -4,6 +4,13 @@
 #include "HTTPRequest.hpp"
 #include "HTTPResponse.hpp"
 
+
+/*
+This class is the link between Request, Response, and client sockets.
+There is one instance of this class per client
+Each instance is linked via the ClientMap to its client fd
+*/
+
 class ClientConnection
 {
     public:

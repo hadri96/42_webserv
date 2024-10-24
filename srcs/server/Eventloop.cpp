@@ -29,9 +29,6 @@ void    EventLoop::bindSocket()
     }
 }
 
-
-
-
 // Makes the server listen for connections on the given port
 void    EventLoop::listenOnPort()
 {
@@ -43,9 +40,6 @@ void    EventLoop::listenOnPort()
     }
     std::cout << "Server listening on port : " << port << std::endl;
 }
-
-
-
 
 // This function creates the server's listening socket, binds it to the given port
 // and configures it to listen for incoming connections.
@@ -78,8 +72,6 @@ void    EventLoop::setupServer()
     }
     // the bitwise OR operator makes sure that the existing flags are not modified, just the O_NONBLOCK and FD_CLOEXEC added.
 }
-
-
 
 
 // Launches accept function and connects client if socket connection is accepted
@@ -143,37 +135,46 @@ void    EventLoop::sendResponseBuffer(std::size_t *i, HTTPResponse &response)
 
 
 // (CLIENT --> SERVER)  : HTTP Request 
-// Function Handles what happens when a client connects with a POLLIN request (i.e client sends a request to server)
-void    EventLoop::handleClientRead(std::size_t *i)
+// Function Handles what happens when a socket presents a POLLIN flag 
+// indicating that there is data available to read on the file descriptor.
+void EventLoop::handleClientRead(std::size_t *i)
 {
     char    buffer[1024] = {0};
-    int     bytes_read = read(pollRequests[(*i)].fd, buffer, 1024);
+    int     bytes_read;
 
-    std::cout << buffer << std::endl;
-
-    if (bytes_read <= 0)
-        closeClient(i, "Client disconnected: No bytes read");
-    else
+    std::map<int, ClientConnection>::iterator it = clientMap.find(pollRequests[(*i)].fd);
+    ClientConnection    *client_ptr = &it->second;
+    HTTPRequest         request;
+    
+    client_ptr->assignRequest(&request); // creates a ptr to the request within the ClientConnection
+    
+    while ((bytes_read = read(pollRequests[(*i)].fd, buffer, sizeof(buffer))) > 0)
     {
-        // Here we create the request and response
-        // then we link them to the ClientConnection so they are in the map
-        // then we send the response through a buffer
-        std::map<int, ClientConnection>::iterator   it = clientMap.find((pollRequests[(*i)].fd));
+        request.appendRequest(buffer);
 
-        ClientConnection    *client_ref = &it->second;
+        if (request.getRawRequest().find("\r\n\r\n") != std::string::npos) // Find end of request string
+        {
+            std::cout << "HTTP Request saved here:\n" << request.getRawRequest() << "\nEND OF REQUEST" << std::endl;
+            HTTPResponse    response;
+            /*
+            Here we need a series of functions that parse the request 
+            then create a response based on the request 
+            (according to method type, error response codes etc.)
 
-        HTTPRequest         HTTPRequest;
-        HTTPResponse        HTTPResponse;
-
-        // Here we need a function that creates the response based on the request. 
-
-        client_ref->assignRequest(&HTTPRequest);
-        client_ref->assignResponse(&HTTPResponse);
-
-        sendResponseBuffer(i, client_ref->getCurrentResponse());
+            something like:
+                request.parsing();
+                response.generateResponse(&request);
+            */
+            client_ptr->assignResponse(&response);
+            sendResponseBuffer(i, client_ptr->getCurrentResponse());
+            break;
+        }
     }
+    if (bytes_read == 0)
+        closeClient(i, "Client disconnected: bytes_read = 0");
+    else if (bytes_read < 0)
+        closeClient(i, "Client disconnected due to read error (bytes_read = -1)");
 }
-
 
 // (SERVER --> CLIENT ) : HTTP Response 
 // Access the correct clientConnection object 
@@ -208,10 +209,10 @@ void    EventLoop::handleClientWrite(std::size_t *i)
     if (clientObj->write_buffer.empty())
     {
         std::cerr << "write buffer is empty" << std::endl;
-        pollRequests[(*i)].events &= ~POLLOUT;
-    } // bitwise AND operation with opposite of POLLOUT (~ = NOT)
+        pollRequests[(*i)].events &= ~POLLOUT; 
+        // bitwise AND operation with opposite of POLLOUT (~ = NOT)
+    } 
 }
-
 
 // The EventLoop::run() function serves as the main server event loop. 
 // It first sets up the server and then continuously waits for events on a set of file descriptors using the poll() system call. 
