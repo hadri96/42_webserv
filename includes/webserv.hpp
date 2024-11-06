@@ -3,8 +3,10 @@
 
 // External libraries
 # include <cstring>
+# include <ctime>
 # include <iostream>
 # include <fstream>
+# include <sstream>
 # include <iomanip>
 # include <sys/socket.h>
 # include <netinet/in.h>
@@ -18,8 +20,12 @@
 // Our HPP files
 # include "colors.hpp"
 # include "defines.hpp"
+# include "utils.hpp"
 # include "EventLoop.hpp"
+# include "Header.hpp"
 # include "ClientConnection.hpp"
+# include "HTMLParser.hpp"
 # include "HTTPResponse.hpp"
+# include "HTTPRequest.hpp"
 
 #endif

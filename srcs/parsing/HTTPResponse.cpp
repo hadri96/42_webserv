@@ -1,4 +1,4 @@
-#include "../../includes/webserv.hpp"
+#include "webserv.hpp"
 
 HTTPResponse::HTTPResponse() {}
 
@@ -7,32 +7,36 @@ HTTPResponse::~HTTPResponse()
     std::cout << "HTTPResponse destructor called" << std::endl;
 }
 
-
-std::string     HTTPResponse::getResponse(std::string uri)
+void HTTPResponse::generateResponse(HTTPRequest *request)
 {
-    getBodyFromFile(uri);
-    getHeaderFromBody();
+	getBodyFromFile(request->getUri());
+	getHeader(request);
+}
+
+std::string HTTPResponse::getResponse()
+{
+    // Use HTMLParser to modify the HTML content
+    htmlParser.parse(fileBody); // Parse the HTML content
+    std::string cssUri = htmlParser.extractCSSUri();
+    // Include modified HTML in the response
     fullResponse.append(fileHeader);
-    fullResponse.append(fileBody, 0, fileBody.length());
-
-    return (this->fullResponse);
+    fullResponse.append(htmlParser.getModifiedHTML()); // Use modified HTML
+    return fullResponse;
 }
 
-
-void    HTTPResponse::getHeaderFromBody()
+void    HTTPResponse::getHeader(HTTPRequest *request)
 {
-    /*
-        Here we should read the fileBody string and deduce the correct header from it.
-    */
-    fileHeader = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: [length of the HTML content]\nConnection: close\n\n";  
-}
+	Header header;
 
+	fileHeader = header.createHeader(request);
+	std::cout << "fileHeader: " << fileHeader << std::endl;
+}
 
 // Takes the uri of the file and copies its' contents to HTTPResponse->fileBody
 void     HTTPResponse::getBodyFromFile(std::string uri)
 {
     std::string     line;
-    std::string     path = "html/";
+    std::string     path = "assets";
     path.append(uri, 0, uri.length()); // problem with the uri
 
     std::ifstream        fs(path.c_str());

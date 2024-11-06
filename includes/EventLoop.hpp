@@ -8,7 +8,7 @@ class HTTPResponse;
 class EventLoop
 {
     public:
-        
+
         // Constructors / destructors
         EventLoop(int port) : port(port) {}
         ~EventLoop() {};
@@ -23,15 +23,15 @@ class EventLoop
         void    handleClientWrite(std::size_t *i);
         void    sendResponseBuffer(std::size_t *i, HTTPResponse &response);
         void    run();
-    
-    private: 
-        // Variables 
+
+    private:
+        // Variables
         int                                             server_fd; // fd for listening socket
         int                                             port;
         std::map<int, ClientConnection>                 clientMap; // client fds mapped to client request objs
         std::vector<pollfd>                             pollRequests;
-        fd_set                                          read_fds; // set of fds to mnitor for reading
-        fd_set                                          write_fds; // set of fds to mnitor for writing
+        // fd_set                                          read_fds; // set of fds to mnitor for reading
+        // fd_set                                          write_fds; // set of fds to mnitor for writing
 
 };
 

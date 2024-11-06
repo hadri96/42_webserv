@@ -18,9 +18,10 @@ UNAME_S := $(shell uname -s)
 
 # Source File names:
 MAIN = main
-PARSING = HTTPResponse HTTPRequest
+PARSING = HTTPResponse HTTPRequest HTMLParser Header
 SERVER = Eventloop ClientConnection
-CONFIG = 
+UTILS = getCurrentTime
+CONFIG =
 
 # Source directory
 SRCS_DIR = srcs
@@ -29,7 +30,7 @@ SRCS_DIR = srcs
 PARS_DIR = parsing
 SERVER_DIR = server
 CONFIG_DIR = config
-
+UTILS_DIR = utils
 # Source Files
 SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, $(addsuffix .cpp, $(UTILS)))\
 	$(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(MAIN)))\
@@ -43,10 +44,11 @@ OBJ_DIR = obj
 OBJ_DIRS = $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(PARS_DIR)) \
 	$(addprefix $(OBJ_DIR)/, $(SERVER_DIR)) \
 	$(addprefix $(OBJ_DIR)/, $(CONFIG_DIR)) \
+	$(addprefix $(OBJ_DIR)/, $(UTILS_DIR))
 
-OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJ_DIR)/%.o) 
+OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
-# SANITIZE= -g3 -fsanitize=address
+#SANITIZE= -g3 -fsanitize=address
 SANITIZE= -g
 
 # Color Variables
@@ -61,10 +63,10 @@ RESET=\033[0m
 
 .PHONY: all clean fclean re header
 
-all: header $(NAME)
+all: $(NAME)
 
 # Compilation rule for the final executable
-$(NAME): $(OBJ_DIRS) $(OBJS)
+$(NAME): $(OBJ_DIRS) $(OBJS) header
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(SANITIZE)
 	@echo "$(YELLOW)\no------------------------------------o$(RESET)"
 	@echo "$(GREEN)|           WEBSERV COMPILED          |$(RESET)"
@@ -75,11 +77,12 @@ $(OBJ_DIRS):
 	@mkdir -p $(OBJ_DIR) \
 		$(addprefix $(OBJ_DIR)/, $(PARS_DIR)) \
 		$(addprefix $(OBJ_DIR)/, $(SERVER_DIR)) \
-		$(addprefix $(OBJ_DIR)/, $(CONFIG_DIR))
+		$(addprefix $(OBJ_DIR)/, $(CONFIG_DIR)) \
+		$(addprefix $(OBJ_DIR)/, $(UTILS_DIR))
 
 # Rule to compile object files from source files
 $(OBJ_DIR)/%.o: $(SRCS_DIR)/%.cpp | $(OBJ_DIRS)
-	$(CC) $(CFLAGS) -o $@ -c $<
+	@$(CC) $(CFLAGS) -o $@ -c $<
 
 header:
 
@@ -110,7 +113,7 @@ header:
 		@echo "$(RED)|__/     \__/ \_______/|_______/ |_______/  \_______/|__/          \_/$(RESET)"
 		@echo "\n\n";
 
-clean:
+clean: header
 	@echo "${RED}\nCleaning up...${RESET}"
 	@rm -f $(OBJS)
 	@echo "${GREEN}Cleanup done.${RESET}"
