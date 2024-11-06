@@ -20,7 +20,7 @@ HTTPRequest&         ClientConnection::getCurrentRequest()
     return (this->current_request);
 }
 
-HTTPResponse&        ClientConnection::& getCurrentResponse()
+HTTPResponse&        ClientConnection::getCurrentResponse()
 {
     return (this->current_response);
 }
