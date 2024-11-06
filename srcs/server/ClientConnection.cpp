@@ -1,4 +1,4 @@
-#include "../../includes/webserv.hpp"
+#include "webserv.hpp"
 
 ClientConnection::ClientConnection(int fd) : client_fd(fd), is_reading(true), is_writing(false) {}
 
@@ -20,7 +20,7 @@ HTTPRequest&         ClientConnection::getCurrentRequest()
     return (this->current_request);
 }
 
-HTTPResponse&        ClientConnection::getCurrentResponse()
+HTTPResponse&        ClientConnection::& getCurrentResponse()
 {
     return (this->current_response);
 }
