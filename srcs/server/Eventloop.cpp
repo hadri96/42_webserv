@@ -33,7 +33,7 @@ void    EventLoop::bindSocket()
 void    EventLoop::listenOnPort()
 {
     // Listen for connections: second parameter = backlog size (max number of incoming queued connections)
-    if (listen(server_fd, 5) < 0)
+    if (listen(server_fd, 5) < 0) // applied on the server_fd == server socket 
     {
         std::cerr << "Listen failed" << std::endl;
         exit(EXIT_FAILURE);
@@ -41,10 +41,16 @@ void    EventLoop::listenOnPort()
     std::cout << "Server listening on port : " << port << std::endl;
 }
 
-// This function creates the server's listening socket, binds it to the given port
+// This function creates the server's listening socket, binds it to a given port
 // and configures it to listen for incoming connections.
 void    EventLoop::setupServer()
 {
+    /*
+    Here we will need to loop over ServerConfigs objects 
+    in order to create a listening socket for each server block.
+    Each server block involves a listening socket, a a bind and a defined port.
+
+    */
     // Socket creation: 
     // AF_INET means we're using an IPv4 address, SOCK_STREAM means its a TCP socket, 0 = TCP/IP protocol
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0 )
@@ -52,9 +58,8 @@ void    EventLoop::setupServer()
         std::cerr << "Socket failed" << std::endl;
         exit(EXIT_FAILURE);
     }
-
-    bindSocket();
-    listenOnPort();
+    bindSocket(); // will likely take a ServerConfig object as argument
+    listenOnPort(); // will likely take a ServerConfig object as argument (port number is in ServerConfig obj)
 
     // Add a pollfd for the server socket to the pollfd vector 
     pollfd      server_pollfd;
@@ -85,18 +90,26 @@ void    EventLoop::connectNewClientToServer()
     clientSocket = accept(server_fd, (struct sockaddr *)&clientAddress, &addrLen);
 
     if (clientSocket < 0)
+    {    
         std::cerr << "Failed to accept client connection" << std::endl;
-    else // if accepted, add new client to pollRequests
-    {
-        pollfd              clientPollRequest;
-        ClientConnection    clientObj(clientSocket);
-
-        clientPollRequest.fd = clientSocket;
-        clientPollRequest.events = POLLIN;
-        pollRequests.push_back(clientPollRequest);
-        clientMap.insert(std::make_pair(clientSocket, clientObj));
-        std::cout << "New client (fd: " << clientSocket << ") connected" << std::endl;
+        return ;
     }
+    // if accepted, add new client to pollRequests
+    pollfd              clientPollRequest;
+    ClientConnection    clientObj(clientSocket);
+
+    clientPollRequest.fd = clientSocket;
+    clientPollRequest.events = POLLIN;
+    pollRequests.push_back(clientPollRequest);
+
+    /*
+        Here we need to identify the server block using the listening socket 
+        This is done by checking if the serverConfigs map contains this particular listening socket (key)
+        and finding its mapped ServerConfig object (value) 
+    */
+
+    clientMap.insert(std::make_pair(clientSocket, clientObj));
+    std::cout << "New client (fd: " << clientSocket << ") connected" << std::endl;
 }
 
 
@@ -158,7 +171,7 @@ void EventLoop::handleClientRead(std::size_t *i)
             HTTPResponse    response;
             /*
             Here we need a series of functions that parse the request 
-            then create a response based on the request 
+            then create a response based on the request and on the ServerConfig values for that socket
             (according to method type, error response codes etc.)
 
             something like:

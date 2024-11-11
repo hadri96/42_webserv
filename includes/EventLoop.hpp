@@ -27,11 +27,12 @@ class EventLoop
     private: 
         // Variables 
         int                                             server_fd; // fd for listening socket
-        int                                             port;
-        std::map<int, ClientConnection>                 clientMap; // client fds mapped to client request objs
+        int                                             port; // comes from config file
         std::vector<pollfd>                             pollRequests;
-        fd_set                                          read_fds; // set of fds to mnitor for reading
-        fd_set                                          write_fds; // set of fds to mnitor for writing
+        std::map<int, ClientConnection>                 clientMap; // client fds mapped to client request objs
+        // std::map<int, ServerConfig>                     serverBlockMap; // maps listening socket to server block config class
+        fd_set                                          read_fds; // set of fds to monitor for reading
+        fd_set                                          write_fds; // set of fds to monitor for writing
 
 };
 
