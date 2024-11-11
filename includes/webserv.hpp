@@ -14,6 +14,7 @@
 # include <vector>
 # include <poll.h>
 # include <fcntl.h>
+# include <algorithm>
 
 // Our HPP files
 # include "colors.hpp"

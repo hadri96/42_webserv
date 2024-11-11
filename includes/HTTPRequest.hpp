@@ -4,22 +4,23 @@
 class HTTPRequest 
 {
     public:
-        //constructors // destructors 
+    // --- Constructors and Destructor ---
         HTTPRequest();
         ~HTTPRequest();
 
-        //methods 
+    // --- Public Methods ---
         void            appendRequest(std::string input);
+        
+        // ··· Getters and utils ···  
         std::string     getRawRequest();
 
 
     private:
+    // --- Private Attributes ---
         std::string     method; // GET, POST, PUT, DELETE
         std::string     uri; // (/index.html)
         std::string     body;
         std::string     rawRequest; // full unparsed string of the request
-        
 };
-
 
 #endif
