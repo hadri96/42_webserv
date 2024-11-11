@@ -1,6 +1,123 @@
 #include "../../includes/webserv.hpp"
 
 
+// =============================================================================
+// Public Methods
+// =============================================================================
+
+
+// The EventLoop::run() function serves as the main server event loop. 
+// It first sets up the server and then continuously waits for events on a set of file descriptors using the poll() system call. 
+// The function processes incoming connections and data from clients by iterating over the array of pollfd structures, 
+// checking the revents field to determine if a file descriptor is ready for reading / writing, has been disconnected, or encountered an error.
+void    EventLoop::run()
+{
+    setupServer();
+
+    while (true)
+    {
+        int poll_count = poll(pollRequests.data(), pollRequests.size(), -1); // -1 means infinite timeout
+
+        if (poll_count < 0)
+        {
+            std::cerr << "Poll failed" << std::endl;
+            break;
+        }
+        for (std::size_t i = 0; i < pollRequests.size(); i++)
+        {
+            // check revents field of this pollfd (is it ready for reading?)
+            if (pollRequests[i].revents & POLLIN)
+            {
+                // if the fd currently being processed is the server socket (listening for new clients)
+                // it means a new client is trying to connect to the server
+                if (pollRequests[i].fd == server_fd) 
+                   connectNewClientToServer();
+                else // Else it's a client fd that is ready for reading ==> Read the data into a buffer 
+                    handleClientRead(&i);
+            }
+            if (pollRequests[i].revents & POLLOUT)
+                handleClientWrite(&i);
+            if (pollRequests[i].revents & POLLHUP)
+                closeClient(&i,"Client disconnected (POLLHUP)");
+            if (pollRequests[i].revents & POLLERR)
+                closeClient(&i, "Error in socket (POLLERR)");
+        }
+    }
+}
+
+
+// This function creates the server's listening socket, binds it to a given port
+// and configures it to listen for incoming connections.
+void    EventLoop::setupServer()
+{
+    /*
+    Here we will need to loop over ServerConfigs objects 
+    in order to create a listening socket for each server block.
+    Each server block involves a listening socket, a a bind and a defined port.
+
+    */
+    
+    // Socket creation: 
+    // AF_INET means we're using an IPv4 address, SOCK_STREAM means its a TCP socket, 0 = TCP/IP protocol
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0 )
+    {
+        std::cerr << "Socket failed" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    bindSocket(); 
+    listenOnPort(); // will likely take a ServerConfig object as argument (port number is in ServerConfig obj)
+
+    // Add a pollfd for the server socket to the pollfd vector 
+    pollfd      server_pollfd;
+
+    server_pollfd.fd = server_fd;
+    server_pollfd.events = POLLIN; // POLLIN means that there is data to read on this fd
+    pollRequests.push_back(server_pollfd);
+
+    // Set server to non blocking:
+    // Set O_NONBLOCK and FD_CLOEXEC (close on exec) flags at the same time using F_SETFL
+    if (fcntl(server_fd, F_SETFL, O_NONBLOCK | FD_CLOEXEC) == -1) 
+    {
+        std::cerr << "fcntl failed" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    // the bitwise OR operator makes sure that the existing flags are not modified, just the O_NONBLOCK and FD_CLOEXEC added.
+}
+
+
+// =============================================================================
+// Private Methods
+// =============================================================================
+
+
+// ·············································································
+// Getters and Utils
+// ·············································································
+
+ClientConnection*    EventLoop::getClientFromSocket(int client_socket)
+{
+    std::vector<ClientConnection>::iterator     it;
+
+    for (it = clientVect.begin(); it != clientVect.end(); it++)
+    {
+        if (it->getClientSocket() == client_socket)
+            break;
+    }
+    if (it != clientVect.end())
+        return (&(*it));
+    else
+    {
+        std::cerr << "client fd " << client_socket << " not found in clientVect" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+// ·············································································
+// Setup Methods
+// ·············································································
+
+
 // Links the socket to an IP address and port
 void    EventLoop::bindSocket()
 {
@@ -22,7 +139,7 @@ void    EventLoop::bindSocket()
     // Here "sockaddr" is a generic structure for socket addresses
     // And because we are using a "sockaddr_in" struct (specific to IPv4)
     // we need to cast a pointer to the "higher" struct for functions such a bind(), accept() and connect()
-    if (bind(server_fd,  (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0)
+    if (bind(server_fd, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0)
     {
         std::cerr << "Bind failed" << std::endl;
         exit(EXIT_FAILURE);
@@ -41,45 +158,9 @@ void    EventLoop::listenOnPort()
     std::cout << "Server listening on port : " << port << std::endl;
 }
 
-// This function creates the server's listening socket, binds it to a given port
-// and configures it to listen for incoming connections.
-void    EventLoop::setupServer()
-{
-    /*
-    Here we will need to loop over ServerConfigs objects 
-    in order to create a listening socket for each server block.
-    Each server block involves a listening socket, a a bind and a defined port.
-
-    */
-    // Socket creation: 
-    // AF_INET means we're using an IPv4 address, SOCK_STREAM means its a TCP socket, 0 = TCP/IP protocol
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0 )
-    {
-        std::cerr << "Socket failed" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    bindSocket(); // will likely take a ServerConfig object as argument
-    listenOnPort(); // will likely take a ServerConfig object as argument (port number is in ServerConfig obj)
-
-    // Add a pollfd for the server socket to the pollfd vector 
-    pollfd      server_pollfd;
-
-    server_pollfd.fd = server_fd;
-    server_pollfd.events = POLLIN; // POLLIN means that there is data to read on this fd
-    pollRequests.push_back(server_pollfd);
-
-    // Set server to non blocking:
-    // Set O_NONBLOCK and FD_CLOEXEC (close on exec) flags at the same time using F_SETFL
-    if (fcntl(server_fd, F_SETFL, O_NONBLOCK | FD_CLOEXEC) == -1) 
-    {
-        std::cerr << "fcntl failed" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    // the bitwise OR operator makes sure that the existing flags are not modified, just the O_NONBLOCK and FD_CLOEXEC added.
-}
 
 
-// Launches accept function and connects client if socket connection is accepted
+// Calls accept function and connects client if socket connection is accepted
 void    EventLoop::connectNewClientToServer()
 {
     int                     clientSocket;
@@ -108,7 +189,7 @@ void    EventLoop::connectNewClientToServer()
         and finding its mapped ServerConfig object (value) 
     */
 
-    clientMap.insert(std::make_pair(clientSocket, clientObj));
+    clientVect.push_back(clientObj);
     std::cout << "New client (fd: " << clientSocket << ") connected" << std::endl;
 }
 
@@ -121,6 +202,12 @@ void    EventLoop::closeClient(std::size_t *i, std::string message)
     --(*i);
     std::cerr << message << std::endl;
 }
+
+
+// ·············································································
+// HTTP handling Methods
+// ·············································································
+
 
 // Sends resource to client via a buffer. Resource comes from HTTPResponse object
 void    EventLoop::sendResponseBuffer(std::size_t *i, HTTPResponse &response)
@@ -147,25 +234,24 @@ void    EventLoop::sendResponseBuffer(std::size_t *i, HTTPResponse &response)
 }
 
 
+
 // (CLIENT --> SERVER)  : HTTP Request 
 // Function Handles what happens when a socket presents a POLLIN flag 
 // indicating that there is data available to read on the file descriptor.
 void EventLoop::handleClientRead(std::size_t *i)
 {
-    char    buffer[1024] = {0};
-    int     bytes_read;
-
-    std::map<int, ClientConnection>::iterator it = clientMap.find(pollRequests[(*i)].fd);
-    ClientConnection    *client_ptr = &it->second;
+    char                buffer[1024] = {0};
+    int                 bytes_read;
+    ClientConnection    *client_ptr = getClientFromSocket(pollRequests[(*i)].fd);
     HTTPRequest         request;
     
-    client_ptr->assignRequest(&request); // creates a ptr to the request within the ClientConnection
+    client_ptr->assignRequest(&request); 
     
     while ((bytes_read = read(pollRequests[(*i)].fd, buffer, sizeof(buffer))) > 0)
     {
         request.appendRequest(buffer);
 
-        if (request.getRawRequest().find("\r\n\r\n") != std::string::npos) // Find end of request string
+        if (request.getRawRequest().find("\r\n\r\n") != std::string::npos)
         {
             std::cout << "HTTP Request saved here:\n" << request.getRawRequest() << "\nEND OF REQUEST" << std::endl;
             HTTPResponse    response;
@@ -192,81 +278,36 @@ void EventLoop::handleClientRead(std::size_t *i)
 // (SERVER --> CLIENT ) : HTTP Response 
 // Access the correct clientConnection object 
 // in order to send the message that lies in its' write_buffer 
-// over the connection of its socket (client_fd) to the server. 
+// over the connection of its socket (client_fd) to the server.
 void    EventLoop::handleClientWrite(std::size_t *i)
 {
     int             client_fd = pollRequests[(*i)].fd;
     ssize_t         bytes_sent;
     
-    // Find clientConnection object in clientMap according to client_fd:
-    std::map<int, ClientConnection>::iterator   it = clientMap.find(client_fd);
-    if (it == clientMap.end())
-    {
-        std::cerr << "client fd " << client_fd << " not found in clientMap" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    ClientConnection*   clientObj = &it->second;
+    // Find clientConnection object in clientVect according to client_fd:
+    ClientConnection*   clientObj = getClientFromSocket(client_fd);
     
     // Send the bytes contained in the write_buffer to client_fd socket
-    bytes_sent = send(client_fd, clientObj->write_buffer.c_str(), clientObj->write_buffer.size(), 0);
+    bytes_sent = send(client_fd, clientObj->getWriteBuffer().c_str(), clientObj->getWriteBuffer().size(), 0);
     if (bytes_sent > 0)
     {
         std::cerr << "bytes_sent > 0 " << std::endl;
-        clientObj->write_buffer.erase(0, bytes_sent);
+        clientObj->getWriteBuffer().erase(0, bytes_sent);
     }
     if  (bytes_sent < 0)
     {   
         std::cerr << "bytes_sent < 0" << std::endl; 
         return ;
     }
-    if (clientObj->write_buffer.empty())
+    if (clientObj->getWriteBuffer().empty())
     {
         std::cerr << "write buffer is empty" << std::endl;
-        pollRequests[(*i)].events &= ~POLLOUT; 
+        pollRequests[(*i)].events &= ~POLLOUT;
         // bitwise AND operation with opposite of POLLOUT (~ = NOT)
     } 
 }
 
-// The EventLoop::run() function serves as the main server event loop. 
-// It first sets up the server and then continuously waits for events on a set of file descriptors using the poll() system call. 
-// The function processes incoming connections and data from clients by iterating over the array of pollfd structures, 
-// checking the revents field to determine if a file descriptor is ready for reading / writing, has been disconnected, or encountered an error.
-void    EventLoop::run()
-{
-    setupServer();
 
-    while (true)
-    {
-        int poll_count = poll(pollRequests.data(), pollRequests.size(), -1); // -1 means infinite timeout
-
-        if (poll_count < 0)
-        {
-            std::cerr << "Poll failed" << std::endl;
-            break;
-        }
-        //iterate over the pollfd array
-        for (std::size_t i = 0; i < pollRequests.size(); i++)
-        {
-            // check revents field of this pollfd 
-            // to check if this fd is ready for reading
-            if (pollRequests[i].revents & POLLIN)
-            {
-                // if the fd currently being processed is the server socket (listening for new clients)
-                // it means a new client is trying to connect to the server
-                if (pollRequests[i].fd == server_fd) 
-                   connectNewClientToServer();
-                else // Else it's a client fd that is ready for reading ==> Read the data into a buffer 
-                    handleClientRead(&i);
-            }
-            if (pollRequests[i].revents & POLLOUT)
-                handleClientWrite(&i);
-            if (pollRequests[i].revents & POLLHUP) // if one fd has the POLL HANG UP flag 
-                closeClient(&i,"Client disconnected (POLLHUP)");
-            if (pollRequests[i].revents & POLLERR) // if one fd has the POLL ERROR flag
-                closeClient(&i, "Error in socket (POLLERR)");
-        }
-    }
-}
 
 
 /*
