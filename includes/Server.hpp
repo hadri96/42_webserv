@@ -13,6 +13,7 @@ class Server
 {
     public:
     // --- Public Attributes ---
+        Manager*                    manager;
 
     // --- Constructors and Destructor ---
         Server(Manager* manager);
@@ -21,15 +22,13 @@ class Server
     // --- Public Methods ---
         void    bindSocket();
         void    listenOnPort();
-        void    applyConfig(Config& config, int i) 
-        {
-            port = config.getPort(i);
-        };
+        void    applyConfig(Config& config, int i) {port = config.getPort(i);};
 
     // ··· Getters,setters and utils ···  
         int                             getServerSock() const {return (serverSocket);};
-        void                            setServerSock(int sock) { serverSocket = sock; };
+        void                            setServerSock(int sock) { serverSocket = sock;};
         Client*                         getClientFromSocket(int clientSocket);
+        bool                            ownsClient(int clientFd);
 
     // ··· Setup Methods ··· 
         void    connectNewClientToServer();
@@ -46,7 +45,6 @@ class Server
         int                         serverSocket;
         int                         port;
         std::vector<Client>         clientVect;
-        Manager*                    manager;
 
     // --- Private Methods ---
  

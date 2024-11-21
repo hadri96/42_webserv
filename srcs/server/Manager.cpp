@@ -27,7 +27,6 @@ void    Manager::initialise(Config& config)
             std::cerr << "Socket failed" << std::endl;
             exit(EXIT_FAILURE);
         }
-
         serverBlock.setServerSock(serverSocket);
         serverBlock.bindSocket();
         serverBlock.listenOnPort();
@@ -51,6 +50,28 @@ void    Manager::initialise(Config& config)
     }
 }
 
+// This function handles the read and write events on the respective server blocks
+void    Manager::handleEvent(std::size_t *i)
+{
+    std::size_t j;
+
+    for (j = 0; j < serverVect.size(); ++j)
+    {
+        if (serverVect[j].ownsClient(pollRequests[(*i)].fd))
+            break;
+    }
+    // Handle client socket events
+    std::cout << "Handle client socket events for server " << j << std::endl;
+    if (pollRequests[(*i)].revents & POLLIN)
+        serverVect[j].handleClientRead(i);
+    if (pollRequests[(*i)].revents & POLLOUT)
+        serverVect[j].handleClientWrite(i);
+    if (pollRequests[(*i)].revents & POLLHUP)
+        serverVect[j].closeClient(i, "Client disconnected (POLLHUP)");
+    if (pollRequests[(*i)].revents & POLLERR)
+        serverVect[j].closeClient(i, "Error in socket (POLLERR)");
+}
+
 // The Manager::run() function serves as the main server event loop. 
 // It first sets up the server and then continuously waits for events on a set of file descriptors using the poll() system call. 
 // The function processes incoming connections and data from clients by iterating over the array of pollfd structures, 
@@ -68,14 +89,14 @@ void    Manager::run()
         }
         for (std::size_t i = 0; i < pollRequests.size(); i++)
         {
-            // skip if no events
-            if (pollRequests[i].revents == 0)
-                continue;
             // Check if the fd belongs to a server socket
             bool            isServerSocket = false;
             std::size_t     j;
 
-            for (j = 0; j < serverVect.size(); j++)
+            // skip if no events
+            if (pollRequests[i].revents == 0)
+                continue;
+            for (j = 0; j < serverVect.size(); ++j)
             {
                 if (pollRequests[i].fd == serverVect[j].getServerSock())
                 {
@@ -85,22 +106,11 @@ void    Manager::run()
             }
             if (isServerSocket)
             {
-                // Handle new client connection 
                 if (pollRequests[i].revents & POLLIN)
                     serverVect[j].connectNewClientToServer();
             }
             else
-            {
-                // Handle client socket events
-                if (pollRequests[i].revents & POLLIN)
-                    serverVect[j].handleClientRead(&i);
-                if (pollRequests[i].revents & POLLOUT)
-                    serverVect[j].handleClientWrite(&i);
-                if (pollRequests[i].revents & POLLHUP)
-                    serverVect[j].closeClient(&i, "Client disconnected (POLLHUP)");
-                if (pollRequests[i].revents & POLLERR)
-                    serverVect[j].closeClient(&i, "Error in socket (POLLERR)");
-            }
+                handleEvent(&i);
         }
     }
 }

@@ -19,6 +19,7 @@ class Manager
     // --- Public Methods ---
         void    run();
         void    initialise(Config& config);
+        void    handleEvent(std::size_t *i);
     // ··· Getters and utils ···  
         std::vector<pollfd>&    getPollRequests() { return (pollRequests); };
 

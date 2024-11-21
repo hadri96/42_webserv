@@ -123,6 +123,16 @@ void Server::closeClient(std::size_t* i, std::string message)
     std::cerr << message << std::endl;
 }
 
+bool Server::ownsClient(int clientFd)
+{
+    for (std::vector<Client>::iterator it = clientVect.begin(); it != clientVect.end(); ++it)
+    {
+        if (it->getClientSocket() == clientFd)
+            return (true);
+    }
+    return (false);
+}
+
 // ·············································································
 // HTTP handling Methods
 // ·············································································
@@ -162,12 +172,13 @@ void Server::handleClientRead(std::size_t *i)
 {
     char                buffer[1024] = {0};
     int                 bytes_read;
-    Client              *client_ptr = getClientFromSocket(manager->getPollRequests()[(*i)].fd);
+    int                 clientFd = manager->getPollRequests()[(*i)].fd; 
+    Client              *client_ptr = getClientFromSocket(clientFd);
     HttpRequest         request;
     
     client_ptr->assignRequest(&request); 
     
-    while ((bytes_read = read(manager->getPollRequests()[(*i)].fd, buffer, sizeof(buffer))) > 0)
+    while ((bytes_read = read(clientFd, buffer, sizeof(buffer))) > 0)
     {
         request.appendRequest(buffer);
 
@@ -203,9 +214,7 @@ void    Server::handleClientWrite(std::size_t *i)
 {
     int             clientFd = manager->getPollRequests()[(*i)].fd;
     ssize_t         bytes_sent;
-    
-    // Find client object in clientVect according to clientFd:
-    Client*   clientObj = getClientFromSocket(clientFd);
+    Client*         clientObj = getClientFromSocket(clientFd);
     
     // Send the bytes contained in the write_buffer to clientFd socket
     bytes_sent = send(clientFd, clientObj->getWriteBuffer().c_str(), clientObj->getWriteBuffer().size(), 0);
