@@ -1,12 +1,12 @@
 #ifndef HTTP_RESPONSE_HPP
 # define HTTP_RESPONSE_HPP
 
-class HTTPResponse
+class HttpResponse
 {
     public:
     // --- Constructors and Destructor ---
-        HTTPResponse();
-        ~HTTPResponse();
+        HttpResponse();
+        ~HttpResponse();
 
     // --- Public Methods ---
         // ··· Getters and utils ···  

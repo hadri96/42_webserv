@@ -1,12 +1,12 @@
 #ifndef HTTPREQUEST_HPP
 # define HTTPREQUEST_HPP
 
-class HTTPRequest 
+class HttpRequest 
 {
     public:
     // --- Constructors and Destructor ---
-        HTTPRequest();
-        ~HTTPRequest();
+        HttpRequest();
+        ~HttpRequest();
 
     // --- Public Methods ---
         void            appendRequest(std::string input);

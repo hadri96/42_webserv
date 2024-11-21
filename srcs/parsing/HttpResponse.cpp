@@ -1,14 +1,14 @@
 #include "../../includes/webserv.hpp"
 
-HTTPResponse::HTTPResponse() {}
+HttpResponse::HttpResponse() {}
 
-HTTPResponse::~HTTPResponse()
+HttpResponse::~HttpResponse()
 {
-    std::cout << "HTTPResponse destructor called" << std::endl;
+    std::cout << "HttpResponse destructor called" << std::endl;
 }
 
 
-std::string     HTTPResponse::getResponse(std::string uri)
+std::string     HttpResponse::getResponse(std::string uri)
 {
     getBodyFromFile(uri);
     getHeaderFromBody();
@@ -19,7 +19,7 @@ std::string     HTTPResponse::getResponse(std::string uri)
 }
 
 
-void    HTTPResponse::getHeaderFromBody()
+void    HttpResponse::getHeaderFromBody()
 {
     /*
         Here we should read the fileBody string and deduce the correct header from it.
@@ -28,8 +28,8 @@ void    HTTPResponse::getHeaderFromBody()
 }
 
 
-// Takes the uri of the file and copies its' contents to HTTPResponse->fileBody
-void     HTTPResponse::getBodyFromFile(std::string uri)
+// Takes the uri of the file and copies its' contents to HttpResponse->fileBody
+void     HttpResponse::getBodyFromFile(std::string uri)
 {
     std::string     line;
     std::string     path = "html/";

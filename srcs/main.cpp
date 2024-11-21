@@ -2,12 +2,13 @@
 
 int	main(int argc, char **argv)
 {
-	int			port = 8080;
-	EventLoop	server(port);
+	Manager		manager;
+	Config		config;
 
 	(void) argc;
 	(void) argv;
 
-	server.run();
+	manager.initialise(config);
+	manager.run();
 	return (0);
 }
