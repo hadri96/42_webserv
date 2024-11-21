@@ -8,20 +8,20 @@
 // Constructors and Destructor
 // ·············································································
 
-ClientConnection::ClientConnection(int fd) : client_socket(fd), is_reading(true), is_writing(false) {}
+Client::Client(int fd) : client_socket(fd), is_reading(true), is_writing(false) {}
 
-ClientConnection::~ClientConnection() {}
+Client::~Client() {}
 
 // ·············································································
 // Public Methods
 // ·············································································
 
-void        ClientConnection::assignRequest(HTTPRequest *request_ptr)
+void        Client::assignRequest(HttpRequest *request_ptr)
 {
     current_request = *request_ptr;
 }
 
-void        ClientConnection::assignResponse(HTTPResponse *response_ptr)
+void        Client::assignResponse(HttpResponse *response_ptr)
 {
     current_response = *response_ptr;
 }
@@ -31,22 +31,22 @@ void        ClientConnection::assignResponse(HTTPResponse *response_ptr)
 // ·············································································
 
 
-HTTPRequest&         ClientConnection::getCurrentRequest()
+HttpRequest&         Client::getCurrentRequest()
 {
     return (this->current_request);
 }
 
-HTTPResponse&        ClientConnection::getCurrentResponse()
+HttpResponse&        Client::getCurrentResponse()
 {
     return (this->current_response);
 }
 
-int         ClientConnection::getClientSocket()
+int         Client::getClientSocket()
 {
     return (client_socket);
 }
 
-std::string ClientConnection::getWriteBuffer()
+std::string Client::getWriteBuffer()
 {
     return (write_buffer);
 }

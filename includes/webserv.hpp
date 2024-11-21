@@ -19,8 +19,10 @@
 // Our HPP files
 # include "colors.hpp"
 # include "defines.hpp"
-# include "EventLoop.hpp"
-# include "ClientConnection.hpp"
-# include "HTTPResponse.hpp"
+# include "Manager.hpp"
+# include "Client.hpp"
+# include "HttpResponse.hpp"
+# include "Config.hpp"
+# include "Server.hpp"
 
 #endif
