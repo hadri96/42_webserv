@@ -61,8 +61,11 @@ class	Server
 		void					unregisterClient(Client* client);
 
 		void					acceptClient(void);
-		void					handleClientRequest(int clientFd);
-		void					sendClientResponse(int clientFd);
+		void					handleRequestFromClient(int clientFd);
+
+		void					sendResponseToClient(int clientFd);
+		void					sendResponseBuffer(int clientFd);
+
 		void					closeClientConnection(int clientFd);
 };
 

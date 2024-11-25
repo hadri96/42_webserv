@@ -76,7 +76,7 @@ Server*	Manager::getServerFromFd(int fd)
 
 void	Manager::addServerToMonitor(Server* server)
 {
-	addSocketToMonitor(server->getFd(), POLLIN | POLLERR | POLLHUP);
+	addSocketToMonitor(server->getFd(), POLLIN | POLLOUT);
 	servers_.push_back(server);
 	Logger::logger()->log(LOG_INFO, "Server added to monitor " + server->getInfoFd());
 }
@@ -89,7 +89,7 @@ void	Manager::removeServerFromMonitor(Server* server)
 
 void	Manager::addClientToMonitor(int fd)
 {
-	addSocketToMonitor(fd, POLLIN | POLLOUT | POLLERR | POLLHUP);
+	addSocketToMonitor(fd, POLLIN | POLLOUT);
 	Logger::logger()->log(LOG_INFO, "Client added to monitor [fd = " + toString(fd) + "]");
 }
 
@@ -104,7 +104,7 @@ void	Manager::monitorEvents(void)
 	while (true)
 	{
 		int count = poll(fds_.data(), fds_.size(), -1);
-
+		
 		if (count < 0)
 		{
 			Logger::logger()->log(LOG_ERROR, "Polling error");
@@ -113,25 +113,23 @@ void	Manager::monitorEvents(void)
 
 		for (size_t i = 0; i < fds_.size(); ++i)
 		{
-			if (fds_[i].revents & POLLIN)
+			if (fds_[i].revents == 0)
+            	continue ;
+			if (isServer(fds_[i].fd))
 			{
-				if (isServer(fds_[i].fd)) // Server fd
+				if (fds_[i].revents & POLLIN)
 					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_NEW_CONNECTION);
-				else
-					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_READY_TO_READ, fds_[i].fd);
 			}
-
-			if (!isServer(fds_[i].fd))
+			else
 			{
-				if (fds_[i].revents & POLLHUP)
+				if (fds_[i].revents & POLLIN)
+					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_SENDING_REQUEST, fds_[i].fd); ///
+				else if (fds_[i].revents & POLLHUP)
 					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_DISCONNECTED, fds_[i].fd);
-
-				else if ((fds_[i].revents & POLLOUT))
-						getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_READY_TO_WRITE, fds_[i].fd);
-
+				else if (fds_[i].revents & POLLOUT)
+					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_EXPECTING_RESPONSE, fds_[i].fd);
 				else if (fds_[i].revents & POLLERR)
 					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_ERROR, fds_[i].fd);
-
 			}
 		}
 	}

@@ -6,9 +6,9 @@ int	main(void)
 
 	Manager m;
 
-	Server s1("127.0.0.1", 7272, &m);
+	Server s1("127.0.0.1", 8084, &m);
 	s1.start();
-	Server s2("127.0.0.1", 7373, &m);
+	Server s2("127.0.0.1", 8085, &m);
 	s2.start();
 
 	m.addServerToMonitor(&s1);

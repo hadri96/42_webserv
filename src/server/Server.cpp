@@ -1,6 +1,8 @@
 #include "Server.hpp"
 #include "Logger.hpp"
 #include "ToString.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 
 #include <iostream>
 
@@ -8,6 +10,7 @@
 #include <arpa/inet.h> // sockaddr_in
 #include <fcntl.h> // fcntl
 #include <unistd.h> // close
+#include <cerrno>
 
 #include <string>
 #include <cstring> // strlen
@@ -103,6 +106,7 @@ Client*	Server::getClient(int fd) const
 void	Server::start(void)
 {
 	socklen_t	addressLen_;
+	int			temp = 1;
 
 	addressLen_ = sizeof(address_);
 	// --- Socket ---
@@ -119,6 +123,12 @@ void	Server::start(void)
 	address_.sin_family = AF_INET;
 	address_.sin_addr.s_addr = inet_addr(host_.c_str());
 	address_.sin_port = htons(port_);
+
+    if (setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &temp, sizeof(temp)) < 0) 
+    {
+        std::cerr << "setsockopt(SO_REUSEADDR) failed" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
 	if (bind(fd_, (struct sockaddr *)&address_, addressLen_) < 0)
 	{
@@ -139,7 +149,7 @@ void	Server::start(void)
 	// Set O_NONBLOCK and FD_CLOEXEC (close on exec) flags at the same time using F_SETFL
 	if (fcntl(fd_, F_SETFL, O_NONBLOCK | FD_CLOEXEC) == -1) 
 	{
-		std::cerr << "fcntl failed" << std::endl;
+		std::cerr << "fcntl " << fd_ << " failed: " << strerror(errno) << std::endl;
 		exit(EXIT_FAILURE);
 	}
 }
@@ -169,11 +179,11 @@ void	Server::handleEvent(EventType event, int clientFd)
 		case CLIENT_NEW_CONNECTION:
 			acceptClient();
 			break ;
-		case CLIENT_READY_TO_READ:
-			handleClientRequest(clientFd);
+		case CLIENT_SENDING_REQUEST:
+			handleRequestFromClient(clientFd);
 			break ;
-		case CLIENT_READY_TO_WRITE:
-			sendClientResponse(clientFd);
+		case CLIENT_EXPECTING_RESPONSE:
+			sendResponseToClient(clientFd);
 			break ;
 		case CLIENT_ERROR:
 			std::cout << "CLIENT_ERROR" << std::endl;
@@ -238,22 +248,83 @@ void	Server::acceptClient(void)
 	Logger::logger()->log(LOG_INFO, "Client connected to server");
 }
 
-void	Server::sendClientResponse(int clientFd)
+// --- handleClientRead ---
+// -> interprete la requete du client et l'ajoute au client->httpRequest
+void	Server::handleRequestFromClient(int clientFd)
 {
-	std::cout << "sendClientResponse" << std::endl;
-	const char	*response = "HTTP/1.1 200 OK\r\n"
-		"Content-Type: text/html\r\n"
-		"Content-Length: 46\r\n"
-		"\r\n"
-		"<html><body><h1>Hello, World!</h1></body></html>";
-	
-	write(clientFd, response, strlen(response));
+	std::cout << "handleRequestFromClient" << std::endl;
+    char                buffer[1024] = {0};
+    int                 bytesRead;
+    Client              *client = getClient(clientFd);
+    HttpRequest         request;
+    
+    client->assignRequest(&request); 
+    
+    while ((bytesRead = read(clientFd, buffer, sizeof(buffer))) > 0)
+    {
+        request.appendRequest(buffer);
+
+        if (request.getRawRequest().find("\r\n\r\n") != std::string::npos)
+        {
+            std::cout << "HTTP Request saved here:\n" << request.getRawRequest() << "\nEND OF REQUEST" << std::endl;
+			/*
+            HttpResponse    response;
+			*/
+
+            /*
+            Here we need a series of functions that parse the request 
+            then create a response based on the request and on the ServerConfig values for that socket
+            (according to method type, error response codes etc.)
+
+            something like:
+                request.parsing();
+                response.generateResponse(&request);
+            */
+            
+			/*
+			client->assignResponse(&response);
+            sendResponseBuffer(clientFd, client->getCurrentResponse());
+            break;
+			*/
+			
+        }
+    }
+	/*
+    if (bytesRead == 0)
+        //closeClientConnection(i, "Client disconnected: bytesRead = 0");
+		closeClientConnection(clientFd);
+    else if (bytesRead < 0)
+        //closeClientConnection(i, "Client disconnected due to read error (bytesRead = -1)");
+		closeClientConnection(clientFd);*/
 }
 
-void	Server::handleClientRequest(int clientFd)
+// en fonction de client->httpRequest construire client->httpResponse
+
+// --- sendResponseBuffer et handleClientWrite ---
+
+void    Server::sendResponseToClient(int clientFd)
 {
-	std::cout << "handleClientRequest" << std::endl;
-	(void) clientFd;
+	HttpResponse    response;
+   	std::string     body = response.getResponse("example_response.html");
+    size_t          bufferSize = 1024;
+    size_t          totalSize = body.size();
+    size_t          bytesSent = 0;
+
+    while (bytesSent < totalSize) 
+    {
+        size_t      chunkSize = std::min(bufferSize, totalSize - bytesSent);
+        int         sent;
+        
+        sent = send(clientFd, (body.c_str() + bytesSent), chunkSize, 0);
+        if (sent < 0) 
+        {
+            closeClientConnection(clientFd);
+            return;
+        }
+        bytesSent += sent;
+    }
+    std::cout << "Response sent in chunks." << std::endl;
+	closeClientConnection(clientFd);
 }
 
 void	Server::closeClientConnection(int clientFd)
