@@ -30,6 +30,7 @@ void	Manager::addSocketToMonitor(int fd, short events)
 {
 	struct pollfd	pfd;
 
+	std::cout << "hello" << std::endl;
 	pfd.fd = fd;
 	pfd.events = events;
 	pfd.revents = 0;
