@@ -1,4 +1,4 @@
-#include "../../includes/webserv.hpp"
+#include "HttpRequest.hpp"
 
 HttpRequest::HttpRequest() : method("GET"), uri("example_response.html"), body("HEllo server\n\n\n") {}
 

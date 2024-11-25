@@ -1,4 +1,6 @@
-#include "../../includes/webserv.hpp"
+#include "HttpResponse.hpp"
+#include <iostream>
+#include <fstream>
 
 HttpResponse::HttpResponse() {}
 

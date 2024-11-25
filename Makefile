@@ -1,12 +1,12 @@
-NAME= webserv
+NAME = webserv
 
-MAKEFLAGS= --no-print-directory
+MAKEFLAGS = --no-print-directory
 
-INCLUDES = includes
+INCLUDES = inc
 
-CC= c++
+CC = c++
 
-CFLAGS= -Wall -Wextra -Werror -I$(INCLUDES) -std=c++98
+CFLAGS = -Wall -Wextra -Werror -I$(INCLUDES) -std=c++98
 
 UNAME_S := $(shell uname -s)
 
@@ -18,46 +18,49 @@ UNAME_S := $(shell uname -s)
 
 # Source File names:
 MAIN = main
-PARSING = HttpResponse HttpRequest
+UTIL = Logger ToString
+HTTP = HttpResponse HttpRequest
 SERVER = Manager Client Server
 CONFIG = 
 
 # Source directory
-SRCS_DIR = srcs
+SRCS_DIR = src
 
 # Source Subdirectories:
-PARS_DIR = parsing
+UTIL_DIR = util
+HTTP_DIR = http
 SERVER_DIR = server
 CONFIG_DIR = config
 
 # Source Files
-SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, $(addsuffix .cpp, $(UTILS)))\
-	$(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(MAIN)))\
-	$(addprefix $(SRCS_DIR)/$(PARS_DIR)/, $(addsuffix .cpp, $(PARSING)))\
+SRCS = $(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(MAIN)))\
+	$(addprefix $(SRCS_DIR)/$(UTIL_DIR)/, $(addsuffix .cpp, $(UTIL)))\
+	$(addprefix $(SRCS_DIR)/$(HTTP_DIR)/, $(addsuffix .cpp, $(HTTP)))\
 	$(addprefix $(SRCS_DIR)/$(SERVER_DIR)/, $(addsuffix .cpp, $(SERVER))) \
 	$(addprefix $(SRCS_DIR)/$(CONFIG_DIR)/, $(addsuffix .cpp, $(CONFIG)))
 
 
 # Convert source file names to object file names in the OBJ_DIRS directory
 OBJ_DIR = obj
-OBJ_DIRS = $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(PARS_DIR)) \
-	$(addprefix $(OBJ_DIR)/, $(SERVER_DIR)) \
-	$(addprefix $(OBJ_DIR)/, $(CONFIG_DIR)) \
+OBJ_DIRS = $(OBJ_DIR) $(addprefix $(OBJ_DIR)/$(UTIL_DIR)/, $(UTIL)) \
+	$(addprefix $(OBJ_DIR)/$(HTTP_DIR)/, $(HTTP)) \
+	$(addprefix $(OBJ_DIR)/$(SERVER_DIR)/, $(SERVER)) \
+	$(addprefix $(OBJ_DIR)/$(CONFIG_DIR)/, $(CONFIG))
 
 OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJ_DIR)/%.o) 
 
-# SANITIZE= -g3 -fsanitize=address
-SANITIZE= -g
+# SANITIZE = -g3 -fsanitize=address
+SANITIZE = -g
 
 # Color Variables
-RED=\033[0;31m
-GREEN=\033[0;32m
-YELLOW=\033[0;33m
-BLUE=\033[0;34m
-MAGENTA=\033[0;35m
-CYAN=\033[0;36m
-WHITE=\033[0;37m
-RESET=\033[0m
+RED = \033[0;31m
+GREEN = \033[0;32m
+YELLOW = \033[0;33m
+BLUE = \033[0;34m
+MAGENTA = \033[0;35m
+CYAN = \033[0;36m
+WHITE = \033[0;37m
+RESET = \033[0m
 
 .PHONY: all clean fclean re header
 
@@ -72,17 +75,13 @@ $(NAME): $(OBJ_DIRS) $(OBJS)
 
 # Create object directories if they do not exist
 $(OBJ_DIRS):
-	@mkdir -p $(OBJ_DIR) \
-		$(addprefix $(OBJ_DIR)/, $(PARS_DIR)) \
-		$(addprefix $(OBJ_DIR)/, $(SERVER_DIR)) \
-		$(addprefix $(OBJ_DIR)/, $(CONFIG_DIR))
+	@mkdir -p $@
 
 # Rule to compile object files from source files
 $(OBJ_DIR)/%.o: $(SRCS_DIR)/%.cpp | $(OBJ_DIRS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 header:
-
 		@echo "$(BLUE)                                 . ....";
 		@echo "$(BLUE)                            .@@@@@@@@%@@@@@";
 		@echo "$(BLUE)                          %@@. @:  @@  .@..@@%";
