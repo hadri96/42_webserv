@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Manager.hpp"
+#include "Observer.hpp"
 #include "Logger.hpp"
 #include "ToString.hpp"
 
@@ -16,7 +16,7 @@
 // Private Methods
 // =============================================================================
 
-bool	Manager::isServer(int fd)
+bool	Observer::isServer(int fd)
 {
 	for (size_t i = 0; i < servers_.size(); ++i)
 	{
@@ -26,7 +26,7 @@ bool	Manager::isServer(int fd)
 	return (false);
 }
 
-void	Manager::addSocketToMonitor(int fd, short events)
+void	Observer::addSocketToMonitor(int fd, short events)
 {
 	struct pollfd	pfd;
 
@@ -37,7 +37,7 @@ void	Manager::addSocketToMonitor(int fd, short events)
 	fds_.push_back(pfd);
 }
 
-void	Manager::removeSocketFromMonitor(int fd)
+void	Observer::removeSocketFromMonitor(int fd)
 {
 	for (std::vector<pollfd>::iterator it = fds_.begin(); it != fds_.end(); ++it)
 	{
@@ -49,7 +49,7 @@ void	Manager::removeSocketFromMonitor(int fd)
 	}
 }
 
-Server*	Manager::getServerFromFd(int fd)
+Server*	Observer::getServerFromFd(int fd)
 {
 	if (isServer(fd))
 	{
@@ -74,32 +74,32 @@ Server*	Manager::getServerFromFd(int fd)
 // Public Methods
 // =============================================================================
 
-void	Manager::addServerToMonitor(Server* server)
+void	Observer::addServerToMonitor(Server* server)
 {
 	addSocketToMonitor(server->getFd(), POLLIN | POLLOUT);
 	servers_.push_back(server);
 	Logger::logger()->log(LOG_INFO, "Server added to monitor " + server->getInfoFd());
 }
 
-void	Manager::removeServerFromMonitor(Server* server)
+void	Observer::removeServerFromMonitor(Server* server)
 {
 	removeSocketFromMonitor(server->getFd());
 	Logger::logger()->log(LOG_INFO, "Server removed from monitor " + server->getInfoFd());
 }
 
-void	Manager::addClientToMonitor(int fd)
+void	Observer::addClientToMonitor(int fd)
 {
 	addSocketToMonitor(fd, POLLIN | POLLOUT);
 	Logger::logger()->log(LOG_INFO, "Client added to monitor [fd = " + toString(fd) + "]");
 }
 
-void	Manager::removeClientFromMonitor(int fd)
+void	Observer::removeClientFromMonitor(int fd)
 {
 	removeSocketFromMonitor(fd);
 	Logger::logger()->log(LOG_INFO, "Client removed from monitor [fd = " + toString(fd) + "]");
 }
 
-void	Manager::monitorEvents(void)
+void	Observer::monitorEvents(void)
 {
 	while (true)
 	{

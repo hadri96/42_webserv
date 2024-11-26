@@ -1,5 +1,5 @@
-#ifndef MANAGER_HPP
-# define MANAGER_HPP
+#ifndef OBSERVER_HPP
+# define OBSERVER_HPP
 
 # include <sys/poll.h> // poll
 # include <vector>
@@ -19,7 +19,7 @@
 // --- Forward Declarations ---
 class	Server;
 
-class	Manager
+class	Observer
 {
 	private:
 		std::vector<pollfd> fds_;

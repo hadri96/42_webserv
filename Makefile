@@ -20,7 +20,7 @@ UNAME_S := $(shell uname -s)
 MAIN = main
 UTIL = Logger ToString
 HTTP = HttpResponse HttpRequest
-SERVER = Manager Client Server
+SERVER = Observer Client Server
 CONFIG = 
 
 # Source directory
