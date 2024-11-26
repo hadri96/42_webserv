@@ -2,11 +2,11 @@ NAME = webserv
 
 MAKEFLAGS = --no-print-directory
 
-INCLUDES = inc
+INCLUDES = -I inc -I inc/config
 
 CC = c++
 
-CFLAGS = -Wall -Wextra -Werror -I$(INCLUDES) -std=c++98
+CFLAGS = -Wall -Wextra -Werror $(INCLUDES) -std=c++98
 
 UNAME_S := $(shell uname -s)
 

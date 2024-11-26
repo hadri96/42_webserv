@@ -8,6 +8,7 @@
 # include "EventType.hpp"
 # include "Observer.hpp"
 # include "Client.hpp"
+# include "Config.hpp"
 
 // --- Forward Declarations ---
 class	Observer;
@@ -19,6 +20,7 @@ class	Server
 								Server(void);
 
 								Server(std::string host, int port, Observer* observer);
+								//Server(const Config& config, Observer* observer);
 
 								Server(const Server& other);
 								~Server(void);
@@ -45,6 +47,7 @@ class	Server
 
 	private:
 		// --- Private Attributes ---
+		//Config&					config_;
 		Observer*				observer_;
 
 		int						fd_;

@@ -1,30 +1,33 @@
-#include "ErrorPage.hpp"
+#include "HttpRedirection.hpp"
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
-ErrorPage::ErrorPage(void) :
-	error_(0),
+HttpRedirection::HttpRedirection(void) :
+	statusCode_(0),
 	path_()
 {}
-ErrorPage::ErrorPage(const ErrorPage& other) :
-	error_(other.error_),
+
+HttpRedirection::HttpRedirection(const HttpRedirection& other) :
+	statusCode_(other.statusCode_),
 	path_(other.path_)
 {}
 
-ErrorPage::~ErrorPage(void)
+HttpRedirection::~HttpRedirection(void)
 {}
 
 // =============================================================================
 // Operators Overload
 // =============================================================================
 
-ErrorPage&	ErrorPage::operator=(const ErrorPage& rhs)
+HttpRedirection&	HttpRedirection::operator=(const HttpRedirection& rhs)
 {
 	if (this == &rhs)
 		return (*this);
 
-	error_ = rhs.error_;
+	statusCode_ = rhs.statusCode_;
 	path_ = rhs.path_;
+
+	return (*this);
 }

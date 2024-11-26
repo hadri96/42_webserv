@@ -8,7 +8,18 @@
 
 class	Route
 {
+	public:
+	// --- Constructors and Destructor ---
+									Route(void);
+									Route(const Route& other);
+
+									~Route(void);
+
+	// --- Operators Overload ---
+	Route&							operator=(const Route& rhs);
+
 	private:
+		// --- Private Attributes ---
 		std::vector<HttpMethodType>	allowedMethods_;
 		HttpRedirection				httpRedirection_;
 		Path						routePath_;
