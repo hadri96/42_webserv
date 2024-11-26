@@ -286,7 +286,7 @@ void	Server::handleRequestFromClient(int clientFd)
             sendResponseBuffer(clientFd, client->getCurrentResponse());
             break;
 			*/
-			
+			break ;
         }
     }
 	/*
