@@ -1,10 +1,10 @@
-#include "Manager.hpp"
+#include "Observer.hpp"
 #include "Server.hpp"
 
 int	main(void)
 {
 
-	Manager m;
+	Observer m;
 
 	Server s1("127.0.0.1", 8084, &m);
 	s1.start();

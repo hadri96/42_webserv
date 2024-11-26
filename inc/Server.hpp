@@ -6,11 +6,11 @@
 # include <arpa/inet.h> 
 
 # include "EventType.hpp"
-# include "Manager.hpp"
+# include "Observer.hpp"
 # include "Client.hpp"
 
 // --- Forward Declarations ---
-class	Manager;
+class	Observer;
 
 class	Server
 {
@@ -18,7 +18,7 @@ class	Server
 		// --- Constructors and Destructor ---
 								Server(void);
 
-								Server(std::string host, int port, Manager* manager);
+								Server(std::string host, int port, Observer* observer);
 
 								Server(const Server& other);
 								~Server(void);
@@ -45,7 +45,7 @@ class	Server
 
 	private:
 		// --- Private Attributes ---
-		Manager*				manager_;
+		Observer*				observer_;
 
 		int						fd_;
 		std::string				host_;

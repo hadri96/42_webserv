@@ -36,8 +36,8 @@ Server::Server(const Server& other) :
 	maxConnections_(other.maxConnections_)
 {}
 
-Server::Server(std::string host, int port, Manager* manager) :
-	manager_(manager),
+Server::Server(std::string host, int port, Observer* observer) :
+	observer_(observer),
 	fd_(0),
 	host_(host),
 	port_(port),
@@ -233,7 +233,7 @@ void	Server::acceptClient(void)
 	addressLen_ = sizeof(address_);
 	clientFd = accept(fd_, (struct sockaddr*)&address_, (socklen_t *)&addressLen_);
 
-	manager_->addClientToMonitor(clientFd);
+	observer_->addClientToMonitor(clientFd);
 
 	if (clientFd < 0)
 	{
@@ -331,7 +331,7 @@ void	Server::closeClientConnection(int clientFd)
 {
 	std::cout << "closeClientConnection" << std::endl;
 	unregisterClient(getClient(clientFd));
-	manager_->removeClientFromMonitor(clientFd);
+	observer_->removeClientFromMonitor(clientFd);
 	Logger::logger()->log(LOG_INFO, "Closing client connection [fd = " + toString(clientFd) + "]");
 	
 	close(clientFd);
