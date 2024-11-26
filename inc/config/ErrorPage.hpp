@@ -7,9 +7,20 @@
 
 class	ErrorPage
 {
+	public:
+		// --- Constructors and Destructor ---
+					ErrorPage(void);
+					ErrorPage(const ErrorPage& other);
+
+					~ErrorPage(void);
+
+		// --- Operators Overload ---
+		ErrorPage&	operator=(const ErrorPage& rhs);
+
 	private:
+		// --- Private Attributes ---
 		int			error_;
-		Path		path;
+		Path		path_;
 };
 
 #endif

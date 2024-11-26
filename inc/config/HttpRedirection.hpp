@@ -5,9 +5,20 @@
 
 class	HttpRedirection
 {
+	public:
+		// --- Constructors and Destructor ---
+							HttpRedirection(void);
+							HttpRedirection(const HttpRedirection& other);
+
+							~HttpRedirection(void);
+
+		// --- Operators Overload ---
+		HttpRedirection&	operator=(const HttpRedirection& rhs);
+
 	private:
-		int		statusCode_;
-		Path	path;
+		// --- Private Attributes ---
+		int					statusCode_;
+		Path				path_;
 };
 
 #endif

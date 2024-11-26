@@ -9,7 +9,18 @@
 
 class	Cgi
 {
+	public:
+		// --- Constructors and Destructor ---
+									Cgi(void);
+									Cgi(const Cgi& other);
+
+									~Cgi(void);
+
+		// --- Operators Overload ---
+		Cgi&						operator=(const Cgi& rhs);
+
 	private:
+		// --- Private Attributes ---
 		Path						rootPath_;
 		std::string					fileExtension_;
 		std::vector<HttpMethodType>	allowedMethods_;

@@ -5,8 +5,19 @@
 
 class	Path
 {
+	public:
+		// --- Constructors and Destructor ---
+					Path(void);
+					Path(const Path& other);
+
+					~Path(void);
+
+		// --- Operators Overload ---
+		Path&		operator=(const Path& rhs);
+
 	private:
-		std::string path_;
+		// --- Private Attributes ---
+		std::string	path_;
 };
 
 #endif
