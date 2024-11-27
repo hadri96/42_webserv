@@ -47,7 +47,8 @@ class	Server
 
 	private:
 		// --- Private Attributes ---
-		std::vector<Config>		configs_;
+		Config					config_;
+		std::vector<Config>		virtualHosts_;
 		Observer*				observer_;
 
 		int						fd_;
