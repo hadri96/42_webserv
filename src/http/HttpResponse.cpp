@@ -1,41 +1,67 @@
 #include "HttpResponse.hpp"
+#include "ToString.hpp"
 #include <iostream>
 #include <fstream>
 
+// =============================================================================
+// Constructors and Destructor
+// =============================================================================
+
 HttpResponse::HttpResponse() {}
 
-HttpResponse::~HttpResponse()
-{
-    std::cout << "HttpResponse destructor called" << std::endl;
-}
+HttpResponse::~HttpResponse() {}
 
+// =============================================================================
+// Public Methods
+// =============================================================================
 
-std::string     HttpResponse::getResponse(std::string uri)
+// Main function for generating response, should call all others in correct order
+std::string     HttpResponse::generateResponse(std::string uri)
 {
     getBodyFromFile(uri);
-    getHeaderFromBody();
-    fullResponse.append(fileHeader);
-    fullResponse.append(fileBody, 0, fileBody.length());
+    generateStatusLine(200);
+    generateHeader();
+    fullResponse_.append(responseHeader_);
+    fullResponse_.append(fileBody_, 0, fileBody_.length());
 
-    return (this->fullResponse);
+    std::cout << "Our HTTP Response: \n\n" << fullResponse_ << std::endl;
+    return (fullResponse_);
 }
 
 
-void    HttpResponse::getHeaderFromBody()
+// =============================================================================
+// Private Methods
+// =============================================================================
+
+
+std::string     HttpResponse::generateStatusLine(int statusCode)
 {
-    /*
-        Here we should read the fileBody string and deduce the correct header from it.
-    */
-    fileHeader = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: [length of the HTML content]\nConnection: close\n\n";  
+    if (statusCode < 400)
+        return ("HTTP/1.1 " + toString(statusCode) + " OK\n\r");
+    else // generate error codes here
+        return ("HTTP/1.1 404 NOT FOUND\n\r"); // temporary 
+}
+
+void    HttpResponse::generateHeader()
+{
+    // get content type (MIME type)
+
+    // get connection ("close" or other)
+
+    // return responseHeader_ 
+    responseHeader_ = "Content-Type: text/html\n \
+                        Content-Length: " + toString(fileBody_.size()) + "\n \
+                        Connection: close\n\n";  
 }
 
 
-// Takes the uri of the file and copies its' contents to HttpResponse->fileBody
+// Takes the uri of the file and copies its' contents to HttpResponse->fileBody_
 void     HttpResponse::getBodyFromFile(std::string uri)
 {
     std::string     line;
-    std::string     path = "html/";
-    path.append(uri, 0, uri.length()); // problem with the uri
+    std::string     path = "www/static/";
+
+    path.append(uri, 0, uri.length());
 
     std::ifstream        fs(path.c_str());
 
@@ -43,8 +69,8 @@ void     HttpResponse::getBodyFromFile(std::string uri)
         std::cout << "File opened: " << path << std::endl;
     while (std::getline(fs, line))
     {
-        fileBody.append(line, 0, line.length());
+        fileBody_.append(line, 0, line.length());
     }
-    std::cout << "parsed file: " << fileBody << std::endl;
+    std::cout << "parsed file: " << fileBody_ << std::endl;
     fs.close();
 }

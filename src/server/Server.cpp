@@ -308,7 +308,7 @@ void	Server::handleRequestFromClient(int clientFd)
 void    Server::sendResponseToClient(int clientFd)
 {
 	HttpResponse    response;
-   	std::string     body = response.getResponse("example_response.html");
+   	std::string     body = response.generateResponse("example_response.html");
     size_t          bufferSize = 1024;
     size_t          totalSize = body.size();
     size_t          bytesSent = 0;
