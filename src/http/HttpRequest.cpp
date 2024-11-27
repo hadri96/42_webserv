@@ -1,6 +1,10 @@
 #include "HttpRequest.hpp"
 
-HttpRequest::HttpRequest() : method("GET"), uri("example_response.html"), body("HEllo server\n\n\n") {}
+HttpRequest::HttpRequest() : 
+    requestLine_(RequestLine()),
+    header_(Header()),
+    body_("")
+    {}
 
 HttpRequest::~HttpRequest() {}
 
