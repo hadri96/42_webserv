@@ -6,6 +6,7 @@
 # include "HttpMethodType.hpp"
 # include "HttpRedirection.hpp"
 # include "Uri.hpp"
+# include "Cgi.hpp"
 
 class	Route
 {
@@ -32,6 +33,7 @@ class	Route
 		Path						defaultFile_;
 		Path						uploadDirectory_;
 
+		bool						isCgi_;
 		Cgi							cgi_;
 };
 
