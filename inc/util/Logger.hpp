@@ -2,6 +2,7 @@
 # define LOGGER_HPP
 
 # include <string>
+# include <sstream> // std::ostringstream
 
 enum	LogLevel
 {
@@ -24,14 +25,17 @@ class	Logger
 
 		// --- Private Attributes ---
 		static Logger*	logger_;
+		static int		width_;
 
 		// --- Private Methods ---
 		std::string		getCurrentTime(void) const;
+		std::string		getLevel(LogLevel level) const;
 
 	public:
 		// --- Public Methods ---
 		static Logger*	logger(void);
 		void			log(LogLevel level, const std::string& message) const;
+		void			log(LogLevel level, const std::ostringstream& oss) const;
 		// void			logStream(std::stringstream ss);
 };
 
