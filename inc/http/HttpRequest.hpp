@@ -5,6 +5,7 @@
 # include "Header.hpp"
 
 # include <string>
+# include <sstream>
 
 class HttpRequest 
 {
@@ -14,15 +15,19 @@ class HttpRequest
         ~HttpRequest();
 
     // --- Public Methods ---
-        void            appendRequest(std::string input);
+        void                appendRequest(std::string input);
+        std::string         generatePrintString();
         
-        // ··· Getters and utils ···  
-        std::string     getRawRequest();
+    // ··· Getters and utils ···  
+        const std::string&  getRawRequest() const;
+        const RequestLine&  getRequestLine() const;
+        const Header&       getHeader() const;
+        const std::string&  getBody() const;
 
 
     private:
     // --- Private Attributes ---
-        std::string     rawRequest; // full unparsed string of the request
+        std::string     rawRequest_; // full unparsed string of the request
         // Not ideal for very long requests, which should be read in chunks rather than saved into memory
         
         RequestLine     requestLine_; // contains httpMethodType, requestTarget(path), HttpVersion

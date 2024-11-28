@@ -6,7 +6,6 @@
 
 Logger* Logger::logger_ = 0;
 
-
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
@@ -48,6 +47,13 @@ void	Logger::log(LogLevel level, const std::string& message) const
 			break ;
 	}
 }
+
+// void	Logger::logStream(std::stringstream ss)
+// {
+// 	std::string currentTime = getCurrentTime();
+//     std::cout << "[" << currentTime << "] ";
+// 	std::cout << ss << std::endl;
+// }
 
 // =============================================================================
 // Private Methods

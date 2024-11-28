@@ -3,8 +3,6 @@
 
 # include <string>
 
-
-
 enum	LogLevel
 {
 	LOG_INFO,
@@ -34,6 +32,7 @@ class	Logger
 		// --- Public Methods ---
 		static Logger*	logger(void);
 		void			log(LogLevel level, const std::string& message) const;
+		// void			logStream(std::stringstream ss);
 };
 
 #endif

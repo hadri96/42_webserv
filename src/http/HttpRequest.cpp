@@ -1,4 +1,9 @@
 #include "HttpRequest.hpp"
+#include "ToString.hpp"
+
+// =============================================================================
+// Constructors and Destructor
+// =============================================================================
 
 HttpRequest::HttpRequest() : 
     requestLine_(RequestLine()),
@@ -10,13 +15,66 @@ HttpRequest::~HttpRequest() {}
 
 void    HttpRequest::appendRequest(std::string input)
 {
-    if (rawRequest.empty())
-        rawRequest = input;
+    if (rawRequest_.empty())
+        rawRequest_ = input;
     else 
-        rawRequest.append(input, 0, input.length());
+        rawRequest_.append(input, 0, input.length());
 }
 
-std::string     HttpRequest::getRawRequest()
+// =============================================================================
+// Getters
+// =============================================================================
+
+
+// Getter for rawRequest_
+const std::string& HttpRequest::getRawRequest() const 
 {
-    return (this->rawRequest);
+    return (rawRequest_);
+}
+
+// Getter for requestLine_
+const RequestLine& HttpRequest::getRequestLine() const 
+{
+    return (requestLine_);
+}
+
+// Getter for header_
+const Header& HttpRequest::getHeader() const 
+{
+    return (header_);
+}
+
+// Getter for body_
+const std::string& HttpRequest::getBody() const 
+{
+    return (body_);
+}
+
+// =============================================================================
+// Public Methods 
+// =============================================================================
+
+
+std::string   HttpRequest::generatePrintString()
+{
+    std::stringstream ss;
+
+    ss << "Client Request (RawRequest): " << rawRequest_ << std::endl;
+	
+    ss << "Dummy RequestLine: " 
+	          << toString(requestLine_.getMethod()) << " ; "
+	          << requestLine_.getRequestTarget().getPath() << " ; "
+	          << requestLine_.getHttpVersion() << std::endl;
+
+    ss << "Dummy Header:\n"
+	          << "host_: " << header_.getHost() << "\n"
+	          << "userAgent_: " << header_.getUserAgent() << "\n"
+	          << "contentLength_: " << toString(header_.getContentLength()) << "\n"
+	          << "contentType_: " << header_.getContentType() << "\n"
+	          << "connectionType_: " << toString(header_.getConnectionType()) << "\n"
+	          << "accept_: " << header_.getAccept() << "\n"
+	          << "acceptEncoding_: " << header_.getAcceptEncoding() << "\n"
+	          << "acceptLanguage_: " << header_.getAcceptLanguage() << std::endl;
+
+    return (ss.str());
 }

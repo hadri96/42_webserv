@@ -2,7 +2,7 @@ NAME = webserv
 
 MAKEFLAGS = --no-print-directory
 
-INCLUDES = -I inc -I inc/config -I inc/http
+INCLUDES = -I inc -I inc/config -I inc/http -I inc/util
 
 CC = c++
 
