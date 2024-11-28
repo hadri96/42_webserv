@@ -1,6 +1,9 @@
 #ifndef HTTPREQUEST_HPP
 # define HTTPREQUEST_HPP
 
+# include "RequestLine.hpp"
+# include "Header.hpp"
+
 # include <string>
 
 class HttpRequest 
@@ -19,10 +22,13 @@ class HttpRequest
 
     private:
     // --- Private Attributes ---
-        std::string     method; // GET, POST, PUT, DELETE
-        std::string     uri; // (/index.html)
-        std::string     body;
         std::string     rawRequest; // full unparsed string of the request
+        // Not ideal for very long requests, which should be read in chunks rather than saved into memory
+        
+        RequestLine     requestLine_; // contains httpMethodType, requestTarget(path), HttpVersion
+        Header          header_; // contains all header information
+        std::string     body_;
+
 };
 
 #endif

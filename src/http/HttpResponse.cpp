@@ -34,8 +34,8 @@ void    HttpResponse::getHeaderFromBody()
 void     HttpResponse::getBodyFromFile(std::string uri)
 {
     std::string     line;
-    std::string     path = "html/";
-    path.append(uri, 0, uri.length()); // problem with the uri
+    std::string     path = "www/html/";
+    path.append(uri, 0, uri.length());
 
     std::ifstream        fs(path.c_str());
 

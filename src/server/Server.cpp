@@ -292,6 +292,16 @@ void	Server::handleRequestFromClient(int clientFd)
 			break ;
         }
     }
+	// std::cout << "Client Request (RawRequest) : " << request.getRawRequest() << std::endl
+
+	// std::cout << "Dummy RequestLine : " << toString(request.requestLine_.method_) << " ; "
+	// 									<< toString(request.requestLine_.requestTarget_) << " ; "
+	// 									<< request.requestLine_.httpVersion_ << std::endl;
+
+	// std::cout << "Dummy Header: " << "host_ : " << request.header_host_ 
+	// 							<< "userAgent_ : " << request.userAgent_
+	// 							<< "contentLength_ "
+
 	/*
     if (bytesRead == 0)
         //closeClientConnection(i, "Client disconnected: bytesRead = 0");
