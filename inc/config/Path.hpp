@@ -9,7 +9,7 @@ class	Path
 		// --- Constructors and Destructor ---
 					Path(void);
 					Path(const Path& other);
-
+					Path(const std::string string);
 					~Path(void);
 
 		// --- Operators Overload ---

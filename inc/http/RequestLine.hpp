@@ -1,9 +1,10 @@
-#ifndef HTTPREQUEST_HPP
-# define HTTPREQUEST_HPP
-
-# include <string>
+#ifndef REQUESTLINE_HPP
+# define REQUESTLINE_HPP
 
 # include "HttpMethodType.hpp"
+# include "Path.hpp"
+
+# include <string>
 
 class	RequestLine
 {

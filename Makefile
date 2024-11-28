@@ -2,7 +2,7 @@ NAME = webserv
 
 MAKEFLAGS = --no-print-directory
 
-INCLUDES = -I inc -I inc/config
+INCLUDES = -I inc -I inc/config -I inc/http
 
 CC = c++
 
@@ -19,9 +19,9 @@ UNAME_S := $(shell uname -s)
 # Source File names:
 MAIN = main
 UTIL = Logger ToString
-HTTP = HttpResponse HttpRequest
+HTTP = HttpResponse HttpRequest Header RequestLine
 SERVER = Observer Client Server
-CONFIG = 
+CONFIG = Path
 
 # Source directory
 SRCS_DIR = src

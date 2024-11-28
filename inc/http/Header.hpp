@@ -3,6 +3,7 @@
 
 # include "ConnectionType.hpp"
 
+
 # include <string>
 
 class	Header
@@ -25,7 +26,7 @@ class	Header
 
         std::size_t     contentLength_; // body.size()
         std::string     contentType_; // "text/html" | "text/css" | "image/png" etc.
-        connectionType  connectionType_; // either CLOSED or KEEP_ALIVE
+        ConnectionType  connectionType_; // either CLOSED or KEEP_ALIVE
 
         std::string     accept_; // "text/html" | "text/css" | "image/png" etc. 
         std::string     acceptEncoding_; // encoding format accepted (zip / deflate / gzip)

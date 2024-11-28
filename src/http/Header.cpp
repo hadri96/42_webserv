@@ -9,7 +9,7 @@
 Header::Header(void) :
     host_("www.example.com"),
     userAgent_("agent"),
-    contentLength(0),
+    contentLength_(0),
     contentType_("text/plain"),
     connectionType_(CLOSED),
     accept_("text/html"),
@@ -18,6 +18,14 @@ Header::Header(void) :
 {}
 
 Header::Header(const Header& other) :
+    host_(other.host_),
+    userAgent_(other.userAgent_),
+    contentLength_(other.contentLength_),
+    contentType_(other.contentType_),
+    connectionType_(other.connectionType_),
+    accept_(other.accept_),
+    acceptEncoding_(other.acceptEncoding_),
+    acceptLanguage_(other.acceptLanguage_)
 {}
 
 Header::~Header(void)

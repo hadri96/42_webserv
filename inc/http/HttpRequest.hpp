@@ -1,6 +1,9 @@
 #ifndef HTTPREQUEST_HPP
 # define HTTPREQUEST_HPP
 
+# include "RequestLine.hpp"
+# include "Header.hpp"
+
 # include <string>
 
 class HttpRequest 
@@ -24,7 +27,7 @@ class HttpRequest
         
         RequestLine     requestLine_; // contains httpMethodType, requestTarget(path), HttpVersion
         Header          header_; // contains all header information
-        std::string     body;
+        std::string     body_;
 
 };
 
