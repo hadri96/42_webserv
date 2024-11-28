@@ -11,7 +11,9 @@ Route::Route(void) :
 	redirection_(),
 	autoIndex_(false),
 	defaultFile_(),
-	uploadDirectory_()
+	uploadDirectory_(),
+	isCgi_(false),
+	cgi_()
 {}
 
 Route::Route(const Route& other) :
@@ -21,7 +23,9 @@ Route::Route(const Route& other) :
 	redirection_(other.redirection_),
 	autoIndex_(other.autoIndex_),
 	defaultFile_(other.defaultFile_),
-	uploadDirectory_(other.uploadDirectory_)
+	uploadDirectory_(other.uploadDirectory_),
+	isCgi_(other.isCgi_),
+	cgi_(other.cgi_)
 {}
 Route::~Route(void)
 {}
@@ -42,6 +46,8 @@ Route&	Route::operator=(const Route& rhs)
 	autoIndex_ = rhs.autoIndex_;
 	defaultFile_ = rhs.defaultFile_;
 	uploadDirectory_ = rhs.uploadDirectory_;
+	isCgi_ = rhs.isCgi_;
+	cgi_ = rhs.cgi_;
 
 	return (*this);
 }
