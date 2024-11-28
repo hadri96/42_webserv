@@ -5,7 +5,7 @@
 // =============================================================================
 
 Config::Config(void) :
-	host_(0),
+	host_("localhost"),
 	port_(0),
 	serverName_("default"),
 	errorPages_(0),

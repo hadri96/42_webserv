@@ -1,9 +1,9 @@
 #include "Observer.hpp"
 #include "Server.hpp"
+#include "Logger.hpp"
 
 int	main(void)
 {
-
 	Observer m;
 
 	Server s1("127.0.0.1", 8084, &m);
