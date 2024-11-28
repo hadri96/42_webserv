@@ -21,11 +21,11 @@ class	Cgi
 
 	private:
 		// --- Private Attributes ---
-		Path						rootPath_;
 		std::string					fileExtension_;
+		Path						rootPath_;
 		std::vector<HttpMethodType>	allowedMethods_;
-		Path						workingDirectory_;
 		Path						scriptPath_;
+		Path						workingDirectory_;
 	};
 
 #endif

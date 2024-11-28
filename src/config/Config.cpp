@@ -10,8 +10,7 @@ Config::Config(void) :
 	serverName_("default"),
 	errorPages_(0),
 	clientMaxBodySize_(-1),
-	routes_(0),
-	cgi_()
+	routes_(0)
 {}
 
 Config::Config(const Config& other) :
@@ -20,8 +19,7 @@ Config::Config(const Config& other) :
 	serverName_(other.serverName_),
 	errorPages_(other.errorPages_),
 	clientMaxBodySize_(other.clientMaxBodySize_),
-	routes_(other.routes_),
-	cgi_(other.cgi_)
+	routes_(other.routes_)
 {}
 
 Config::~Config(void)
@@ -42,7 +40,6 @@ Config&	Config::operator=(const Config& rhs)
 	errorPages_ = rhs.errorPages_;
 	clientMaxBodySize_ = rhs.clientMaxBodySize_;
 	routes_ = rhs.routes_;
-	cgi_ = rhs.cgi_;
 
 	return (*this);
 }
@@ -71,11 +68,6 @@ void	Config::setServerName(const std::string& serverName)
 void	Config::setClientMaxBodySize(int clientMaxBodySize)
 {
 	clientMaxBodySize_ = clientMaxBodySize;
-}
-
-void	Config::setCgi(const Cgi& cgi)
-{
-	cgi_ = cgi;
 }
 
 void	Config::addErrorPage(const ErrorPage& errorPage)
@@ -108,11 +100,6 @@ const std::string&	Config::getServerName(void) const
 int	Config::getClientMaxBodySize(void) const
 {
 	return (clientMaxBodySize_);
-}
-
-const Cgi&	Config::getCgi(void) const
-{
-	return (cgi_);
 }
 
 const std::vector<ErrorPage>&	Config::getErrorPages(void) const

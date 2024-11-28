@@ -5,18 +5,20 @@
 // =============================================================================
 
 Route::Route(void) :
+	uri_(),
+	rootPath_(),
 	allowedMethods_(),
-	httpRedirection_(),
-	routePath_(),
+	redirection_(),
 	autoIndex_(false),
 	defaultFile_(),
 	uploadDirectory_()
 {}
 
 Route::Route(const Route& other) :
+	uri_(other.uri_),
+	rootPath_(other.rootPath_),
 	allowedMethods_(other.allowedMethods_),
-	httpRedirection_(other.httpRedirection_),
-	routePath_(other.routePath_),
+	redirection_(other.redirection_),
 	autoIndex_(other.autoIndex_),
 	defaultFile_(other.defaultFile_),
 	uploadDirectory_(other.uploadDirectory_)
@@ -33,9 +35,10 @@ Route&	Route::operator=(const Route& rhs)
 	if (this == &rhs)
 		return (*this);
 	
+	uri_ = rhs.uri_;
+	rootPath_ = rhs.rootPath_;
 	allowedMethods_ = rhs.allowedMethods_;
-	httpRedirection_ = rhs.httpRedirection_;
-	routePath_ = rhs.routePath_;
+	redirection_ = rhs.redirection_;
 	autoIndex_ = rhs.autoIndex_;
 	defaultFile_ = rhs.defaultFile_;
 	uploadDirectory_ = rhs.uploadDirectory_;
