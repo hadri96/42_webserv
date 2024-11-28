@@ -18,6 +18,12 @@ class	RequestLine
 		// --- Operators Overload ---
 		RequestLine&		operator=(const RequestLine& other);
 
+		// --- Getters & Setters ---
+		HttpMethodType      getMethod() const;
+		const Path&         getRequestTarget() const;
+		const std::string&  getHttpVersion() const;
+		const std::string&  getQueryString() const;
+
 	private:
 		// --- Private Attributes ---
         HttpMethodType      method_;

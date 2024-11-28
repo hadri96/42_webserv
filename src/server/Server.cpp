@@ -180,20 +180,23 @@ void	Server::handleEvent(EventType event, int clientFd)
 	switch (event)
 	{
 		case CLIENT_NEW_CONNECTION:
+			Logger::logger()->log(LOG_INFO, "CLIENT_NEW_CONNECTION");
 			acceptClient();
 			break ;
 		case CLIENT_SENDING_REQUEST:
+			Logger::logger()->log(LOG_INFO, "CLIENT_SENDING_REQUEST");
 			handleRequestFromClient(clientFd);
 			break ;
 		case CLIENT_EXPECTING_RESPONSE:
+			Logger::logger()->log(LOG_INFO, "CLIENT_EXPECTING_RESPONSE");
 			sendResponseToClient(clientFd);
 			break ;
 		case CLIENT_ERROR:
-			std::cout << "CLIENT_ERROR" << std::endl;
+			Logger::logger()->log(LOG_ERROR, "CLIENT_ERROR");
 			closeClientConnection(clientFd);
 			break ;
 		case CLIENT_DISCONNECTED:
-			std::cout << "CLIENT_DISCONNECTED" << std::endl;
+			Logger::logger()->log(LOG_INFO, "CLIENT_DISCONNECTED");
 			closeClientConnection(clientFd);
 			break ;
 	}
@@ -226,7 +229,7 @@ void	Server::unregisterClient(Client* client)
 
 void	Server::acceptClient(void)
 {
-	std::cout << "acceptClient" << std::endl;
+	Logger::logger()->log(LOG_INFO, "Server::acceptClient called");
 	socklen_t	addressLen_;
 	int 		clientFd;
 	char		clientIp[INET_ADDRSTRLEN];
@@ -255,7 +258,7 @@ void	Server::acceptClient(void)
 // -> interprete la requete du client et l'ajoute au client->httpRequest
 void	Server::handleRequestFromClient(int clientFd)
 {
-	std::cout << "handleRequestFromClient" << std::endl;
+	Logger::logger()->log(LOG_INFO, "Server::handleRequestFromClient called");
     char                buffer[1024] = {0};
     int                 bytesRead;
     Client              *client = getClient(clientFd);
@@ -292,16 +295,6 @@ void	Server::handleRequestFromClient(int clientFd)
 			break ;
         }
     }
-	// std::cout << "Client Request (RawRequest) : " << request.getRawRequest() << std::endl
-
-	// std::cout << "Dummy RequestLine : " << toString(request.requestLine_.method_) << " ; "
-	// 									<< toString(request.requestLine_.requestTarget_) << " ; "
-	// 									<< request.requestLine_.httpVersion_ << std::endl;
-
-	// std::cout << "Dummy Header: " << "host_ : " << request.header_host_ 
-	// 							<< "userAgent_ : " << request.userAgent_
-	// 							<< "contentLength_ "
-
 	/*
     if (bytesRead == 0)
         //closeClientConnection(i, "Client disconnected: bytesRead = 0");
@@ -317,6 +310,7 @@ void	Server::handleRequestFromClient(int clientFd)
 
 void    Server::sendResponseToClient(int clientFd)
 {
+	Logger::logger()->log(LOG_INFO, "Server::sendResponseToClient called");
 	HttpResponse    response;
    	std::string     body = response.getResponse("example_response.html");
     size_t          bufferSize = 1024;
@@ -336,13 +330,12 @@ void    Server::sendResponseToClient(int clientFd)
         }
         bytesSent += sent;
     }
-    std::cout << "Response sent in chunks." << std::endl;
+    Logger::logger()->log(LOG_INFO, "Response sent in chunks");
 	closeClientConnection(clientFd);
 }
 
 void	Server::closeClientConnection(int clientFd)
 {
-	std::cout << "closeClientConnection" << std::endl;
 	unregisterClient(getClient(clientFd));
 	observer_->removeClientFromMonitor(clientFd);
 	Logger::logger()->log(LOG_INFO, "Closing client connection [fd = " + toString(clientFd) + "]");

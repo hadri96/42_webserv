@@ -15,6 +15,9 @@ class	Path
 		// --- Operators Overload ---
 		Path&		operator=(const Path& rhs);
 
+		// --- Getters & Setters ---
+		std::string	getPath() const;
+
 	private:
 		// --- Private Attributes ---
 		std::string	path_;

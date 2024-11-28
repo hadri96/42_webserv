@@ -42,3 +42,56 @@ Header&	Header::operator=(const Header& other)
     // variables = other.variables
 	return (*this);
 }
+
+// =============================================================================
+// Getters
+// =============================================================================
+
+
+// Getter for host_
+const std::string& Header::getHost() const 
+{
+    return (host_);
+}
+
+// Getter for userAgent_
+const std::string& Header::getUserAgent() const 
+{
+    return (userAgent_);
+}
+
+// Getter for contentLength_
+std::size_t Header::getContentLength() const 
+{
+    return (contentLength_);
+}
+
+// Getter for contentType_
+const std::string& Header::getContentType() const 
+{
+    return (contentType_);
+}
+
+// Getter for connectionType_
+ConnectionType Header::getConnectionType() const 
+{
+    return (connectionType_);
+}
+
+// Getter for accept_
+const std::string& Header::getAccept() const 
+{
+    return (accept_);
+}
+
+// Getter for acceptEncoding_
+const std::string& Header::getAcceptEncoding() const 
+{
+    return (acceptEncoding_);
+}
+
+// Getter for acceptLanguage_
+const std::string& Header::getAcceptLanguage() const 
+{
+    return (acceptLanguage_);
+}

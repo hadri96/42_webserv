@@ -32,3 +32,31 @@ RequestLine&	RequestLine::operator=(const RequestLine& other)
 
 	return (*this);
 }
+
+// =============================================================================
+// Getters
+// =============================================================================
+
+// Getter for method_
+HttpMethodType RequestLine::getMethod() const 
+{
+    return (method_);
+}
+
+// Getter for requestTarget_
+const Path& RequestLine::getRequestTarget() const 
+{
+    return (requestTarget_);
+}
+
+// Getter for httpVersion_
+const std::string& RequestLine::getHttpVersion() const 
+{
+    return (httpVersion_);
+}
+
+// Getter for queryString_
+const std::string& RequestLine::getQueryString() const 
+{
+    return (queryString_);
+}
