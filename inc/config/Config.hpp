@@ -25,7 +25,6 @@ class	Config
 		void							setPort(int port);
 		void							setServerName(const std::string& serverName);
 		void							setClientMaxBodySize(int clientMaxBodySize);
-		void							setCgi(const Cgi& cgi);
 
 		void							addErrorPage(const ErrorPage& errorPage);
 		void							addRoute(const Route& route);
@@ -34,7 +33,6 @@ class	Config
 		int								getPort(void) const;
 		const std::string&				getServerName(void) const;
 		int								getClientMaxBodySize(void) const;
-		const Cgi&						getCgi(void) const;
 		const std::vector<ErrorPage>&	getErrorPages(void) const;
 		const std::vector<Route>&		getRoutes(void) const;
 
@@ -45,13 +43,11 @@ class	Config
 		std::string						serverName_;
 
 		std::vector<ErrorPage>			errorPages_;
+		HttpRedirection					redirection_;
 
 		int								clientMaxBodySize_;
 
 		std::vector<Route>				routes_;
-
-		Cgi								cgi_;
-
 };
 
 #endif

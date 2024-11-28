@@ -12,8 +12,8 @@ Path::Path(const Path& other) :
 	path_(other.path_)
 {}
 
-Path::Path(const std::string string) :
-	path_(string)
+Path::Path(const std::string path) :
+	path_(path)
 {}
 
 Path::~Path(void)

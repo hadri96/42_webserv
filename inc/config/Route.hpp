@@ -5,6 +5,7 @@
 
 # include "HttpMethodType.hpp"
 # include "HttpRedirection.hpp"
+# include "Uri.hpp"
 
 class	Route
 {
@@ -20,13 +21,18 @@ class	Route
 
 	private:
 		// --- Private Attributes ---
+		Uri							uri_;
+		Path						rootPath_;
+
 		std::vector<HttpMethodType>	allowedMethods_;
-		HttpRedirection				httpRedirection_;
-		Path						routePath_;
+
+		HttpRedirection				redirection_;
+		
 		bool						autoIndex_;
 		Path						defaultFile_;
 		Path						uploadDirectory_;
 
+		Cgi							cgi_;
 };
 
 #endif
