@@ -10,10 +10,16 @@ class	HttpRedirection
 							HttpRedirection(void);
 							HttpRedirection(const HttpRedirection& other);
 
+							HttpRedirection(int statusCode, const Path& path);
+
 							~HttpRedirection(void);
 
 		// --- Operators Overload ---
 		HttpRedirection&	operator=(const HttpRedirection& rhs);
+
+		// --- Setters and Getters ---
+		int					getStatusCode(void) const;
+		const Path&			getPath(void) const;
 
 	private:
 		// --- Private Attributes ---

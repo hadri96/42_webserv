@@ -1,10 +1,53 @@
 #include "Observer.hpp"
 #include "Server.hpp"
 #include "Logger.hpp"
+#include "Config.hpp"
 
 int	main(void)
 {
 	Observer m;
+	Config c1;
+	Route r1;
+	Cgi	cgi1;
+
+	// --- Configuration Object Sample ---
+	// General
+	c1.setHost("127.0.0.1");
+	c1.setPort(8084);
+	c1.setServerName("server_1");
+
+	// Client Max Body Size
+	c1.setClientMaxBodySize(10);
+
+	// Redirection
+	c1.setRedirection(HttpRedirection(301, Path("/www/redirection.html")));
+
+	// Error Pages
+	c1.addErrorPage(ErrorPage(404, Path("/www/404.html")));
+	c1.addErrorPage(ErrorPage(403, Path("/www/403.html")));
+
+	// Routes
+	r1.setUri(Uri("/images"));
+	r1.setRootPath(Path("/www/images"));
+	// r1.setRedirection(HttpRedirection(301, Path("/www/redirection.html")));
+	r1.setAutoIndex(true);
+	r1.setDefaultFile(Path("index.html"));
+	r1.setUploadDirectory(Path("/www/upload"));
+	r1.addAllowedMethod(GET);
+	r1.addAllowedMethod(POST);
+
+	// Routes : CGI
+	/*
+	r1.setIsCgi(true);
+	cgi1.setFileExtension(".php");
+	cgi1.setRootPath(Path("/www/cgi"));
+	cgi1.setScriptPath(Path("/www/cgi/script.sh"));
+	cgi1.setWorkingDirectory(Path("/www/cgi/work"));
+	cgi1.addAllowedMethod(GET);
+	cgi1.addAllowedMethod(POST);
+	r1.setCgi(cgi1);
+	*/
+	c1.addRoute(r1);
 
 	Server s1("127.0.0.1", 8084, &m);
 	s1.start();
