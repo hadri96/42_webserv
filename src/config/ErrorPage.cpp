@@ -27,4 +27,5 @@ ErrorPage&	ErrorPage::operator=(const ErrorPage& rhs)
 
 	error_ = rhs.error_;
 	path_ = rhs.path_;
+	return (*this);
 }

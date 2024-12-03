@@ -19,9 +19,9 @@ UNAME_S := $(shell uname -s)
 # Source File names:
 MAIN = main
 UTIL = Logger ToString
-HTTP = HttpResponse HttpRequest Header RequestLine
+HTTP = HttpResponse HttpRequest Header RequestLine RequestInterpreter
 SERVER = Observer Client Server
-CONFIG = Path
+CONFIG = Path 
 
 # Source directory
 SRCS_DIR = src

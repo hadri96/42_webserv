@@ -20,6 +20,7 @@ class	RequestLine
 
 		// --- Getters & Setters ---
 		HttpMethodType      getMethod() const;
+		std::string			getMethodString() const;
 		const Path&         getRequestTarget() const;
 		const std::string&  getHttpVersion() const;
 		const std::string&  getQueryString() const;

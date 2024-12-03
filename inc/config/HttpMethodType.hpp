@@ -4,7 +4,9 @@
 enum	HttpMethodType
 {
 	GET,
-	POST
+	POST,
+	DELETE,
+	UNDEFINED
 };
 
 #endif

@@ -32,7 +32,7 @@ class	Route
 		Path						defaultFile_;
 		Path						uploadDirectory_;
 
-		Cgi							cgi_;
+		// Cgi							cgi_;
 };
 
 #endif

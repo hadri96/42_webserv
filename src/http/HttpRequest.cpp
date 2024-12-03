@@ -61,17 +61,17 @@ std::string   HttpRequest::generatePrintString()
 
     ss << "Client Request (RawRequest): " << rawRequest_ << std::endl;
 	
-    ss << "Dummy RequestLine: " 
-	          << toString(requestLine_.getMethod()) << " ; "
+    ss << "Dummy RequestLine: \n\n" 
+	          << requestLine_.getMethodString() << " ; "
 	          << requestLine_.getRequestTarget().getPath() << " ; "
 	          << requestLine_.getHttpVersion() << std::endl;
 
-    ss << "Dummy Header:\n"
+    ss << "\nDummy Header:\n\n"
 	          << "host_: " << header_.getHost() << "\n"
 	          << "userAgent_: " << header_.getUserAgent() << "\n"
 	          << "contentLength_: " << toString(header_.getContentLength()) << "\n"
 	          << "contentType_: " << header_.getContentType() << "\n"
-	          << "connectionType_: " << toString(header_.getConnectionType()) << "\n"
+	          << "connectionType_: " << header_.getConnectionTypeString() << "\n"
 	          << "accept_: " << header_.getAccept() << "\n"
 	          << "acceptEncoding_: " << header_.getAcceptEncoding() << "\n"
 	          << "acceptLanguage_: " << header_.getAcceptLanguage() << std::endl;
