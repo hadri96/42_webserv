@@ -29,7 +29,7 @@ RequestInterpreter::~RequestInterpreter() {}
 // =============================================================================
 
 
-void    RequestInterpreter::interpret(HttpRequest& request)
+void    RequestInterpreter::interpret(HttpRequest& request, Config& config)
 {
     // Check Request Method
     HttpMethodType      method = request.getRequestLine().getMethod();
@@ -38,9 +38,9 @@ void    RequestInterpreter::interpret(HttpRequest& request)
     {
         case GET:
             Logger::logger()->log(LOG_INFO, "CLient sent a GET request");
-            if (fileInServer(request.getRequestLine().getRequestTarget().getPath()))
+            if (fileInServer(request.getRequestLine().getRequestTarget().getPath(), config))
                 Logger::logger()->log(LOG_INFO, "Static file request");
-            else // is not a static file request
+            else
                 Logger::logger()->log(LOG_INFO, "Not a static file request");
             break;
         case POST:
@@ -59,8 +59,17 @@ void    RequestInterpreter::interpret(HttpRequest& request)
 // =============================================================================
 
 // Check if file is in server directory
-bool    RequestInterpreter::fileInServer(std::string uri)
+bool    RequestInterpreter::fileInServer(std::string uri, Config& config)
 {
+    std::vector<Route>      routes = config.getRoutes();
+
+    // Logger::logger()->log(LOG_WARNING, config.getServerName());
+    for (std::vector<Route>::const_iterator it = routes.begin(); it != routes.end(); ++it) 
+    {
+        Logger::logger()->log(LOG_WARNING, it->getRootPath().getPath());
+    }
+
+    // completely random, just to use uri for testing purposes here : 
     if (uri.size() > 0)
         return (true);
     return (false);

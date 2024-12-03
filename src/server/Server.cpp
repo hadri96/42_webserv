@@ -73,6 +73,11 @@ bool	Server::operator==(int fd)
 // Getters and Setters
 // =============================================================================
 
+void	Server::setConfig(Config& config)
+{
+	config_ = config;
+}
+
 int	Server::getFd(void) const
 {
 	return (fd_);
@@ -252,9 +257,8 @@ void	Server::acceptClient(void)
 	clientPort = ntohs(address_.sin_port);
 
 	// For testing purposes
-	HttpRequest	httpRequest;
-
-	Logger::logger()->log(LOG_INFO, httpRequest.generatePrintString());
+	// HttpRequest	httpRequest;
+	// Logger::logger()->log(LOG_INFO, httpRequest.generatePrintString());
 
 	registerClient(new Client(clientFd, clientIp, clientPort));
 	Logger::logger()->log(LOG_INFO, "Client connected to server");
@@ -283,13 +287,12 @@ void	Server::handleRequestFromClient(int clientFd)
         }
     }
 	// HttpRequest Parsing goes here
-
 	// HttpRequest Interpretation goes here
 	RequestInterpreter	interpreter = RequestInterpreter(this);
 
 	try 
 	{
-		interpreter.interpret(request);
+		interpreter.interpret(request, config_);
 	}
 	catch (std::exception& e)
 	{

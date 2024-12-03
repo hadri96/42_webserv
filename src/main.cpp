@@ -50,6 +50,7 @@ int	main(void)
 	c1.addRoute(r1);
 
 	Server s1("127.0.0.1", 8084, &m);
+	s1.setConfig(c1);
 	s1.start();
 	Server s2("127.0.0.1", 8085, &m);
 	s2.start();
