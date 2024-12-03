@@ -3,6 +3,7 @@
 #include "ToString.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
+#include "RequestInterpreter.hpp"
 
 #include <iostream>
 
@@ -250,6 +251,11 @@ void	Server::acceptClient(void)
 	inet_ntop(AF_INET, &address_.sin_addr, clientIp, sizeof(clientIp));
 	clientPort = ntohs(address_.sin_port);
 
+	// For testing purposes
+	HttpRequest	httpRequest;
+
+	Logger::logger()->log(LOG_INFO, httpRequest.generatePrintString());
+
 	registerClient(new Client(clientFd, clientIp, clientPort));
 	Logger::logger()->log(LOG_INFO, "Client connected to server");
 }
@@ -273,35 +279,33 @@ void	Server::handleRequestFromClient(int clientFd)
         if (request.getRawRequest().find("\r\n\r\n") != std::string::npos)
         {
             std::cout << "HTTP Request saved here:\n" << request.getRawRequest() << "\nEND OF REQUEST" << std::endl;
-			/*
-            HttpResponse    response;
-			*/
-
-            /*
-            Here we need a series of functions that parse the request 
-            then create a response based on the request and on the ServerConfig values for that socket
-            (according to method type, error response codes etc.)
-
-            something like:
-                request.parsing();
-                response.generateResponse(&request);
-            */
-            
-			/*
-			client->assignResponse(&response);
-            sendResponseBuffer(clientFd, client->getCurrentResponse());
-            break;
-			*/
 			break ;
         }
     }
-	/*
+	// HttpRequest Parsing goes here
+
+	// HttpRequest Interpretation goes here
+	RequestInterpreter	interpreter = RequestInterpreter(this);
+
+	try 
+	{
+		interpreter.interpret(request);
+	}
+	catch (std::exception& e)
+	{
+		Logger::logger()->log(LOG_ERROR, e.what());
+	}
+
     if (bytesRead == 0)
-        //closeClientConnection(i, "Client disconnected: bytesRead = 0");
+	{
+        Logger::logger()->log(LOG_INFO, "Client disconnected: bytesRead = 0");
 		closeClientConnection(clientFd);
-    else if (bytesRead < 0)
-        //closeClientConnection(i, "Client disconnected due to read error (bytesRead = -1)");
-		closeClientConnection(clientFd);*/
+	}
+	else if (bytesRead < 0)
+    {
+		Logger::logger()->log(LOG_INFO, "Client disconnected due to read error (bytesRead = -1)");
+		closeClientConnection(clientFd);
+	}
 }
 
 // en fonction de client->httpRequest construire client->httpResponse

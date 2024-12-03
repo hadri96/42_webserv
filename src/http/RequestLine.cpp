@@ -43,6 +43,19 @@ HttpMethodType RequestLine::getMethod() const
     return (method_);
 }
 
+// String getter for method_
+std::string RequestLine::getMethodString() const 
+{
+    if (method_ == 0)
+        return ("GET");
+    else if (method_ == 1)
+        return ("POST");
+    else if (method_ == 2)
+        return ("DELETE");
+    else
+        return ("UNDEFINED");
+}
+
 // Getter for requestTarget_
 const Path& RequestLine::getRequestTarget() const 
 {

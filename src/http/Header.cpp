@@ -78,6 +78,17 @@ ConnectionType Header::getConnectionType() const
     return (connectionType_);
 }
 
+std::string Header::getConnectionTypeString() const
+{
+    if (connectionType_ == 0)
+        return ("CLOSED");
+    else if (connectionType_ == 1)
+        return ("KEEP_ALIVE");
+    else 
+        return ("UNDEFINED");
+}
+
+
 // Getter for accept_
 const std::string& Header::getAccept() const 
 {

@@ -20,14 +20,15 @@ class	Header
         // --- Public Methods ---
 
         // --- Getters & Setters ---
-        const std::string& getHost() const;
-        const std::string& getUserAgent() const;
-        std::size_t getContentLength() const;
-        const std::string& getContentType() const;
-        ConnectionType getConnectionType() const;
-        const std::string& getAccept() const;
-        const std::string& getAcceptEncoding() const;
-        const std::string& getAcceptLanguage() const;
+        const std::string&      getHost() const;
+        const std::string&      getUserAgent() const;
+        std::size_t             getContentLength() const;
+        const std::string&      getContentType() const;
+        ConnectionType          getConnectionType() const;
+        std::string             getConnectionTypeString() const;
+        const std::string&      getAccept() const;
+        const std::string&      getAcceptEncoding() const;
+        const std::string&      getAcceptLanguage() const;
 
 
 	private:
