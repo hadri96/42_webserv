@@ -25,6 +25,7 @@ class	Config
 		void							setPort(int port);
 		void							setServerName(const std::string& serverName);
 		void							setClientMaxBodySize(int clientMaxBodySize);
+		void							setRedirection(const HttpRedirection& redirection);
 
 		void							addErrorPage(const ErrorPage& errorPage);
 		void							addRoute(const Route& route);

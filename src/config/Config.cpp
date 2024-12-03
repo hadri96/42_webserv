@@ -5,7 +5,7 @@
 // =============================================================================
 
 Config::Config(void) :
-	host_(0),
+	host_("localhost"),
 	port_(0),
 	serverName_("default"),
 	errorPages_(0),
@@ -68,6 +68,11 @@ void	Config::setServerName(const std::string& serverName)
 void	Config::setClientMaxBodySize(int clientMaxBodySize)
 {
 	clientMaxBodySize_ = clientMaxBodySize;
+}
+
+void	Config::setRedirection(const HttpRedirection& redirection)
+{
+	redirection_ = redirection;
 }
 
 void	Config::addErrorPage(const ErrorPage& errorPage)

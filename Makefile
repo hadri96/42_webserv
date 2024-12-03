@@ -21,7 +21,7 @@ MAIN = main
 UTIL = Logger ToString
 HTTP = HttpResponse HttpRequest Header RequestLine RequestInterpreter
 SERVER = Observer Client Server
-CONFIG = Path 
+CONFIG = Path Uri Route HttpRedirection ErrorPage Cgi Config
 
 # Source directory
 SRCS_DIR = src
