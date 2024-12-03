@@ -37,3 +37,61 @@ Cgi&	Cgi::operator=(const Cgi& rhs)
 
 	return (*this);
 }
+
+// =============================================================================
+// Setters and Getters
+// =============================================================================
+
+// --- Setters ---
+
+void	Cgi::setFileExtension(const std::string& fileExtension)
+{
+	fileExtension_ = fileExtension;
+}
+
+void	Cgi::setRootPath(const Path& rootPath)
+{
+	rootPath_ = rootPath;
+}
+
+void	Cgi::setScriptPath(const Path& scriptPath)
+{
+	scriptPath_ = scriptPath;
+}
+
+void	Cgi::setWorkingDirectory(const Path& workingDirectory)
+{
+	workingDirectory_ = workingDirectory;
+}
+
+void	Cgi::addAllowedMethod(HttpMethodType allowedMethod)
+{
+	allowedMethods_.push_back(allowedMethod);
+}
+
+// --- Getters ---
+
+const std::string&	Cgi::getFileExtension(void) const
+{
+	return (fileExtension_);
+}
+
+const Path&	Cgi::getRootPath(void) const
+{
+	return (rootPath_);
+}
+
+const Path&	Cgi::getScriptPath(void) const
+{
+	return (scriptPath_);
+}
+
+const Path&	Cgi::getWorkingDirectory(void) const
+{
+	return (workingDirectory_);
+}
+
+const std::vector<HttpMethodType>&	Cgi::getAllowedMethods(void) const
+{
+	return (allowedMethods_);
+}

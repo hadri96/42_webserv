@@ -70,6 +70,11 @@ void	Config::setClientMaxBodySize(int clientMaxBodySize)
 	clientMaxBodySize_ = clientMaxBodySize;
 }
 
+void	Config::setRedirection(const HttpRedirection& redirection)
+{
+	redirection_ = redirection;
+}
+
 void	Config::addErrorPage(const ErrorPage& errorPage)
 {
 	errorPages_.push_back(errorPage);
