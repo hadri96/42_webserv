@@ -125,7 +125,7 @@ void	Server::start(void)
 		// To handle with exceptions
 		Logger::logger()->log(LOG_ERROR, "Socket creation failed");
 	}
-	Logger::logger()->log(LOG_INFO, "Created a server socket " + getInfoFd());
+	// Logger::logger()->log(LOG_INFO, "Created a server socket " + getInfoFd());
 
 	// --- Bind ---
 
@@ -144,7 +144,7 @@ void	Server::start(void)
 		Logger::logger()->log(LOG_ERROR, "Bind failed");
 		stop();
 	}
-	Logger::logger()->log(LOG_INFO, "Bound successfully " + getInfoUrl());
+	// Logger::logger()->log(LOG_INFO, "Bound successfully " + getInfoUrl());
 
 	// --- Listen ---
 	if (listen(fd_, maxConnections_) < 0)
@@ -153,7 +153,7 @@ void	Server::start(void)
 		Logger::logger()->log(LOG_ERROR, "Listen failed");
 		stop();
 	}
-	Logger::logger()->log(LOG_INFO, "Server is listening for connections...");
+	// Logger::logger()->log(LOG_INFO, "Server is listening for connections...");
 
 	// Set O_NONBLOCK and FD_CLOEXEC (close on exec) flags at the same time using F_SETFL
 	if (fcntl(fd_, F_SETFL, O_NONBLOCK | FD_CLOEXEC) == -1) 
@@ -235,7 +235,7 @@ void	Server::unregisterClient(Client* client)
 
 void	Server::acceptClient(void)
 {
-	Logger::logger()->log(LOG_INFO, "Server::acceptClient called");
+	// Logger::logger()->log(LOG_INFO, "Server::acceptClient called");
 	socklen_t	addressLen_;
 	int 		clientFd;
 	char		clientIp[INET_ADDRSTRLEN];
@@ -256,19 +256,15 @@ void	Server::acceptClient(void)
 	inet_ntop(AF_INET, &address_.sin_addr, clientIp, sizeof(clientIp));
 	clientPort = ntohs(address_.sin_port);
 
-	// For testing purposes
-	// HttpRequest	httpRequest;
-	// Logger::logger()->log(LOG_INFO, httpRequest.generatePrintString());
-
 	registerClient(new Client(clientFd, clientIp, clientPort));
-	Logger::logger()->log(LOG_INFO, "Client connected to server");
+	// Logger::logger()->log(LOG_INFO, "Client connected to server");
 }
 
 // --- handleClientRead ---
 // -> interprete la requete du client et l'ajoute au client->httpRequest
 void	Server::handleRequestFromClient(int clientFd)
 {
-	Logger::logger()->log(LOG_INFO, "Server::handleRequestFromClient called");
+	// Logger::logger()->log(LOG_INFO, "Server::handleRequestFromClient called");
     char                buffer[1024] = {0};
     int                 bytesRead;
     Client              *client = getClient(clientFd);
@@ -317,7 +313,7 @@ void	Server::handleRequestFromClient(int clientFd)
 
 void    Server::sendResponseToClient(int clientFd)
 {
-	Logger::logger()->log(LOG_INFO, "Server::sendResponseToClient called");
+	// Logger::logger()->log(LOG_INFO, "Server::sendResponseToClient called");
 	HttpResponse    response;
    	std::string     body = response.getResponse("example_response.html");
     size_t          bufferSize = 1024;
@@ -337,7 +333,7 @@ void    Server::sendResponseToClient(int clientFd)
         }
         bytesSent += sent;
     }
-    Logger::logger()->log(LOG_INFO, "Response sent in chunks");
+    // Logger::logger()->log(LOG_INFO, "Response sent in chunks");
 	closeClientConnection(clientFd);
 }
 
@@ -346,6 +342,5 @@ void	Server::closeClientConnection(int clientFd)
 	unregisterClient(getClient(clientFd));
 	observer_->removeClientFromMonitor(clientFd);
 	Logger::logger()->log(LOG_INFO, "Closing client connection [fd = " + toString(clientFd) + "]");
-	
 	close(clientFd);
 }

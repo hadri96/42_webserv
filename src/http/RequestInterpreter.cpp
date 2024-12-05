@@ -28,17 +28,16 @@ RequestInterpreter::~RequestInterpreter() {}
 // Public Methods 
 // =============================================================================
 
-
 void    RequestInterpreter::interpret(HttpRequest& request, Config& config)
 {
-    // Check Request Method
     HttpMethodType      method = request.getRequestLine().getMethod();
 
     switch (method)
     {
         case GET:
             Logger::logger()->log(LOG_INFO, "CLient sent a GET request");
-            if (fileInServer(request.getRequestLine().getRequestTarget().getPath(), config))
+            if (request.getRequestLine().getRequestTarget().getPath(config) != "")
+                // getPath will have returned an empty string if path is not valid
                 Logger::logger()->log(LOG_INFO, "Static file request");
             else
                 Logger::logger()->log(LOG_INFO, "Not a static file request");
@@ -58,22 +57,23 @@ void    RequestInterpreter::interpret(HttpRequest& request, Config& config)
 // Private Methods 
 // =============================================================================
 
-// Check if file is in server directory
-bool    RequestInterpreter::fileInServer(std::string uri, Config& config)
-{
-    std::vector<Route>      routes = config.getRoutes();
+// Check if file from request is in server directory according to config
+// bool    RequestInterpreter::fileInServer(std::string uri, Config& config)
+// {
+//     if (uri.size() <= 0) // is
+//         return (false);
+//     std::vector<Route>      routes = config.getRoutes();
 
-    // Logger::logger()->log(LOG_WARNING, config.getServerName());
-    for (std::vector<Route>::const_iterator it = routes.begin(); it != routes.end(); ++it) 
-    {
-        Logger::logger()->log(LOG_WARNING, it->getRootPath().getPath());
-    }
+//     // Logger::logger()->log(LOG_WARNING, config.getServerName());
+//     for (std::vector<Route>::const_iterator it = routes.begin(); it != routes.end(); ++it) 
+//     {
+//         Logger::logger()->log(LOG_WARNING, it->getRootPath().getPath());
+//     }
+//     // Logger::logger()->log(LOG_WARNING, routes.begin()->getRootPath().getPath());
 
-    // completely random, just to use uri for testing purposes here : 
-    if (uri.size() > 0)
-        return (true);
-    return (false);
-}
+//     // completely random, just to use uri for testing purposes here : 
+//     return (true);
+// }
 
 /*
 bool RequestInterpreter::fileInServer(const std::string& uri, const Config& config)

@@ -65,21 +65,39 @@ void	Observer::monitorEvents(void)
 			else
 			{
 				if (fds_[i].revents & POLLIN)
-					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_SENDING_REQUEST, fds_[i].fd); ///
-				else if (fds_[i].revents & POLLHUP)
-					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_DISCONNECTED, fds_[i].fd);
-				else if (fds_[i].revents & POLLOUT)
-					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_EXPECTING_RESPONSE, fds_[i].fd);
-				else if (fds_[i].revents & POLLERR)
-					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_ERROR, fds_[i].fd);
+				{	
+					Logger::logger()->log(LOG_WARNING, toString(fds_[i].fd) + " is POLLIN");
+					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_SENDING_REQUEST, fds_[i].fd);
+					if (fds_[i].revents & POLLOUT)
+						getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_EXPECTING_RESPONSE, fds_[i].fd);
+				}
+				// 	Logger::logger()->log(LOG_WARNING, toString(fds_[i].fd) + " is POLLOUT");
+				// else if (fds_[i].revents & POLLHUP)
+				// 	getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_DISCONNECTED, fds_[i].fd);
+				// else if (fds_[i].revents & POLLERR)
+				// 	getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_ERROR, fds_[i].fd);
 			}
 		}
 	}
 }
 
+
 // =============================================================================
 // Private Methods
 // =============================================================================
+
+void	Observer::updatePollEvent(int clientFd, short newEvents)
+{
+	for (std::size_t i = 0; i < fds_.size(); i++)
+	{
+		if (fds_[i].fd == clientFd)
+		{
+			fds_[i].events = newEvents;
+			Logger::logger()->log(LOG_INFO, "Updated events for FD " + toString(clientFd) + " to " + toString(newEvents));
+		}
+	}
+}
+
 
 bool	Observer::isServer(int fd)
 {
