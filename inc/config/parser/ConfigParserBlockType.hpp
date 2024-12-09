@@ -1,0 +1,13 @@
+#ifndef CONFIG_PARSER_BLOCK_TYPE_HPP
+# define CONFIG_PARSER_BLOCK_TYPE_HPP
+
+enum	ConfigParserBlockType
+{
+	BT_EVENTS,
+	BT_HTTP,
+	BT_SERVER,
+	BT_LOCATION,
+	BT_UNKNOWN
+};
+
+#endif
