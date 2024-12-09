@@ -75,8 +75,8 @@ bool	Path::isInFileSystem() const
 
 bool	Path::isInConfig(Config& config) const
 {
-	// Check if path corresponds to the path given in the config
-	// 
+	// Check if path corresponds to the path given in the config file
+	// config file path can be found here: request.getRequestLine().getRequestTarget().getPath(config)
 	(void)config;
 	return (true);
 }

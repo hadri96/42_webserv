@@ -32,6 +32,11 @@ void    RequestInterpreter::interpret(HttpRequest& request, Config& config)
 {
     HttpMethodType      method = request.getRequestLine().getMethod();
 
+    if (!isAllowedMethod(config))
+    {
+        Logger::logger()->log(LOG_ERROR, "Method not allowed by server");
+    }
+
     switch (method)
     {
         case GET:
@@ -56,6 +61,14 @@ void    RequestInterpreter::interpret(HttpRequest& request, Config& config)
 // =============================================================================
 // Private Methods 
 // =============================================================================
+
+// Check if method is allowed by the config file
+bool    RequestInterpreter::isAllowedMethod(Config& config)
+{
+    (void)config;
+    // implementation here
+    return (true);
+}
 
 // Check if file from request is in server directory according to config
 // bool    RequestInterpreter::fileInServer(std::string uri, Config& config)

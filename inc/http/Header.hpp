@@ -18,8 +18,9 @@ class	Header
 		Header&		operator=(const Header& other);
 
         // --- Public Methods ---
+        std::string             generateHeaderString() const;
 
-        // --- Getters & Setters ---
+        // --- Getters ---
         const std::string&      getHost() const;
         const std::string&      getUserAgent() const;
         std::size_t             getContentLength() const;
@@ -30,8 +31,19 @@ class	Header
         const std::string&      getAcceptEncoding() const;
         const std::string&      getAcceptLanguage() const;
 
+        // --- Setters ---
+        void                    setHost(const std::string& host);
+        void                    setUserAgent(const std::string& userAgent);
+        void                    setContentLength(std::size_t contentLength);
+        void                    setContentType(const std::string& contentType);
+        void                    setConnectionType(ConnectionType connectionType);
+        void                    setAccept(const std::string& accept);
+        void                    setAcceptEncoding(const std::string& acceptEncoding);
+        void                    setAcceptLanguage(const std::string& acceptLanguage);
 
 	private:
+        // --- Private Methods ---
+
 		// --- Private Attributes ---
         std::string     host_; // host and port of the server ( type ???)
         std::string     userAgent_;
@@ -43,6 +55,8 @@ class	Header
         std::string     accept_; // "text/html" | "text/css" | "image/png" etc. 
         std::string     acceptEncoding_; // encoding format accepted (zip / deflate / gzip)
         std::string     acceptLanguage_; // preferred language for response (en / fr)
+
+        std::string     fullHeaderString_;
 };
 
 #endif

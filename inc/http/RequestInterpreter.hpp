@@ -36,6 +36,7 @@ class RequestInterpreter
 
     // --- Private Methods ---
         bool        fileInServer(std::string uri, Config& config);
+        bool        isAllowedMethod(Config& config);
 };
 
 #endif

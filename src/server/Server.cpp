@@ -313,10 +313,10 @@ void	Server::handleRequestFromClient(int clientFd)
 
 void    Server::sendResponseToClient(int clientFd)
 {
-	// Logger::logger()->log(LOG_INFO, "Server::sendResponseToClient called");
 	HttpResponse    response;
-   	std::string     body = response.getResponse("example_response.html");
-    size_t          bufferSize = 1024;
+   	// std::string     body = response.getResponse("example_response.html");
+    std::string     body = response.getResponseError(400);
+	size_t          bufferSize = 1024;
     size_t          totalSize = body.size();
     size_t          bytesSent = 0;
 
@@ -333,7 +333,6 @@ void    Server::sendResponseToClient(int clientFd)
         }
         bytesSent += sent;
     }
-    // Logger::logger()->log(LOG_INFO, "Response sent in chunks");
 	closeClientConnection(clientFd);
 }
 

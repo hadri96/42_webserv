@@ -2,6 +2,7 @@
 # define HTTP_RESPONSE_HPP
 
 # include <string>
+# include "Header.hpp"
 
 class HttpResponse
 {
@@ -13,15 +14,28 @@ class HttpResponse
     // --- Public Methods ---
         // ··· Getters and utils ···  
         std::string         getResponse(std::string uri);
-        void                getBodyFromFile(std::string uri);
-        void                getHeaderFromBody();
+        std::string         getResponseError(int errorCode);
 
     private:
+    // --- Private Methods ---
+        void                getBodyFromFile(std::string uri, std::string path);
+        void                generateHeaderFromBody();
+        std::string         extractStatusText(const std::string& fileName);
+        std::string         generateStatusLine(const std::string& fileName, int errorCode); 
+
+        std::string         getCurrentDate();
+        std::string         generateErrorHeaders();
     // --- Private Attributes ---
 
-        std::string     fileHeader;
-        std::string     fileBody;
-        std::string     fullResponse;
+        std::string     headerTemp_;
+        std::string     statusLine_;
+        Header          header_;
+        std::string     body_;
+        std::string     fullResponse_;
 };
 
 #endif
+
+/*
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+*/
