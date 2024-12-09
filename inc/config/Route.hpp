@@ -48,10 +48,10 @@ class	Route
 
 		std::vector<HttpMethodType>		allowedMethods_;
 
-		HttpRedirection					redirection_;
+		HttpRedirection					redirection_; // priorite 1
 		
-		bool							autoIndex_;
-		Path							defaultFile_;
+		bool							autoIndex_; // priorite 3
+		Path							defaultFile_; // priorite 2
 		Path							uploadDirectory_;
 
 		bool							isCgi_;
