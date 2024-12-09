@@ -1,0 +1,13 @@
+#ifndef CONFIG_TOKEN_TYPE_HPP
+# define CONFIG_TOKEN_TYPE_HPP
+
+enum	ConfigTokenType
+{
+	CT_KEYWORD,
+	CT_LEFT_BRACE,
+	CT_RIGHT_BRACE,
+	CT_SEMICOLON,
+	CT_UNKNOWN
+};
+
+#endif
