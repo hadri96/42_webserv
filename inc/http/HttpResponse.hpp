@@ -13,25 +13,30 @@ class HttpResponse
 
     // --- Public Methods ---
         // ··· Getters and utils ···  
-        std::string         getResponse(std::string uri);
-        std::string         getResponseError(int errorCode);
-
+        std::string         getResponse(int statusCode, std::string uri);
+    
     private:
     // --- Private Methods ---
         void                getBodyFromFile(std::string uri, std::string path);
-        void                generateHeaderFromBody();
-        std::string         extractStatusText(const std::string& fileName);
-        std::string         generateStatusLine(const std::string& fileName, int errorCode); 
-
+        void                generateBasicHeaders();
         std::string         getCurrentDate();
-        std::string         generateErrorHeaders();
+        void                composeFullResponse();
+
+        // --- Error Response Methods ---
+        std::string         extractStatusText(const std::string& fileName);
+        void                ErrorStatusLine(const std::string& fileName, int statusCode); 
+        
+        // --- Static Response Methods ---
+        void                staticStatusLine();
+
+
     // --- Private Attributes ---
 
-        std::string     headerTemp_;
+        std::string     headers_;
         std::string     statusLine_;
-        Header          header_;
         std::string     body_;
         std::string     fullResponse_;
+        // Header          header_;
 };
 
 #endif

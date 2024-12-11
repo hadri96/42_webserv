@@ -65,6 +65,8 @@ std::string	Logger::getLevel(LogLevel level) const
 			return ("[ERROR] ");
 		case LOG_WARNING:
 			return ("[WARNING] ");
+		case LOG_DEBUG:
+			return ("[DEBUG] ");
 		default:
 			return ("[UNKNOWN] ");
 	}	

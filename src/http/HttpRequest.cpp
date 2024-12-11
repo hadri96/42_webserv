@@ -6,10 +6,10 @@
 // =============================================================================
 
 HttpRequest::HttpRequest() : 
+    rawRequest_(""),
     requestLine_(RequestLine()),
     header_(Header()),
-    body_("")
-    {}
+    body_(""){}
 
 HttpRequest::~HttpRequest() {}
 

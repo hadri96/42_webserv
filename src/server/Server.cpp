@@ -195,7 +195,8 @@ void	Server::handleEvent(EventType event, int clientFd)
 			break ;
 		case CLIENT_EXPECTING_RESPONSE:
 			Logger::logger()->log(LOG_INFO, "CLIENT_EXPECTING_RESPONSE");
-			sendResponseToClient(clientFd);
+			// sendResponseToClient(clientFd);
+			exit(1);
 			break ;
 		case CLIENT_ERROR:
 			Logger::logger()->log(LOG_ERROR, "CLIENT_ERROR");
@@ -235,7 +236,6 @@ void	Server::unregisterClient(Client* client)
 
 void	Server::acceptClient(void)
 {
-	// Logger::logger()->log(LOG_INFO, "Server::acceptClient called");
 	socklen_t	addressLen_;
 	int 		clientFd;
 	char		clientIp[INET_ADDRSTRLEN];
@@ -257,14 +257,12 @@ void	Server::acceptClient(void)
 	clientPort = ntohs(address_.sin_port);
 
 	registerClient(new Client(clientFd, clientIp, clientPort));
-	// Logger::logger()->log(LOG_INFO, "Client connected to server");
 }
 
 // --- handleClientRead ---
 // -> interprete la requete du client et l'ajoute au client->httpRequest
 void	Server::handleRequestFromClient(int clientFd)
 {
-	// Logger::logger()->log(LOG_INFO, "Server::handleRequestFromClient called");
     char                buffer[1024] = {0};
     int                 bytesRead;
     Client              *client = getClient(clientFd);
@@ -272,33 +270,41 @@ void	Server::handleRequestFromClient(int clientFd)
     
     client->assignRequest(&request); 
     
-    while ((bytesRead = read(clientFd, buffer, sizeof(buffer))) > 0)
+	Logger::logger()->log(LOG_DEBUG, request.generatePrintString());
+
+    while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) -1, 0)) > 0)
     {
         request.appendRequest(buffer);
-
+		Logger::logger()->log(LOG_DEBUG, "bytesRead = " + toString(bytesRead) + " from clientFd " + toString(clientFd));
+		Logger::logger()->log(LOG_DEBUG, "Buffer: " + std::string(buffer));
         if (request.getRawRequest().find("\r\n\r\n") != std::string::npos)
         {
             std::cout << "HTTP Request saved here:\n" << request.getRawRequest() << "\nEND OF REQUEST" << std::endl;
 			break ;
         }
+		Logger::logger()->log(LOG_DEBUG, "Request looks like this: \n" + request.getRawRequest());
+		memset(buffer, 0, sizeof(buffer));
     }
-	// HttpRequest Parsing goes here
-	// HttpRequest Interpretation goes here
-	RequestInterpreter	interpreter = RequestInterpreter(this);
 
-	try 
-	{
-		interpreter.interpret(request, config_);
-	}
-	catch (std::exception& e)
-	{
-		Logger::logger()->log(LOG_ERROR, e.what());
-	}
+	// HttpRequest Parsing goes here
+
+	// Logger::logger()->log(LOG_DEBUG, "Before request interpreter");
+	// RequestInterpreter	interpreter = RequestInterpreter(this);
+	// Logger::logger()->log(LOG_DEBUG, "After request interpreter");
+
+	// try 
+	// {
+	// 	interpreter.interpret(request, config_);
+	// }
+	// catch (std::exception& e)
+	// {
+	// 	Logger::logger()->log(LOG_ERROR, e.what());
+	// }
 
     if (bytesRead == 0)
 	{
-        Logger::logger()->log(LOG_INFO, "Client disconnected: bytesRead = 0");
-		closeClientConnection(clientFd);
+        Logger::logger()->log(LOG_INFO, "Finished reading from clientFd " + toString(clientFd));
+		// closeClientConnection(clientFd);
 	}
 	else if (bytesRead < 0)
     {
@@ -314,18 +320,19 @@ void	Server::handleRequestFromClient(int clientFd)
 void    Server::sendResponseToClient(int clientFd)
 {
 	HttpResponse    response;
-   	// std::string     body = response.getResponse("example_response.html");
-    std::string     body = response.getResponseError(400);
+   	std::string     fullResponse = response.getResponse(200, "random_file.html");
 	size_t          bufferSize = 1024;
-    size_t          totalSize = body.size();
+    size_t          totalSize = fullResponse.size();
     size_t          bytesSent = 0;
 
+	Logger::logger()->log(LOG_DEBUG, "About to send response to clientFd " + toString(clientFd));
     while (bytesSent < totalSize) 
     {
         size_t      chunkSize = std::min(bufferSize, totalSize - bytesSent);
         int         sent;
         
-        sent = send(clientFd, (body.c_str() + bytesSent), chunkSize, 0);
+		Logger::logger()->log(LOG_DEBUG, (fullResponse.c_str() + bytesSent));
+        sent = send(clientFd, (fullResponse.c_str() + bytesSent), chunkSize, 0);
         if (sent < 0) 
         {
             closeClientConnection(clientFd);
@@ -340,6 +347,6 @@ void	Server::closeClientConnection(int clientFd)
 {
 	unregisterClient(getClient(clientFd));
 	observer_->removeClientFromMonitor(clientFd);
-	Logger::logger()->log(LOG_INFO, "Closing client connection [fd = " + toString(clientFd) + "]");
+	Logger::logger()->log(LOG_DEBUG, "Closing client connection [fd = " + toString(clientFd) + "]");
 	close(clientFd);
 }

@@ -66,7 +66,7 @@ void	Observer::monitorEvents(void)
 			{
 				if (fds_[i].revents & POLLIN)
 				{	
-					Logger::logger()->log(LOG_WARNING, toString(fds_[i].fd) + " is POLLIN");
+					Logger::logger()->log(LOG_DEBUG, toString(fds_[i].fd) + " is POLLIN");
 					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_SENDING_REQUEST, fds_[i].fd);
 					if (fds_[i].revents & POLLOUT)
 						getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_EXPECTING_RESPONSE, fds_[i].fd);
