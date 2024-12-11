@@ -69,10 +69,12 @@ class	Server
 		void					acceptClient(void);
 		void					handleRequestFromClient(int clientFd);
 
+		void					runInterpreter(HttpRequest& request, int clientFd);
+
 		void					sendResponseToClient(int clientFd);
 		void					sendResponseBuffer(int clientFd);
 
-		void					closeClientConnection(int clientFd);
+		void					closeClientConnection(int clientFd, std::string message);
 };
 
 #endif

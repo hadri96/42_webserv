@@ -21,6 +21,7 @@ class HttpRequest
     // ··· Getters and utils ···  
         const std::string&  getRawRequest() const;
         const RequestLine&  getRequestLine() const;
+        const std::string   getRequestTarget() const;
         const Header&       getHeader() const;
         const std::string&  getBody() const;
 

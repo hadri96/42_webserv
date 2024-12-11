@@ -22,20 +22,26 @@ HttpResponse::~HttpResponse() {}
 // =============================================================================
 
 // So far this function only handles static GET requests and Error pages
-std::string     HttpResponse::getResponse(int statusCode, std::string uri)
+std::string     HttpResponse::generateStaticResponse(int statusCode, std::string uri)
 {
-    Logger::logger()->log(LOG_INFO, "getResponse");
-    if (statusCode >= 400)
+    Logger::logger()->log(LOG_INFO, "generateStaticResponse");
+    
+    if (statusCode == 200 && uri != "")
+    {
+        getBodyFromFile(uri, "www/html/");
+        staticStatusLine();
+    }
+    else if (statusCode >= 400)
     {
         std::string     fileName = toString(statusCode) + ".html";
         
         getBodyFromFile(fileName, "www/.errors/");
         ErrorStatusLine(fileName, statusCode);
     }
-    else if (statusCode == 200 && uri != "")
+    else
     {
-        getBodyFromFile(uri, "www/html/");
-        staticStatusLine();
+        getBodyFromFile("500.html", "www/.errors/");
+        ErrorStatusLine("500.html", 500);
     }
     generateBasicHeaders();
     composeFullResponse();
@@ -64,22 +70,23 @@ void     HttpResponse::getBodyFromFile(std::string uri, std::string path)
     fileStream.close();
 }
 
-std::string HttpResponse::getCurrentDate()
+std::string     HttpResponse::getCurrentTime(void) const
 {
-    time_t      now = time(0);
-    struct tm   *gmt = gmtime(&now);
-    char        buffer[100];
+	std::time_t currentTime;
+	std::tm* 	localTime;
+	char		timeBuffer[20];
 
-    strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", gmt);
-
-    return (std::string(buffer));
+	currentTime = std::time(0);
+	localTime = std::localtime(&currentTime);
+	std::strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d %H:%M:%S", localTime);
+	return (std::string(timeBuffer));
 }
 
 void    HttpResponse::generateBasicHeaders() 
 {
     std::ostringstream headers;
 
-    headers << "Date: " << getCurrentDate() << "\r\n";
+    headers << "Date: " << getCurrentTime() << "\r\n";
     headers << "Server: Webserv\r\n";
     headers << "Content-Type: text/html; charset=UTF-8\r\n";
     headers << "Content-Length: " << body_.size() << "\r\n";
@@ -93,7 +100,7 @@ void    HttpResponse::composeFullResponse()
     fullResponse_.append(statusLine_);
     fullResponse_.append(headers_);
     fullResponse_.append(body_, 0, body_.length());
-    Logger::logger()->log(LOG_INFO, "Full Response\n" + fullResponse_);
+    Logger::logger()->log(LOG_DEBUG, "Full Response\n" + fullResponse_);
 }
 
 // --- Error Response Methods ---

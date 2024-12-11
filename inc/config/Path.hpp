@@ -23,6 +23,10 @@ class	Path
 		std::string	getPath() const;
 		std::string	getPath(Config& config) const;
 
+		// level
+		// compose, add
+		newPat = Path + std::string
+
 	private:
 		// --- Private Attributes ---
 		std::string	path_;

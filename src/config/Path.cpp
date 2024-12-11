@@ -73,6 +73,7 @@ bool	Path::isInFileSystem() const
 	return (true);
 }
 
+// Cette fonction devrait etre faite par le config : Config->isAvailablePath(Path& path)
 bool	Path::isInConfig(Config& config) const
 {
 	// Check if path corresponds to the path given in the config file

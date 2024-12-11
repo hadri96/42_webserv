@@ -38,6 +38,11 @@ const RequestLine& HttpRequest::getRequestLine() const
     return (requestLine_);
 }
 
+const std::string   HttpRequest::getRequestTarget() const
+{
+    return (getRequestLine()->getRequestTarget());
+}
+
 // Getter for header_
 const Header& HttpRequest::getHeader() const 
 {

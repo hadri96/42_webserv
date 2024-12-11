@@ -41,7 +41,7 @@ void    RequestInterpreter::interpret(HttpRequest& request, Config& config)
     {
         case GET:
             Logger::logger()->log(LOG_INFO, "CLient sent a GET request");
-            if (request.getRequestLine().getRequestTarget().getPath(config) != "")
+            if (request.getRequestLine().getRequestTarget() != "")
                 // getPath will have returned an empty string if path is not valid
                 Logger::logger()->log(LOG_INFO, "Static file request");
             else
