@@ -10,24 +10,32 @@ class	ConfigParserBlock : public ConfigParserNode
 {
 	public:
 		// --- Constructors and Destructor ---
-										ConfigParserBlock(void);
-										ConfigParserBlock(const ConfigParserBlock& other);
+												ConfigParserBlock(void);
+												ConfigParserBlock(const ConfigParserBlock& other);
 
-										ConfigParserBlock(const std::string& block, const std::vector<std::string>& parameters);
+												ConfigParserBlock(const std::string& block, const std::vector<std::string> parameters);
 
-										~ConfigParserBlock(void);
+												~ConfigParserBlock(void);
 
 		// --- Operators Overload ---
-		ConfigParserBlock&				operator=(const ConfigParserBlock& rhs);
+		ConfigParserBlock&						operator=(const ConfigParserBlock& rhs);
+
+		// --- Setters and Getters ---
+		const std::vector<ConfigParserNode*>&	getNodes(void) const;
 
 		// --- Public Methods ---
-		void							addNode(ConfigParserNode& node);
+		void									addNode(ConfigParserNode* node);
+		void									display(void) const;
 
 	private:
 		// --- Private Attributes ---
-		std::string						block_;
-		std::vector<std::string>		parameters_;
-		std::vector<ConfigParserNode*>	nodes_;
+		std::string								block_;
+		std::vector<std::string>				parameters_;
+		std::vector<ConfigParserNode*>			nodes_;
+
+		// --- Private Methods ---
+		void									display(ConfigParserNode* node) const;
+		void									display(int nestingLevel) const;
 };
 
 #endif
