@@ -8,7 +8,7 @@
 # include "EventType.hpp"
 # include "Observer.hpp"
 # include "Client.hpp"
-// # include "Config.hpp"
+# include "Config.hpp"
 
 // --- Forward Declarations ---
 class	Observer;
@@ -30,6 +30,8 @@ class	Server
 		bool					operator==(int fd);
 
 		// --- Getters and Setters ---
+		void					setConfig(Config& config);
+
 		int						getFd(void) const;
 
 		std::string				getInfoFd(void) const;
@@ -47,7 +49,7 @@ class	Server
 
 	private:
 		// --- Private Attributes ---
-		// Config					config_;
+		Config					config_;
 		// std::vector<Config>		virtualHosts_;
 		Observer*				observer_;
 
@@ -67,10 +69,12 @@ class	Server
 		void					acceptClient(void);
 		void					handleRequestFromClient(int clientFd);
 
+		void					runInterpreter(HttpRequest& request, int clientFd);
+
 		void					sendResponseToClient(int clientFd);
 		void					sendResponseBuffer(int clientFd);
 
-		void					closeClientConnection(int clientFd);
+		void					closeClientConnection(int clientFd, std::string message);
 };
 
 #endif

@@ -73,6 +73,11 @@ bool	Server::operator==(int fd)
 // Getters and Setters
 // =============================================================================
 
+void	Server::setConfig(Config& config)
+{
+	config_ = config;
+}
+
 int	Server::getFd(void) const
 {
 	return (fd_);
@@ -120,7 +125,7 @@ void	Server::start(void)
 		// To handle with exceptions
 		Logger::logger()->log(LOG_ERROR, "Socket creation failed");
 	}
-	Logger::logger()->log(LOG_INFO, "Created a server socket " + getInfoFd());
+	// Logger::logger()->log(LOG_INFO, "Created a server socket " + getInfoFd());
 
 	// --- Bind ---
 
@@ -139,7 +144,7 @@ void	Server::start(void)
 		Logger::logger()->log(LOG_ERROR, "Bind failed");
 		stop();
 	}
-	Logger::logger()->log(LOG_INFO, "Bound successfully " + getInfoUrl());
+	// Logger::logger()->log(LOG_INFO, "Bound successfully " + getInfoUrl());
 
 	// --- Listen ---
 	if (listen(fd_, maxConnections_) < 0)
@@ -148,7 +153,7 @@ void	Server::start(void)
 		Logger::logger()->log(LOG_ERROR, "Listen failed");
 		stop();
 	}
-	Logger::logger()->log(LOG_INFO, "Server is listening for connections...");
+	// Logger::logger()->log(LOG_INFO, "Server is listening for connections...");
 
 	// Set O_NONBLOCK and FD_CLOEXEC (close on exec) flags at the same time using F_SETFL
 	if (fcntl(fd_, F_SETFL, O_NONBLOCK | FD_CLOEXEC) == -1) 
@@ -193,12 +198,10 @@ void	Server::handleEvent(EventType event, int clientFd)
 			sendResponseToClient(clientFd);
 			break ;
 		case CLIENT_ERROR:
-			Logger::logger()->log(LOG_ERROR, "CLIENT_ERROR");
-			closeClientConnection(clientFd);
+			closeClientConnection(clientFd, "CLIENT_ERROR");
 			break ;
 		case CLIENT_DISCONNECTED:
-			Logger::logger()->log(LOG_INFO, "CLIENT_DISCONNECTED");
-			closeClientConnection(clientFd);
+			closeClientConnection(clientFd, "CLIENT_DISCONNECTED");
 			break ;
 	}
 }
@@ -230,7 +233,6 @@ void	Server::unregisterClient(Client* client)
 
 void	Server::acceptClient(void)
 {
-	Logger::logger()->log(LOG_INFO, "Server::acceptClient called");
 	socklen_t	addressLen_;
 	int 		clientFd;
 	char		clientIp[INET_ADDRSTRLEN];
@@ -251,98 +253,85 @@ void	Server::acceptClient(void)
 	inet_ntop(AF_INET, &address_.sin_addr, clientIp, sizeof(clientIp));
 	clientPort = ntohs(address_.sin_port);
 
-	// For testing purposes
-	HttpRequest	httpRequest;
-
-	Logger::logger()->log(LOG_INFO, httpRequest.generatePrintString());
-
 	registerClient(new Client(clientFd, clientIp, clientPort));
-	Logger::logger()->log(LOG_INFO, "Client connected to server");
 }
 
 // --- handleClientRead ---
 // -> interprete la requete du client et l'ajoute au client->httpRequest
 void	Server::handleRequestFromClient(int clientFd)
 {
-	Logger::logger()->log(LOG_INFO, "Server::handleRequestFromClient called");
     char                buffer[1024] = {0};
     int                 bytesRead;
     Client              *client = getClient(clientFd);
     HttpRequest         request;
     
-    client->assignRequest(&request); 
+    client->assignRequest(&request);
     
-    while ((bytesRead = read(clientFd, buffer, sizeof(buffer))) > 0)
+    while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) -1, 0)) > 0)
     {
         request.appendRequest(buffer);
-
         if (request.getRawRequest().find("\r\n\r\n") != std::string::npos)
-        {
-            std::cout << "HTTP Request saved here:\n" << request.getRawRequest() << "\nEND OF REQUEST" << std::endl;
 			break ;
-        }
+		Logger::logger()->log(LOG_DEBUG, "Request looks like this: \n" + request.getRawRequest());
     }
-	// HttpRequest Parsing goes here
+	if (bytesRead < 0)
+		closeClientConnection(clientFd, "read error");
 
-	// HttpRequest Interpretation goes here
+	runInterpreter(request, clientFd);
+}
+
+void	Server::runInterpreter(HttpRequest& request,int clientFd)
+{
+	// Should interpret request to generate response 
+	// and add the response to the client object 
 	RequestInterpreter	interpreter = RequestInterpreter(this);
+	HttpResponse		response;
+   	Client*				client = getClient(clientFd);
 
+	client->assignResponse(&response);
 	try 
 	{
-		interpreter.interpret(request);
+		interpreter.interpret(request, config_);
 	}
 	catch (std::exception& e)
 	{
 		Logger::logger()->log(LOG_ERROR, e.what());
 	}
 
-    if (bytesRead == 0)
-	{
-        Logger::logger()->log(LOG_INFO, "Client disconnected: bytesRead = 0");
-		closeClientConnection(clientFd);
-	}
-	else if (bytesRead < 0)
-    {
-		Logger::logger()->log(LOG_INFO, "Client disconnected due to read error (bytesRead = -1)");
-		closeClientConnection(clientFd);
-	}
 }
-
-// en fonction de client->httpRequest construire client->httpResponse
 
 // --- sendResponseBuffer et handleClientWrite ---
 
 void    Server::sendResponseToClient(int clientFd)
 {
-	Logger::logger()->log(LOG_INFO, "Server::sendResponseToClient called");
-	HttpResponse    response;
-   	std::string     body = response.getResponse("example_response.html");
-    size_t          bufferSize = 1024;
-    size_t          totalSize = body.size();
-    size_t          bytesSent = 0;
+	// Should call getClient, and reach the response through the Client class
+	// Client*			client = getClient(clientFd);
+	HttpResponse	response;
+	std::string		fullResponse = response.generateStaticResponse(399, "random_file.html");
+	size_t			bufferSize = 1024;
+    size_t			totalSize = fullResponse.size();
+    size_t			bytesSent = 0;
 
     while (bytesSent < totalSize) 
     {
         size_t      chunkSize = std::min(bufferSize, totalSize - bytesSent);
         int         sent;
         
-        sent = send(clientFd, (body.c_str() + bytesSent), chunkSize, 0);
+        sent = send(clientFd, (fullResponse.c_str() + bytesSent), chunkSize, 0);
         if (sent < 0) 
         {
-            closeClientConnection(clientFd);
+            closeClientConnection(clientFd, "Error in send() function.");
             return;
         }
         bytesSent += sent;
     }
-    Logger::logger()->log(LOG_INFO, "Response sent in chunks");
-	closeClientConnection(clientFd);
+	// closeClientConnection(clientFd, "Response sent");
 }
 
-void	Server::closeClientConnection(int clientFd)
+void	Server::closeClientConnection(int clientFd, std::string message)
 {
 	unregisterClient(getClient(clientFd));
 	observer_->removeClientFromMonitor(clientFd);
-	Logger::logger()->log(LOG_INFO, "Closing client connection [fd = " + toString(clientFd) + "]");
-	
+	Logger::logger()->log(LOG_DEBUG, "Closing client connection [fd = " + toString(clientFd) + "] : " + message);
 	close(clientFd);
 }

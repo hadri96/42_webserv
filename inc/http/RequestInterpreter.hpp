@@ -4,6 +4,7 @@
 # include "HttpRequest.hpp"
 # include "HttpResponse.hpp"
 # include "Server.hpp"
+# include "Config.hpp"
 
 class RequestInterpreter 
 {
@@ -13,7 +14,7 @@ class RequestInterpreter
         ~RequestInterpreter();
 
     // --- Public Methods ---
-        void        interpret(HttpRequest& request);
+        void        interpret(HttpRequest& request, Config& config);
         
     // ··· Getters and utils ···  
 
@@ -34,7 +35,8 @@ class RequestInterpreter
         Server*     server_;
 
     // --- Private Methods ---
-        bool        fileInServer(std::string uri);
+        bool        fileInServer(std::string uri, Config& config);
+        bool        isAllowedMethod(Config& config);
 };
 
 #endif

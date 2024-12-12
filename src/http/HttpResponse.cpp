@@ -1,50 +1,149 @@
 #include "HttpResponse.hpp"
+#include "Logger.hpp"
+#include "ToString.hpp"
+
 #include <iostream>
 #include <fstream>
+#include <ctime>
+#include <sstream>
+
+// =============================================================================
+// Constructors and Destructor
+// =============================================================================
+
 
 HttpResponse::HttpResponse() {}
 
-HttpResponse::~HttpResponse()
+HttpResponse::~HttpResponse() {}
+
+
+// =============================================================================
+// Public Methods
+// =============================================================================
+
+// So far this function only handles static GET requests and Error pages
+std::string     HttpResponse::generateStaticResponse(int statusCode, std::string uri)
 {
-    std::cout << "HttpResponse destructor called" << std::endl;
-}
-
-
-std::string     HttpResponse::getResponse(std::string uri)
-{
-    getBodyFromFile(uri);
-    getHeaderFromBody();
-    fullResponse.append(fileHeader);
-    fullResponse.append(fileBody, 0, fileBody.length());
-
-    return (this->fullResponse);
-}
-
-
-void    HttpResponse::getHeaderFromBody()
-{
-    /*
-        Here we should read the fileBody string and deduce the correct header from it.
-    */
-    fileHeader = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: [length of the HTML content]\nConnection: close\n\n";  
-}
-
-
-// Takes the uri of the file and copies its' contents to HttpResponse->fileBody
-void     HttpResponse::getBodyFromFile(std::string uri)
-{
-    std::string     line;
-    std::string     path = "www/html/";
-    path.append(uri, 0, uri.length());
-
-    std::ifstream        fs(path.c_str());
-
-    if (fs.is_open())
-        std::cout << "File opened: " << path << std::endl;
-    while (std::getline(fs, line))
+    Logger::logger()->log(LOG_INFO, "generateStaticResponse");
+    
+    if (statusCode == 200 && uri != "")
     {
-        fileBody.append(line, 0, line.length());
+        getBodyFromFile(uri, "www/html/");
+        staticStatusLine();
     }
-    std::cout << "parsed file: " << fileBody << std::endl;
-    fs.close();
+    else if (statusCode >= 400)
+    {
+        std::string     fileName = toString(statusCode) + ".html";
+        
+        getBodyFromFile(fileName, "www/.errors/");
+        ErrorStatusLine(fileName, statusCode);
+    }
+    else
+    {
+        getBodyFromFile("500.html", "www/.errors/");
+        ErrorStatusLine("500.html", 500);
+    }
+    generateBasicHeaders();
+    composeFullResponse();
+
+    return (fullResponse_);
+}
+
+// =============================================================================
+// Private Methods 
+// =============================================================================
+
+// --- General Methods ---
+
+void     HttpResponse::getBodyFromFile(std::string uri, std::string path)
+{
+    std::string         line;
+    
+    path.append(uri, 0, uri.length());
+    
+    std::ifstream       fileStream(path.c_str());
+
+    if (fileStream.is_open())
+        Logger::logger()->log(LOG_INFO, "File opened: " + path);
+    while (std::getline(fileStream, line))
+        body_.append(line, 0, line.length());
+    fileStream.close();
+}
+
+std::string     HttpResponse::getCurrentTime(void) const
+{
+	std::time_t currentTime;
+	std::tm* 	localTime;
+	char		timeBuffer[20];
+
+	currentTime = std::time(0);
+	localTime = std::localtime(&currentTime);
+	std::strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d %H:%M:%S", localTime);
+	return (std::string(timeBuffer));
+}
+
+void    HttpResponse::generateBasicHeaders() 
+{
+    std::ostringstream headers;
+
+    headers << "Date: " << getCurrentTime() << "\r\n";
+    headers << "Server: Webserv\r\n";
+    headers << "Content-Type: text/html; charset=UTF-8\r\n";
+    headers << "Content-Length: " << body_.size() << "\r\n";
+    headers << "Connection: keep-alive\r\n\r\n";
+
+    headers_ = headers.str();
+}
+
+void    HttpResponse::composeFullResponse()
+{
+    fullResponse_.append(statusLine_);
+    fullResponse_.append(headers_);
+    fullResponse_.append(body_, 0, body_.length());
+    Logger::logger()->log(LOG_DEBUG, "Full Response\n" + fullResponse_);
+}
+
+// --- Error Response Methods ---
+
+std::string     HttpResponse::extractStatusText(const std::string& fileName) 
+{
+    std::string         line;
+    std::string         path = "www/errors/";
+
+    path.append(fileName, 0, fileName.length());
+
+    std::ifstream        htmlFile(path.c_str());
+
+    if (!htmlFile.is_open()) 
+        return ("Unknown Error");
+    while (std::getline(htmlFile, line)) 
+    {
+        std::size_t     titleStart = line.find("<title>");
+        std::size_t     titleEnd = line.find("</title>");
+
+        if (titleStart != std::string::npos && titleEnd != std::string::npos) 
+            return (line.substr(titleStart + 7, titleEnd - titleStart - 7));
+    }
+    htmlFile.close();
+    return ("Unknown Error");
+}
+
+void    HttpResponse::ErrorStatusLine(const std::string& fileName, int statusCode) 
+{
+    std::string             statusText = extractStatusText(fileName);
+    std::ostringstream      statusLine;
+
+    if (statusCode == 0) 
+        statusLine_ = "HTTP/1.1 500 Internal Server Error";
+
+    statusLine << "HTTP/1.1 " << statusText << "\n";
+    statusLine_ = statusLine.str();
+}
+
+
+// --- Static Response Methods ---
+
+void    HttpResponse::staticStatusLine()
+{
+    statusLine_ = "HTTP/1.1 200 OK\n\r";
 }

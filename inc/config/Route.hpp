@@ -41,10 +41,10 @@ class	Route
 	const Cgi&							getCgi(void) const;
 	const std::vector<HttpMethodType>&	getAllowedMethods(void) const;
 
-	private:
+	private: // gallery/
 		// --- Private Attributes ---
-		Uri								uri_;
-		Path							rootPath_;
+		Uri								uri_; // = uriSegment_;
+		Path							rootPath_; 
 
 		std::vector<HttpMethodType>		allowedMethods_;
 

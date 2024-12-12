@@ -1,5 +1,8 @@
 #include "Header.hpp"
 #include "ConnectionType.hpp"
+#include "ToString.hpp"
+
+#include <sstream>
 
 // =============================================================================
 // Constructors and Destructor
@@ -88,7 +91,6 @@ std::string Header::getConnectionTypeString() const
         return ("UNDEFINED");
 }
 
-
 // Getter for accept_
 const std::string& Header::getAccept() const 
 {
@@ -105,4 +107,75 @@ const std::string& Header::getAcceptEncoding() const
 const std::string& Header::getAcceptLanguage() const 
 {
     return (acceptLanguage_);
+}
+
+// =============================================================================
+// Setters
+// =============================================================================
+
+// Setter for host_
+void Header::setHost(const std::string& host) 
+{
+    host_ = host;
+}
+
+// Setter for userAgent_
+void Header::setUserAgent(const std::string& userAgent) 
+{
+    userAgent_ = userAgent;
+}
+
+// Setter for contentLength_
+void Header::setContentLength(std::size_t contentLength) 
+{
+    contentLength_ = contentLength;
+}
+
+// Setter for contentType_
+void Header::setContentType(const std::string& contentType) 
+{
+    contentType_ = contentType;
+}
+
+// Setter for connectionType_
+void Header::setConnectionType(ConnectionType connectionType) 
+{
+    connectionType_ = connectionType;
+}
+
+// Setter for accept_
+void Header::setAccept(const std::string& accept) 
+{
+    accept_ = accept;
+}
+
+// Setter for acceptEncoding_
+void Header::setAcceptEncoding(const std::string& acceptEncoding) 
+{
+    acceptEncoding_ = acceptEncoding;
+}
+
+// Setter for acceptLanguage_
+void Header::setAcceptLanguage(const std::string& acceptLanguage) 
+{
+    acceptLanguage_ = acceptLanguage;
+}
+
+// =============================================================================
+// Private Methods
+// =============================================================================
+
+std::string     Header::generateHeaderString() const
+{
+    std::ostringstream  headers;
+
+    headers << "Host: " << getHost() << "\r\n";
+    headers << "User Agent: " << getUserAgent() << "\r\n";
+    headers << "Content Length: " << toString(getContentLength()) << "\r\n";
+    headers << "Connection Type: " << getConnectionTypeString() << "\r\n";
+    headers << "Accept: " << getAccept() << "\r\n";
+    headers << "Accept Encoding: " << getAcceptEncoding() << "\r\n";
+    headers << "Accept Language: " << getAcceptLanguage() << "\r\n";
+    
+    return (headers.str());
 }
