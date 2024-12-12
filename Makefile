@@ -17,11 +17,11 @@ UNAME_S := $(shell uname -s)
 #endif
 
 # Source File names:
-MAIN = main
+MAIN = main Webserv
 UTIL = Logger ToString
 HTTP = HttpResponse HttpRequest Header RequestLine RequestInterpreter
 SERVER = Observer Client Server
-CONFIG = Path Uri Route HttpRedirection ErrorPage Cgi Config
+CONFIG = File Path Uri Route HttpRedirection ErrorPage Cgi Config ConfigLexer
 
 # Source directory
 SRCS_DIR = src

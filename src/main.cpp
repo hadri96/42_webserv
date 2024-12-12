@@ -1,16 +1,37 @@
+#include "Webserv.hpp"
 #include "Observer.hpp"
 #include "Server.hpp"
 #include "Logger.hpp"
 #include "Config.hpp"
 
+#include <iostream>
+
 int	main(void)
 {
-	Observer m;
+	Observer o;
 	Config c1;
 	Route r1;
 	Cgi	cgi1;
 
-	// --- Configuration Object Sample ---
+	// =============================================================================
+	// Option A : Parsed Config File (how it should work in the end)
+	// =============================================================================
+
+	try
+	{
+		std::cout << "--- Config parser ---" << std::endl;
+		Webserv webserv("src/config/test.conf");
+		//webserv.start();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+	
+	// =============================================================================
+	// Option B : Configuration Object Sample (only for tests, will be later removed)
+	// =============================================================================
+	
 	// General
 	c1.setHost("127.0.0.1");
 	c1.setPort(8084);
@@ -49,15 +70,20 @@ int	main(void)
 	*/
 	c1.addRoute(r1);
 
-	Server s1("127.0.0.1", 8084, &m);
-	s1.setConfig(c1);
+	// =============================================================================
+	// Option C : Server Constructors (only for tests, will be later removed)
+	// =============================================================================
+
+	std::cout << "--- Servers starting ---" << std::endl;
+	Server s1("127.0.0.1", 8084, &o);
+  s1.setConfig(c1);
 	s1.start();
-	Server s2("127.0.0.1", 8085, &m);
+	Server s2("127.0.0.1", 8085, &o);
 	s2.start();
 
-	m.addServerToMonitor(&s1);
-	m.addServerToMonitor(&s2);
-	m.monitorEvents();
+	o.addServerToMonitor(&s1);
+	o.addServerToMonitor(&s2);
+	o.monitorEvents();
 
 	return (0);
 }
