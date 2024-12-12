@@ -5,7 +5,7 @@
 // =============================================================================
 
 ConfigToken::ConfigToken(void) :
-	type_(CT_UNKNOWN),
+	type_(CT_UNDEFINED),
 	value_("")
 {}
 
@@ -37,12 +37,12 @@ ConfigToken&	ConfigToken::operator=(const ConfigToken& rhs)
 	return (*this);
 }
 
-bool	ConfigToken::operator==(ConfigTokenType rhs)
+bool	ConfigToken::operator==(const ConfigTokenType& rhs) const
 {
 	return (type_ == rhs);
 }
 
-bool	ConfigToken::operator!=(ConfigTokenType rhs)
+bool	ConfigToken::operator!=(const ConfigTokenType& rhs) const
 {
 	return (type_ != rhs);
 }

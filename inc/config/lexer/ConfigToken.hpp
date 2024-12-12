@@ -19,8 +19,8 @@ class	ConfigToken
 		// --- Operators Overload ---
 		ConfigToken&				operator=(const ConfigToken& rhs);
 
-		bool						operator==(ConfigTokenType rhs);
-		bool						operator!=(ConfigTokenType rhs);
+		bool						operator==(const ConfigTokenType& rhs) const;
+		bool						operator!=(const ConfigTokenType& rhs) const;
 
 		// --- Setters and Getters ---
 		ConfigTokenType				getType(void) const;
