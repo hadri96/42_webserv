@@ -6,16 +6,16 @@
 
 ErrorPage::ErrorPage(void) :
 	errorCode_(0),
-	errorPage_()
+	errorFile_()
 {}
 ErrorPage::ErrorPage(const ErrorPage& other) :
 	errorCode_(other.errorCode_),
-	errorPage_(other.errorPage_)
+	errorFile_(other.errorFile_)
 {}
 
 ErrorPage::ErrorPage(int error, const Path& path) :
 	errorCode_(error),
-	errorPage_(path)
+	errorFile_(File(path))
 {}
 
 ErrorPage::~ErrorPage(void)
@@ -31,7 +31,7 @@ ErrorPage&	ErrorPage::operator=(const ErrorPage& rhs)
 		return (*this);
 
 	errorCode_ = rhs.errorCode_;
-	errorPage_ = rhs.errorPage_;
+	errorFile_ = rhs.errorFile_;
 
 	return (*this);
 }
@@ -45,7 +45,17 @@ int	ErrorPage::getErrorCode(void) const
 	return (errorCode_);
 }
 
-const Path&	ErrorPage::getErrorPage(void) const
+const File&	ErrorPage::getErrorFile(void) const
 {
-	return (errorPage_);
+	return (errorFile_);
+}
+
+const Path&	ErrorPage::getErrorPath(void) const
+{
+	return (errorFile_.getPath());
+}
+
+const std::string	ErrorPage::read(void) const
+{
+	return (errorFile_.read());
 }

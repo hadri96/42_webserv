@@ -41,6 +41,26 @@ class	Config
 
 		// const Path						getPathFromUri(Uri uri);
 
+		/*
+		Methodes necessaires pour Interpreter:
+
+		bool		isAllowedMethod(HttpMethodType& method);
+		bool		resourceExists(Uri& uri);
+		bool		isRedirection(Uri& uri);
+		Path&		getRedirection(Uri& uri);
+		{
+			gets redirection if there is one
+			if not gets path (in server) from uri
+		}
+		bool		hasreadPermissions(File& file);
+		bool		isDirectory(Uri& uri);
+		bool		directoryListing();
+		File		getIndexFile();
+		ErrorPage	getErrorPage(int errorCode);
+
+		
+		*/
+
 
 	private:
 		// --- Private Attributes ---

@@ -38,11 +38,6 @@ const RequestLine& HttpRequest::getRequestLine() const
     return (requestLine_);
 }
 
-const std::string   HttpRequest::getRequestTarget() const
-{
-    return (getRequestLine().getRequestTarget().getPath());
-}
-
 // Getter for header_
 const Header& HttpRequest::getHeader() const 
 {
@@ -54,6 +49,25 @@ const std::string& HttpRequest::getBody() const
 {
     return (body_);
 }
+
+int HttpRequest::getBodySize() const 
+{
+    return (body_.length());
+}
+
+
+// ··· "Deep" Getters and utils ···
+
+const std::string   HttpRequest::getRelativeUri() const
+{
+    return (requestLine_.getRelativeUri().getUri());
+}
+
+HttpMethodType    HttpRequest::getMethod() const
+{
+    return (requestLine_.getMethod());
+}
+
 
 // =============================================================================
 // Public Methods 
@@ -68,7 +82,7 @@ std::string   HttpRequest::generatePrintString()
 	
     ss << "Dummy RequestLine: \n\n" 
 	          << requestLine_.getMethodString() << " ; "
-	          << requestLine_.getRequestTarget().getPath() << " ; "
+	          << requestLine_.getRelativeUri().getUri() << " ; "
 	          << requestLine_.getHttpVersion() << std::endl;
 
     ss << "\nDummy Header:\n\n"

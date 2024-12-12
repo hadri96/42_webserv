@@ -15,24 +15,28 @@ class HttpRequest
         ~HttpRequest();
 
     // --- Public Methods ---
-        void                appendRequest(std::string input);
-        std::string         generatePrintString();
+        void                    appendRequest(std::string input);
+        std::string             generatePrintString();
         
-    // ··· Getters and utils ···  
-        const std::string&  getRawRequest() const;
-        const RequestLine&  getRequestLine() const;
-        const std::string   getRequestTarget() const;
-        const Header&       getHeader() const;
-        const std::string&  getBody() const;
+    // ··· "Deep" Getters and utils ···  
+        const std::string       getRelativeUri() const;
+        HttpMethodType          getMethod() const;
+
+    // ··· Direct getters ···  
+        const std::string&      getRawRequest() const;
+        const RequestLine&      getRequestLine() const;
+        const Header&           getHeader() const;
+        const std::string&      getBody() const;
+        int                     getBodySize() const;
 
 
     private:
     // --- Private Attributes ---
-        std::string     rawRequest_; // full unparsed string of the request
-        // Not ideal for very long requests, which should be read in chunks rather than saved into memory
+        std::string     rawRequest_;
         
-        RequestLine     requestLine_; // contains httpMethodType, requestTarget(path), HttpVersion
-        Header          header_; // contains all header information
+        RequestLine     requestLine_;
+        Header          header_;
+        // Could use an std::map for all the headers ??
         std::string     body_;
 
 };

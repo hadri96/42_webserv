@@ -30,28 +30,27 @@ RequestInterpreter::~RequestInterpreter() {}
 
 void    RequestInterpreter::interpret(HttpRequest& request, Config& config)
 {
-    HttpMethodType      method = request.getRequestLine().getMethod();
-
+    HttpMethodType      method = request.getMethod();
+    
     if (!isAllowedMethod(config))
-    {
         Logger::logger()->log(LOG_ERROR, "Method not allowed by server");
-    }
+    if (config.getClientMaxBodySize() < request.getBodySize())
+        Logger::logger()->log(LOG_ERROR, "Request Body Size Exceeded");
 
     switch (method)
     {
         case GET:
             Logger::logger()->log(LOG_INFO, "CLient sent a GET request");
-            if (request.getRequestLine().getRequestTarget().getPath() != "")
-                // getPath will have returned an empty string if path is not valid
-                Logger::logger()->log(LOG_INFO, "Static file request");
-            else
-                Logger::logger()->log(LOG_INFO, "Not a static file request");
+            handleGetRequest(config, request);
             break;
         case POST:
             Logger::logger()->log(LOG_INFO, "CLient sent a POST request");
+            // get request content length header (if too big --> 403)
+            handlePostRequest(config, request);
             break;
         case DELETE:
             Logger::logger()->log(LOG_INFO, "CLient sent a DELETE request");
+            handleDeleteRequest(config, request);
             break;
         case UNDEFINED:
             throw (RequestInterpreter::BadRequest());
@@ -70,3 +69,36 @@ bool    RequestInterpreter::isAllowedMethod(Config& config)
     return (true);
 }
 
+void    RequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
+{
+    Uri     uri = request.getRelativeUri();
+
+    Logger::logger()->log(LOG_INFO, config.getServerName());
+    // check if resource exists
+    // check if redirection 
+    // get filepath or redirection path
+    // check if directory or file 
+        // if directory get index file
+        // check if directory listing is on
+    // build File object
+    // check permissions
+    // build HttpResponse with 200 OK
+}
+
+void    RequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
+{
+    Uri     uri = request.getRelativeUri();
+
+    Logger::logger()->log(LOG_INFO, config.getServerName());
+    // check if resource exists
+    // check if resource is allowed
+    // get request content length header (check not too big --> 403)
+
+}
+
+void    RequestInterpreter::handleDeleteRequest(Config& config, HttpRequest& request)
+{
+    Uri     uri = request.getRelativeUri();
+
+    Logger::logger()->log(LOG_INFO, config.getServerName());
+}
