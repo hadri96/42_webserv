@@ -3,11 +3,12 @@
 
 enum	ConfigTokenType
 {
+	CT_UNDEFINED,
 	CT_KEYWORD,
 	CT_LEFT_BRACE,
 	CT_RIGHT_BRACE,
 	CT_SEMICOLON,
-	CT_UNKNOWN
+	CT_EOF
 };
 
 #endif
