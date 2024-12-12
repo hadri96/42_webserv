@@ -50,7 +50,7 @@ class	Route
 
 		HttpRedirection					redirection_; // priorite 1
 		
-		bool							autoIndex_;  // -> page 
+		bool							autoIndex_; // priorite 3
 		Path							defaultFile_; // priorite 2
 		Path							uploadDirectory_;
 

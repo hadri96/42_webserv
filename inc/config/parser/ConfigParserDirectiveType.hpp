@@ -1,0 +1,13 @@
+#ifndef CONFIG_PARSER_DIRECTIVE_TYPE_HPP
+# define CONFIG_PARSER_DIRECTIVE_TYPE_HPP
+
+enum	ConfigParserDirectiveType
+{
+	BT_EVENTS,
+	BT_HTTP,
+	BT_SERVER,
+	BT_LOCATION,
+	BT_UNKNOWN
+};
+
+#endif

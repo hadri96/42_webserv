@@ -2,6 +2,7 @@
 
 #include "File.hpp"
 #include "ConfigLexer.hpp"
+#include "ConfigParser.hpp"
 
 #include <iostream>
 
@@ -24,15 +25,9 @@ Webserv::Webserv(const std::string& configFile)
 	file.setContent();
 	std::string content = file.getContent();
 
-	std::cout << "Content : " << content; 
-
-	ConfigLexer lexer = ConfigLexer();
-
-	std::cout << "Lexer : " << std::endl;
-
-	std::vector<ConfigToken> tokens = lexer.tokenize(content);
-
-	lexer.displayTokens(tokens);
+	ConfigParser parser = ConfigParser(content);
+	parser.parse();
+	parser.display();
 }
 
 Webserv::~Webserv(void)
