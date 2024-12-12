@@ -40,7 +40,7 @@ const RequestLine& HttpRequest::getRequestLine() const
 
 const std::string   HttpRequest::getRequestTarget() const
 {
-    return (getRequestLine()->getRequestTarget());
+    return (getRequestLine().getRequestTarget().getPath());
 }
 
 // Getter for header_

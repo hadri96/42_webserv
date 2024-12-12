@@ -14,8 +14,8 @@ class HttpResponse
     // --- Public Methods ---
         // ··· Getters and utils ···  
         std::string         generateStaticResponse(int statusCode, std::string uri);
-        std::string         generateStaticResponse(std:::string html);
-        std::string         generateStaticResponse(File& html);
+        // std::string         generateStaticResponse(std:::string html);
+        // std::string         generateStaticResponse(File& html);
         // std::string         generateStaticResponse(int statusCode, File& errorPage);
     
     private:

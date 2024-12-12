@@ -307,7 +307,7 @@ void    Server::sendResponseToClient(int clientFd)
 	// Should call getClient, and reach the response through the Client class
 	// Client*			client = getClient(clientFd);
 	HttpResponse	response;
-	std::string		fullResponse = response.getResponse(399, "random_file.html");
+	std::string		fullResponse = response.generateStaticResponse(399, "random_file.html");
 	size_t			bufferSize = 1024;
     size_t			totalSize = fullResponse.size();
     size_t			bytesSent = 0;

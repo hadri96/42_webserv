@@ -25,7 +25,7 @@ class	Path
 
 		// level
 		// compose, add
-		newPat = Path + std::string
+		// newPath = Path + std::string
 
 	private:
 		// --- Private Attributes ---

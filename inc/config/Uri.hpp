@@ -2,6 +2,7 @@
 # define URI_HPP
 
 # include <string>
+# include <vector>
 
 class	Uri
 {
@@ -25,7 +26,7 @@ class	Uri
 	private:
 		// --- Private Attributes ---
 		std::string					uri_;
-		std::vector<std::string>	chunks_;
+		// std::vector<std::string>	chunks_;
 };
 
 #endif
