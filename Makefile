@@ -2,7 +2,7 @@ NAME = webserv
 
 MAKEFLAGS = --no-print-directory
 
-INCLUDES = -I inc -I inc/config -I inc/http -I inc/util
+INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/http -I inc/util
 
 CC = c++
 
@@ -21,7 +21,20 @@ MAIN = main Webserv
 UTIL = Logger ToString
 HTTP = HttpResponse HttpRequest Header RequestLine RequestInterpreter
 SERVER = Observer Client Server
-CONFIG = File Path Uri Route HttpRedirection ErrorPage Cgi Config ConfigLexer
+CONFIG = 	File \
+			Path \
+			Uri \
+			Route \
+			HttpRedirection \
+			ErrorPage \
+			Cgi \
+			Config \
+			lexer/ConfigLexer \
+			lexer/ConfigToken \
+			parser/ConfigParser \
+			parser/ConfigParserNode \
+			parser/ConfigParserBlock \
+			parser/ConfigParserDirective
 
 # Source directory
 SRCS_DIR = src
