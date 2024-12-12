@@ -6,10 +6,10 @@
 // =============================================================================
 
 HttpRequest::HttpRequest() : 
+    rawRequest_(""),
     requestLine_(RequestLine()),
     header_(Header()),
-    body_("")
-    {}
+    body_(""){}
 
 HttpRequest::~HttpRequest() {}
 
@@ -36,6 +36,11 @@ const std::string& HttpRequest::getRawRequest() const
 const RequestLine& HttpRequest::getRequestLine() const 
 {
     return (requestLine_);
+}
+
+const std::string   HttpRequest::getRequestTarget() const
+{
+    return (getRequestLine().getRequestTarget().getPath());
 }
 
 // Getter for header_

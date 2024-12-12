@@ -26,6 +26,7 @@ class	Observer
 		std::vector<Server*> servers_;
 
 		bool				isServer(int fd);
+		void				updatePollEvent(int clientFd, short newEvents);
 
 		void				addSocketToMonitor(int fd, short events);
 		void				removeSocketFromMonitor(int fd);

@@ -76,6 +76,7 @@ int	main(void)
 
 	std::cout << "--- Servers starting ---" << std::endl;
 	Server s1("127.0.0.1", 8084, &o);
+  s1.setConfig(c1);
 	s1.start();
 	Server s2("127.0.0.1", 8085, &o);
 	s2.start();

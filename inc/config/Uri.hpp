@@ -2,6 +2,7 @@
 # define URI_HPP
 
 # include <string>
+# include <vector>
 
 class	Uri
 {
@@ -20,9 +21,12 @@ class	Uri
 		// --- Getters and Setters ---
 		const std::string&	getUri(void) const;
 
+		// getLevel
+
 	private:
 		// --- Private Attributes ---
-		std::string			uri_;
+		std::string					uri_;
+		// std::vector<std::string>	chunks_;
 };
 
 #endif

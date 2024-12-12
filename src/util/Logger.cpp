@@ -60,12 +60,14 @@ std::string	Logger::getLevel(LogLevel level) const
 	switch(level)
 	{
 		case LOG_INFO:
-			return ("[INFO] ");
+			return ("\033[32m[INFO]\033[0m ");
 		case LOG_ERROR:
-			return ("[ERROR] ");
+			return ("\033[31m[ERROR]\033[0m ");
 		case LOG_WARNING:
-			return ("[WARNING] ");
+			return ("\033[35m[WARNING]\033[0m ");
+		case LOG_DEBUG:
+			return ("\033[34m[DEBUG]\033[0m "); 
 		default:
-			return ("[UNKNOWN] ");
+			return ("\033[0m[UNKNOWN] "); 
 	}	
 }

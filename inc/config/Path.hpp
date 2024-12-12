@@ -1,7 +1,11 @@
 #ifndef PATH_HPP
 # define PATH_HPP
 
+# include <Logger.hpp>
+
 # include <string>
+
+class Config;
 
 class	Path
 {
@@ -17,10 +21,20 @@ class	Path
 
 		// --- Getters & Setters ---
 		std::string	getPath() const;
+		std::string	getPath(Config& config) const;
+
+		// level
+		// compose, add
+		// newPath = Path + std::string
 
 	private:
 		// --- Private Attributes ---
 		std::string	path_;
+
+		// --- Private Methods ---
+		bool	isInFileSystem() const;
+		bool	isInConfig(Config& config) const;
+
 };
 
 #endif

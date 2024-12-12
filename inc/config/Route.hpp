@@ -41,17 +41,17 @@ class	Route
 	const Cgi&							getCgi(void) const;
 	const std::vector<HttpMethodType>&	getAllowedMethods(void) const;
 
-	private:
+	private: // gallery/
 		// --- Private Attributes ---
-		Uri								uri_;
-		Path							rootPath_;
+		Uri								uri_; // = uriSegment_;
+		Path							rootPath_; 
 
 		std::vector<HttpMethodType>		allowedMethods_;
 
-		HttpRedirection					redirection_;
+		HttpRedirection					redirection_; // priorite 1
 		
-		bool							autoIndex_;
-		Path							defaultFile_;
+		bool							autoIndex_;  // -> page 
+		Path							defaultFile_; // priorite 2
 		Path							uploadDirectory_;
 
 		bool							isCgi_;
