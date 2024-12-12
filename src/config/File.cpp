@@ -22,6 +22,8 @@ File::File(const std::string& filename)
 		throw std::runtime_error("File could not be opened");
 }
 
+File::File(const Path& path_) : path_(path_) {}
+
 File::~File(void)
 {
 	file_.close();
@@ -53,4 +55,23 @@ void	File::setContent(void)
 const std::string&	File::getContent(void) const
 {
 	return (content_);
+}
+
+std::string	File::read(void) const
+{
+	std::string         line;
+    std::string         content;
+    std::ifstream       fileStream(path_.getPath().c_str());
+
+    if (fileStream.is_open())
+        Logger::logger()->log(LOG_INFO, "File opened: " + path_.getPath());
+    while (std::getline(fileStream, line))
+        content.append(line, 0, line.length());
+    fileStream.close();
+	return (content);
+}
+
+const Path&	File::getPath(void) const
+{
+	return (path_);
 }

@@ -144,18 +144,14 @@ void	Server::start(void)
 		Logger::logger()->log(LOG_ERROR, "Bind failed");
 		stop();
 	}
-	// Logger::logger()->log(LOG_INFO, "Bound successfully " + getInfoUrl());
 
 	// --- Listen ---
 	if (listen(fd_, maxConnections_) < 0)
 	{
-		// To handle with exceptions
 		Logger::logger()->log(LOG_ERROR, "Listen failed");
 		stop();
 	}
-	// Logger::logger()->log(LOG_INFO, "Server is listening for connections...");
 
-	// Set O_NONBLOCK and FD_CLOEXEC (close on exec) flags at the same time using F_SETFL
 	if (fcntl(fd_, F_SETFL, O_NONBLOCK | FD_CLOEXEC) == -1) 
 	{
 		std::cerr << "fcntl " << fd_ << " failed: " << strerror(errno) << std::endl;
@@ -170,9 +166,8 @@ void	Server::stop(void)
 	{
 		Logger::logger()->log(LOG_INFO, "Stopping server, closing socket " + getInfoFd());
 		close(fd_);
-		fd_ = -1;  // Reset the fd
+		fd_ = -1;
 	}
-	//exit (0);
 }
 
 void	Server::handleEvent(EventType event)
@@ -297,7 +292,6 @@ void	Server::runInterpreter(HttpRequest& request,int clientFd)
 	{
 		Logger::logger()->log(LOG_ERROR, e.what());
 	}
-
 }
 
 // --- sendResponseBuffer et handleClientWrite ---
@@ -307,7 +301,10 @@ void    Server::sendResponseToClient(int clientFd)
 	// Should call getClient, and reach the response through the Client class
 	// Client*			client = getClient(clientFd);
 	HttpResponse	response;
-	std::string		fullResponse = response.generateStaticResponse(399, "random_file.html");
+	Path			path("www/errors/404.html");
+	// File			file(path);
+	ErrorPage		error404(404, path);
+	std::string		fullResponse = response.generateStaticResponse(error404);
 	size_t			bufferSize = 1024;
     size_t			totalSize = fullResponse.size();
     size_t			bytesSent = 0;

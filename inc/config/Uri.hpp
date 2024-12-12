@@ -8,13 +8,10 @@ class	Uri
 {
 	public:
 		// --- Constructors and Destructor ---
-							Uri(void);
-							Uri(const Uri& other);
-
-							Uri(const std::string& uri);
-
-							~Uri(void);
-		
+		Uri(void);
+		Uri(const Uri& other);
+		Uri(const std::string& uri);
+		~Uri(void);
 		// --- Operators Overload ---
 		Uri&				operator=(const Uri& rhs);
 
@@ -25,7 +22,7 @@ class	Uri
 
 	private:
 		// --- Private Attributes ---
-		std::string					uri_;
+		std::string			uri_;
 		// std::vector<std::string>	chunks_;
 };
 

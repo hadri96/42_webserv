@@ -6,13 +6,13 @@
 
 RequestLine::RequestLine(void) : 
 	method_(GET),
-	requestTarget_("www/html/example_response.html"),
+	relativeUri_("www/html/example_response.html"),
 	httpVersion_("HTTP/1.1")
 {}
 
 RequestLine::RequestLine(const RequestLine& other) :
 	method_(other.method_),
-    requestTarget_(other.requestTarget_),
+    relativeUri_(other.relativeUri_),
     httpVersion_(other.httpVersion_)
 {}
 
@@ -27,7 +27,7 @@ RequestLine&	RequestLine::operator=(const RequestLine& other)
 	if (this == &other)
 		return (*this);
 	method_ = other.method_;
-    requestTarget_ = other.requestTarget_;
+    relativeUri_ = other.relativeUri_;
     httpVersion_ = other.httpVersion_;
 
 	return (*this);
@@ -56,10 +56,10 @@ std::string RequestLine::getMethodString() const
         return ("UNDEFINED");
 }
 
-// Getter for requestTarget_
-const Path& RequestLine::getRequestTarget() const 
+// Getter for relativeUri_
+const Uri& RequestLine::getRelativeUri() const 
 {
-    return (requestTarget_);
+    return (relativeUri_);
 }
 
 // Getter for httpVersion_

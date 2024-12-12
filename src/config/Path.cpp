@@ -32,6 +32,11 @@ Path&	Path::operator=(const Path& rhs)
 	return (*this);
 }
 
+Path	operator+(const Path& path, const Uri& uri)
+{
+    return (path.addUri(uri));
+}
+
 // =============================================================================
 // Getters
 // =============================================================================
@@ -61,6 +66,11 @@ std::string	Path::getPath(Config& config) const
 		Logger::logger()->log(LOG_ERROR, "Not a valid Path");
 		return ("");
 	}
+}
+
+Path	Path::addUri(const Uri& uri) const
+{
+    return (Path(path_ + uri.getUri()));
 }
 
 // =============================================================================

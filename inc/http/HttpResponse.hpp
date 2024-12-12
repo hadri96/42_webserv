@@ -3,6 +3,7 @@
 
 # include <string>
 # include "Header.hpp"
+# include "ErrorPage.hpp"
 
 class HttpResponse
 {
@@ -13,24 +14,24 @@ class HttpResponse
 
     // --- Public Methods ---
         // ··· Getters and utils ···  
-        std::string         generateStaticResponse(int statusCode, std::string uri);
+        std::string         generateStaticResponse(File& file);
+        std::string         generateStaticResponse(ErrorPage& errorPage);
         // std::string         generateStaticResponse(std:::string html);
         // std::string         generateStaticResponse(File& html);
         // std::string         generateStaticResponse(int statusCode, File& errorPage);
     
     private:
     // --- Private Methods ---
-        void                getBodyFromFile(std::string uri, std::string path);
-        void                generateBasicHeaders();
-        std::string         getCurrentTime() const;
-        void                composeFullResponse();
+        void                        generateBasicHeaders();
+        std::string                 getCurrentTime() const;
+        void                        composeFullResponse();
 
         // --- Error Response Methods ---
-        std::string         extractStatusText(const std::string& fileName);
-        void                ErrorStatusLine(const std::string& fileName, int statusCode); 
+        std::string                 extractStatusText() const;
+        void                        errorStatusLine(ErrorPage& errorPage); 
         
         // --- Static Response Methods ---
-        void                staticStatusLine();
+        void                        staticStatusLine();
 
 
     // --- Private Attributes ---

@@ -1,6 +1,7 @@
 #include "HttpResponse.hpp"
 #include "Logger.hpp"
 #include "ToString.hpp"
+#include "File.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -22,27 +23,22 @@ HttpResponse::~HttpResponse() {}
 // =============================================================================
 
 // So far this function only handles static GET requests and Error pages
-std::string     HttpResponse::generateStaticResponse(int statusCode, std::string uri)
+std::string     HttpResponse::generateStaticResponse(File& file)
+{    
+    body_ = file.read();
+    Logger::logger()->log(LOG_DEBUG, body_);
+    staticStatusLine();
+    generateBasicHeaders();
+    composeFullResponse();
+
+    return (fullResponse_);
+}
+
+std::string     HttpResponse::generateStaticResponse(ErrorPage& errorPage)
 {
-    Logger::logger()->log(LOG_INFO, "generateStaticResponse");
-    
-    if (statusCode == 200 && uri != "")
-    {
-        getBodyFromFile(uri, "www/html/");
-        staticStatusLine();
-    }
-    else if (statusCode >= 400)
-    {
-        std::string     fileName = toString(statusCode) + ".html";
-        
-        getBodyFromFile(fileName, "www/.errors/");
-        ErrorStatusLine(fileName, statusCode);
-    }
-    else
-    {
-        getBodyFromFile("500.html", "www/.errors/");
-        ErrorStatusLine("500.html", 500);
-    }
+    body_ = errorPage.read();
+    Logger::logger()->log(LOG_DEBUG, body_);
+    errorStatusLine(errorPage);
     generateBasicHeaders();
     composeFullResponse();
 
@@ -55,22 +51,8 @@ std::string     HttpResponse::generateStaticResponse(int statusCode, std::string
 
 // --- General Methods ---
 
-void     HttpResponse::getBodyFromFile(std::string uri, std::string path)
-{
-    std::string         line;
-    
-    path.append(uri, 0, uri.length());
-    
-    std::ifstream       fileStream(path.c_str());
 
-    if (fileStream.is_open())
-        Logger::logger()->log(LOG_INFO, "File opened: " + path);
-    while (std::getline(fileStream, line))
-        body_.append(line, 0, line.length());
-    fileStream.close();
-}
-
-std::string     HttpResponse::getCurrentTime(void) const
+std::string     HttpResponse::getCurrentTime() const
 {
 	std::time_t currentTime;
 	std::tm* 	localTime;
@@ -82,7 +64,7 @@ std::string     HttpResponse::getCurrentTime(void) const
 	return (std::string(timeBuffer));
 }
 
-void    HttpResponse::generateBasicHeaders() 
+void    HttpResponse::generateBasicHeaders()
 {
     std::ostringstream headers;
 
@@ -105,33 +87,22 @@ void    HttpResponse::composeFullResponse()
 
 // --- Error Response Methods ---
 
-std::string     HttpResponse::extractStatusText(const std::string& fileName) 
+std::string     HttpResponse::extractStatusText() const
 {
-    std::string         line;
-    std::string         path = "www/errors/";
+    std::size_t     titleStart = body_.find("<title>");
+    std::size_t     titleEnd = body_.find("</title>");
 
-    path.append(fileName, 0, fileName.length());
+    if (titleStart != std::string::npos && titleEnd != std::string::npos) 
+        return body_.substr(titleStart + 7, titleEnd - titleStart - 7);
 
-    std::ifstream        htmlFile(path.c_str());
-
-    if (!htmlFile.is_open()) 
-        return ("Unknown Error");
-    while (std::getline(htmlFile, line)) 
-    {
-        std::size_t     titleStart = line.find("<title>");
-        std::size_t     titleEnd = line.find("</title>");
-
-        if (titleStart != std::string::npos && titleEnd != std::string::npos) 
-            return (line.substr(titleStart + 7, titleEnd - titleStart - 7));
-    }
-    htmlFile.close();
     return ("Unknown Error");
 }
 
-void    HttpResponse::ErrorStatusLine(const std::string& fileName, int statusCode) 
+void    HttpResponse::errorStatusLine(ErrorPage& errorPage)
 {
-    std::string             statusText = extractStatusText(fileName);
+    std::string             statusText = extractStatusText();
     std::ostringstream      statusLine;
+    int                     statusCode = errorPage.getErrorCode();
 
     if (statusCode == 0) 
         statusLine_ = "HTTP/1.1 500 Internal Server Error";

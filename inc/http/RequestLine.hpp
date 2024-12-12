@@ -21,14 +21,14 @@ class	RequestLine
 		// --- Getters & Setters ---
 		HttpMethodType      getMethod() const;
 		std::string			getMethodString() const;
-		const Path&         getRequestTarget() const;
+		const Uri&			getRelativeUri() const;
 		const std::string&  getHttpVersion() const;
 		const std::string&  getQueryString() const;
 
 	private:
 		// --- Private Attributes ---
         HttpMethodType      method_;
-        Path                requestTarget_;
+        Uri					relativeUri_;
         std::string         httpVersion_;
         std::string         queryString_; // example: /path?key=value
 
