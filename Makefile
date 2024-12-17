@@ -2,7 +2,7 @@ NAME = webserv
 
 MAKEFLAGS = --no-print-directory
 
-INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/http -I inc/util
+INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/config/interpreter -I inc/http -I inc/util
 
 CC = c++
 
@@ -34,7 +34,8 @@ CONFIG = 	File \
 			parser/ConfigParser \
 			parser/ConfigParserNode \
 			parser/ConfigParserBlock \
-			parser/ConfigParserDirective
+			parser/ConfigParserDirective \
+			interpreter/ConfigInterpreter
 
 # Source directory
 SRCS_DIR = src

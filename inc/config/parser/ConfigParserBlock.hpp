@@ -22,6 +22,7 @@ class	ConfigParserBlock : public ConfigParserNode
 
 		// --- Setters and Getters ---
 		const std::vector<ConfigParserNode*>&	getNodes(void) const;
+		std::string								getName(void) const;
 
 		// --- Public Methods ---
 		void									addNode(ConfigParserNode* node);

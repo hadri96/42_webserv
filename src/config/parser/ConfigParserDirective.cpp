@@ -41,6 +41,15 @@ ConfigParserDirective& ConfigParserDirective::operator=(const ConfigParserDirect
 }
 
 // =============================================================================
+// Setters and Getters
+// =============================================================================
+
+std::string	ConfigParserDirective::getName(void) const
+{
+	return (directive_);
+}
+
+// =============================================================================
 // Public Methods
 // =============================================================================
 

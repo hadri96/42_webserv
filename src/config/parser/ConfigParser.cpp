@@ -51,6 +51,15 @@ ConfigParser&	ConfigParser::operator=(const ConfigParser& rhs)
 }
 
 // =============================================================================
+// Setters and Getters
+// =============================================================================
+
+ConfigParserBlock*	ConfigParser::getRoot(void) const
+{
+	return (root_);
+}
+
+// =============================================================================
 // Public Methods
 // =============================================================================
 
@@ -143,116 +152,3 @@ void ConfigParser::parseBlock(ConfigParserBlock* parent, int openBlockCount)
 	}
 
 }
-
-
-
-/*void	ConfigParser::parseBlock(
-			const std::vector<ConfigToken>& tokens,
-			ConfigParserBlock* parent,
-			size_t& index)
-{
-	while (index != tokens.size())
-	{
-		if (tokens[index] == CT_KEYWORD)
-		{
-			std::cout << "KEYWORD" << std::endl;
-			std::string					keyword;
-			std::vector<std::string>	parameters;
-
-			keyword = tokens[index].getValue();
-			std::cout << "keyword : " << keyword << std::endl;
-			
-			// Loop through the parameters
-			++index;
-			while (index != tokens.size())
-			{
-				std::cout << "TYPE : " << tokens[index].getType() << " VALUE : `" << tokens[index].getValue() << "`" << std::endl;
-				if (tokens[index] == CT_KEYWORD)
-				{
-					std::string parameter = tokens[index].getValue();
-					std::cout << "parameter : " << parameter << std::endl;
-					parameters.push_back(parameter);
-				}
-				else if (tokens[index] == CT_LEFT_BRACE)
-				{
-					std::cout << "LEFT_BRACE" << std::endl;
-					// Triggers block creation
-					ConfigParserBlock* block = new ConfigParserBlock(keyword, parameters);
-					parent->addNode(block);
-					
-					parseBlock(tokens, block, index);
-					if (tokens[index] == CT_RIGHT_BRACE)
-					{
-						std::cout << "RIGHT_BRACE" << std::endl;
-						// close block
-						++index;
-						break;
-					}
-				}
-				else if (tokens[index] == CT_SEMICOLON)
-				{
-					std::cout << "SEMICOLON" << std::endl;
-					// Triggers directive creation
-					ConfigParserDirective* directive = new ConfigParserDirective(keyword, parameters);
-					parent->addNode(directive);
-					++index;
-					break ;
-				}
-				++index;
-			}
-		}
-		++index;
-	}
-}*/
-
-/*void	ConfigParser::parseBlock(
-			const std::vector<ConfigToken>& tokens,
-			ConfigParserBlock* parent,
-			size_t& index)
-{
-	bool	isInKeyword;
-
-	isInKeyword = false;
-
-	// First token must be a keyword
-	if (tokens[index] != CT_KEYWORD)
-		return ;
-
-	while (index != tokens.size())
-	{
-		std::string					keyword;
-		std::vector<std::string>	parameters;
-		if (tokens[index] == CT_KEYWORD)
-		{
-			if (!isInKeyword)
-			{
-				// Handle keyword
-				isInKeyword = true;
-			}
-			else
-			{
-				// Handle parameters
-			}
-		}
-		else if (tokens[index] == CT_LEFT_BRACE)
-		{
-			
-		}
-		else if (tokens[index] == CT_SEMICOLON)
-		{
-			isInKeyword = false;
-		}
-
-		++index;
-	}
-	
-	std::cout << "KEYWORD" << std::endl;
-
-	std::string					keyword;
-	std::vector<std::string>	parameters;
-
-	keyword = tokens[index].getValue();
-	std::cout << "keyword : " << keyword << std::endl;
-
-
-}*/
