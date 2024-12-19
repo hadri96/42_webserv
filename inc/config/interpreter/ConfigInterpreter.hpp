@@ -22,6 +22,14 @@ class	ConfigInterpreter
 	private:
 		// --- Private Methods ---
 		void 				interpret(ConfigParserNode* node, std::vector<std::string>& context);
+
+		void				addValidItemsToContext(
+								std::vector<std::string> context,
+								std::vector<std::vector<std::string> > validBlocks,
+								std::vector<std::string> validDirectives
+							);
+		bool				isValidContext(std::string directive, std::vector<std::string>& context);
 };
 
 #endif
+

@@ -9,7 +9,32 @@
 // =============================================================================
 
 ConfigInterpreter::ConfigInterpreter(void)
-{}
+{
+	// --- Context : root --
+	const char* context1[] 		= {"root"};
+	const char* blocks1[] 		= {"events","http"};
+	const char* directives1[]	= {};
+
+	// --- Context : root, http ---
+	const char* context2[]		= {"root", "http"};
+	const char*	blocks2[]		= {"server"};
+	const char* directives2[]	= {};
+
+	// --- Context : root, http, server --
+	const char* context3[]		= {"root", "http", "server"};
+	const char*	blocks3[]		= {"location"};
+	const char* directives3[]	= {"server_name", "listen", "index", "error_page", "client_max_body_size", "return"};
+
+	// --- Context : root, http, server, location --
+	const char* context4[]		= {"root", "http", "server", "location"};
+	const char* blocks4[]		= {"limit_except"};
+	const char* directives4[]	= {"root", "autoindex", "index", "return"};
+
+	// --- Context : root, http, server, location, limit_except --
+	const char* context5[]		= {"root", "http", "server", "location", "limit_except"};
+	const char* blocks5[]		= {};
+	const char* directives5[]	= {"deny"};
+}
 
 ConfigInterpreter::ConfigInterpreter(const ConfigInterpreter& other)
 {
@@ -57,6 +82,7 @@ void ConfigInterpreter::interpret(
 	std::vector<std::string>& context)
 {
 	ConfigParserBlock* block = dynamic_cast<ConfigParserBlock*>(node);
+	// --- Block ---
 	if (block)
 	{
 		std::cout << "This is a block : " << node->getName() << std::endl;
@@ -70,6 +96,7 @@ void ConfigInterpreter::interpret(
 		}
 		context.pop_back();
 	}
+	// --- Directive ---
 	else
 	{
 		std::cout << "\tThis is a directive : " << node->getName() << " ( ";
@@ -96,4 +123,121 @@ void ConfigInterpreter::interpret(
 		// index
 
 	}
+}
+
+bool	ConfigInterpreter::isValidContext(std::string directive, std::vector<std::string>& context)
+{
+	/*
+
+	-> set a maximum nesting allowed in the parser
+
+	2 informations :
+	-> what is valid inside a context
+
+	// --- Context : root --
+	addValidItemsToContext({root},
+		// --- Allowed blocks ---
+		{
+			{events},
+			{http}
+		},
+		// --- Allowed directives ---
+		{}
+	);
+
+	// --- Context : root, http ---
+	addValideItemsToContext{root, http}
+		// --- Allowed blocks ---
+		{
+			{server},
+		},
+		// --- Allowed directives ---
+		{}
+	);
+
+	// --- Context : root, http, server --
+	addValidItemsToContext({root, http, server},
+		// --- Allowed blocks ---
+		{
+			{location}
+		},
+		// --- Allowed directives ---
+		{
+			server_name,
+			listen,
+			index,
+			error_page,
+			client_max_body_size,
+			return
+		}
+	);
+
+	// --- Context : root, http, server, location --
+	addValidItemsToContext({root, http, server, location},
+		// --- Allowed blocks ---
+		{
+			{limit_except}
+		},
+		// --- Allowed directives ---
+		{
+			root,
+			autoindex,
+			index,
+			return
+		}
+	);
+
+	// --- Context : root, http, server, location, limit_except --
+	addValidItemsToContext({root, http, server, location, limit_except},
+		// --- Allowed blocks ---
+		{
+			{}
+		},
+		// --- Allowed directives ---
+		{
+			deny
+		}
+	);
+
+
+
+	std::vector<std::vector> validBlocks
+
+
+	addValidDirectivesToContext
+	
+
+	root :
+		- [events]
+		- [http]
+
+	root, http :
+		- [server]
+
+
+	root, http, server :
+		- [location]
+
+		- server_name
+		- listen
+		- index
+		- error_page
+		- client_max_body_size
+		- return
+
+	root, http, server, location :
+		- [limit_except]
+
+		- root
+		- autoindex
+		- index
+		- return
+
+	root, http, server, location, limit_except :
+		- deny
+
+
+	-> what is mandatory (let's see if it is not better to handle with Config object directly...)
+
+	*/
 }
