@@ -49,6 +49,11 @@ std::string	ConfigParserDirective::getName(void) const
 	return (directive_);
 }
 
+std::vector<std::string>	ConfigParserDirective::getParameters(void) const
+{
+	return (parameters_);
+}
+
 // =============================================================================
 // Public Methods
 // =============================================================================

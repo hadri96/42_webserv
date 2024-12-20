@@ -18,7 +18,7 @@ UNAME_S := $(shell uname -s)
 
 # Source File names:
 MAIN = main Webserv
-UTIL = Logger ToString
+UTIL = Logger ToString ToInts
 HTTP = HttpResponse HttpRequest Header RequestLine RequestInterpreter
 SERVER = Observer Client Server
 CONFIG = 	File \

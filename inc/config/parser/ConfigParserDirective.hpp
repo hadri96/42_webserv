@@ -22,6 +22,7 @@ class	ConfigParserDirective : public ConfigParserNode
 
 		// --- Setters and Getters ---
 		std::string						getName(void) const;
+		std::vector<std::string>		getParameters(void) const;
 
 		// --- Public Methods ---
 		void							display(void) const;

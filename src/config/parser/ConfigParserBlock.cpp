@@ -61,6 +61,11 @@ std::string	ConfigParserBlock::getName(void) const
 	return (block_);
 }
 
+std::vector<std::string>	ConfigParserBlock::getParameters(void) const
+{
+	return (parameters_);
+}
+
 // =============================================================================
 // Public Methods
 // =============================================================================
