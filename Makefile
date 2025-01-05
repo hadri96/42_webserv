@@ -18,7 +18,7 @@ UNAME_S := $(shell uname -s)
 
 # Source File names:
 MAIN = main
-PARSING = HTTPResponse HTTPRequest HTMLParser Header
+PARSING = HTTPResponse HTTPRequest HTMLParser ResponseHeader
 SERVER = Eventloop ClientConnection
 UTILS = getCurrentTime
 CONFIG =

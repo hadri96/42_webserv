@@ -4,12 +4,13 @@
 #include "webserv.hpp"
 #include "HTTPRequest.hpp"
 
-class Header
+class ResponseHeader
 {
 public:
     // Constructors & destructors
-    Header();
-    ~Header();
+
+    ResponseHeader();
+    ~ResponseHeader();
 
     // Public methods
     bool fileExists(std::string filepath);
