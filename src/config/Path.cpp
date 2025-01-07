@@ -48,18 +48,12 @@ std::string	Path::getPath() const
 
 std::string	Path::getPath(Config& config) const
 {
+	(void)config;
+
 	if (isInFileSystem())
 	{
-		if (isInConfig(config))
-		{
-			Logger::logger()->log(LOG_INFO, "Path is valid.");
-			return (path_);
-		}
-		else
-		{
-			Logger::logger()->log(LOG_ERROR, "Requested path " + path_ + " is not valid in Config.");
-			return ("");
-		}
+		Logger::logger()->log(LOG_INFO, "Path is valid.");
+		return (path_);
 	}
 	else
 	{
@@ -68,7 +62,7 @@ std::string	Path::getPath(Config& config) const
 	}
 }
 
-Path	Path::addUri(const Uri& uri) const
+const Path	Path::addUri(const Uri& uri) const
 {
     return (Path(path_ + uri.getUri()));
 }
@@ -83,11 +77,4 @@ bool	Path::isInFileSystem() const
 	return (true);
 }
 
-// Cette fonction devrait etre faite par le config : Config->isAvailablePath(Path& path)
-bool	Path::isInConfig(Config& config) const
-{
-	// Check if path corresponds to the path given in the config file
-	// config file path can be found here: request.getRequestLine().getRequestTarget().getPath(config)
-	(void)config;
-	return (true);
-}
+

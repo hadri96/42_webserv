@@ -48,8 +48,8 @@ int	main(void)
 	c1.addErrorPage(ErrorPage(403, Path("/www/403.html")));
 
 	// Routes
-	r1.setUri(Uri("/images"));
-	r1.setRootPath(Path("/www/images"));
+	r1.setUri(Uri("/html"));
+	r1.setRootPath(Path("/www/html"));
 	// r1.setRedirection(HttpRedirection(301, Path("/www/redirection.html")));
 	r1.setAutoIndex(true);
 	r1.setDefaultFile(Path("index.html"));

@@ -37,28 +37,25 @@ class	Config
 		const std::vector<ErrorPage>&	getErrorPages(void) const;
 		const Path&						getErrorPage(int statusCode);							
 		const std::vector<Route>&		getRoutes(void) const;
-		const Route&					getRoute(Uri uri);
+		const Path&						getPathFromUri(Uri& uri) const;
 
-		// const Path						getPathFromUri(Uri uri);
+
 
 		/*
 		Methodes necessaires pour Interpreter:
 
 		bool		isAllowedMethod(HttpMethodType& method);
-		bool		resourceExists(Uri& uri);
 		bool		isRedirection(Uri& uri);
 		Path&		getRedirection(Uri& uri);
 		{
 			gets redirection if there is one
 			if not gets path (in server) from uri
 		}
-		bool		hasreadPermissions(File& file);
+		bool		hasReadPermissions(File& file);
 		bool		isDirectory(Uri& uri);
 		bool		directoryListing();
 		File		getIndexFile();
 		ErrorPage	getErrorPage(int errorCode);
-
-		
 		*/
 
 

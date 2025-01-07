@@ -24,7 +24,7 @@ class	Path
 		std::string			getPath(Config& config) const;
 		std::string			addUriAndGet(Uri& uri);
 
-		Path				addUri(const Uri& uri) const;
+		const Path			addUri(const Uri& uri) const;
     
 
 	private:
@@ -33,7 +33,7 @@ class	Path
 
 		// --- Private Methods ---
 		bool	isInFileSystem() const;
-		bool	isInConfig(Config& config) const;
+		// bool	isInConfig(Config& config) const;
 
 };
 

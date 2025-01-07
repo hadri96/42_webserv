@@ -267,15 +267,15 @@ void	Server::handleRequestFromClient(int clientFd)
         request.appendRequest(buffer);
         if (request.getRawRequest().find("\r\n\r\n") != std::string::npos)
 			break ;
-		Logger::logger()->log(LOG_DEBUG, "Request looks like this: \n" + request.getRawRequest());
     }
+	Logger::logger()->log(LOG_DEBUG, "Request looks like this: \n" + request.getRawRequest());
 	if (bytesRead < 0)
 		closeClientConnection(clientFd, "read error");
 
 	runInterpreter(request, clientFd);
 }
 
-void	Server::runInterpreter(HttpRequest& request,int clientFd)
+void	Server::runInterpreter(HttpRequest& request, int clientFd)
 {
 	// Should interpret request to generate response 
 	// and add the response to the client object 
@@ -283,15 +283,16 @@ void	Server::runInterpreter(HttpRequest& request,int clientFd)
 	HttpResponse		response;
    	Client*				client = getClient(clientFd);
 
-	client->assignResponse(&response);
 	try 
 	{
+		// interpreter should probably generate response (then assigned to client) 
 		interpreter.interpret(request, config_);
 	}
 	catch (std::exception& e)
 	{
 		Logger::logger()->log(LOG_ERROR, e.what());
 	}
+	client->assignResponse(&response);
 }
 
 // --- sendResponseBuffer et handleClientWrite ---

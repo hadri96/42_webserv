@@ -71,10 +71,15 @@ bool    RequestInterpreter::isAllowedMethod(Config& config)
 
 void    RequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
 {
-    Uri     uri = request.getRelativeUri();
+    Uri     uri = request.getRelativeUri(); // "/index.html"
+    Path    configPath = config.getPathFromUri(uri); // "www/html/"
+    Path    newPath = configPath.addUri(uri); // "www/html/index.html"
 
-    Logger::logger()->log(LOG_INFO, config.getServerName());
-    // check if resource exists
+    Logger::logger()->log(LOG_INFO, "relative Uri: " + uri.getUri());
+    Logger::logger()->log(LOG_INFO, "newPath: " + newPath.getPath());
+
+    // check if resource exists within server -->
+
     // check if redirection 
     // get filepath or redirection path
     // check if directory or file 
