@@ -1,180 +1,221 @@
 #include "ConfigInterpreter.hpp"
+#include "ConfigInterpreterRule.hpp"
+
 #include "ToVector.hpp"
 #include "ToInt.hpp"
+#include "Join.hpp"
+
 #include <iostream>
 #include <string>
 #include <vector>
-#include <map>
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
+/*
+root :
+	- [events]
+	- [http]
+
+root, http :
+	- [server]
+
+root, http, server :
+	- [location]
+
+	- server_name
+	- listen
+	- index
+	- error_page
+	- client_max_body_size
+	- return
+
+root, http, server, location :
+	- [limit_except]
+
+	- root
+	- autoindex
+	- index
+	- return
+
+root, http, server, location, limit_except :
+	- deny
+*/
+
 ConfigInterpreter::ConfigInterpreter(void)
 {
-	// Initialize valid blocks and directives for each context
-	validBlocks_[toVector("root")] = toVector("events", "http");
-	validBlocks_[toVector("root", "http")] = toVector("server");
-	validBlocks_[toVector("root", "http", "server")] = toVector("location");
-	validBlocks_[toVector("root", "http", "server", "location")] = toVector("limit_except");
+	/*
+	 Defines the allowed blocks and directives for a given context.
+	 */
+	// --- Context : root --
+	const char* context1[] 		= {"root", 0};
+	const char* blocks1[] 		= {"events","http", 0};
+	const char* directives1[]	= {0};
 
-	validDirectives_[toVector("root")] = toVector();
-	validDirectives_[toVector("root", "http")] = toVector();
-	validDirectives_[toVector("root", "http", "server")] = toVector("server_name", "listen", "index", "error_page", "client_max_body_size", "return");
-	validDirectives_[toVector("root", "http", "server", "location")] = toVector("root", "autoindex", "index", "return");
-	validDirectives_[toVector("root", "http", "server", "location", "limit_except")] = toVector("deny");
+	void (ConfigInterpreter::*handlers1[])(ConfigParserNode*) = {0};
 
-	// Initialize directive handlers
-	directiveHandlers_["server_name"] = &ConfigInterpreter::handleServerName;
-	directiveHandlers_["listen"] = &ConfigInterpreter::handleServerListen;
-	directiveHandlers_["index"] = &ConfigInterpreter::handleServerIndex;
-	directiveHandlers_["error_page"] = &ConfigInterpreter::handleServerErrorPage;
-	directiveHandlers_["client_max_body_size"] = &ConfigInterpreter::handleServerClientMaxBodySize;
-	directiveHandlers_["return"] = &ConfigInterpreter::handleServerReturn;
-	// Add more handlers as needed
+	// Block handler or directive handler ?
+
+	// --- Context : root, http ---
+	const char* context2[]		= {"root", "http", 0};
+	const char*	blocks2[]		= {"server", 0};
+	const char* directives2[]	= {0};
+
+	void (ConfigInterpreter::*handlers2[])(ConfigParserNode*) = {0};
+
+	// --- Context : root, http, server --
+	const char* context3[]		= {"root", "http", "server", 0};
+	const char*	blocks3[]		= {"location", 0};
+	const char* directives3[]	= {"server_name", "listen", "index", "error_page", "client_max_body_size", "return", 0};
+
+	void (ConfigInterpreter::*handlers3[])(ConfigParserNode*) = {
+		&ConfigInterpreter::handleServerName,
+		&ConfigInterpreter::handleListen,
+		&ConfigInterpreter::handleIndex,
+		&ConfigInterpreter::handleErrorPage,
+		&ConfigInterpreter::handleClientMaxBodySize,
+		&ConfigInterpreter::handleReturn
+	};
+
+	// --- Context : root, http, server, location --
+	const char* context4[]		= {"root", "http", "server", "location", 0};
+	const char* blocks4[]		= {"limit_except", 0};
+	const char* directives4[]	= {"root", "autoindex", "index", "return", 0};
+
+	// --- Context : root, http, server, location, limit_except --
+	const char* context5[]		= {"root", "http", "server", "location", "limit_except", 0};
+	const char* blocks5[]		= {0};
+	const char* directives5[]	= {"deny", 0};
+
+	addRule(ConfigInterpreterRule(context1, blocks1, directives1));
+	addRule(ConfigInterpreterRule(context2, blocks2, directives2));
+	addRule(ConfigInterpreterRule(context3, blocks3, directives3));
+	addRule(ConfigInterpreterRule(context4, blocks4, directives4));
+	addRule(ConfigInterpreterRule(context5, blocks5, directives5));
+
+	for (size_t i = 0; i != rules_.size(); ++i)
+	{
+		std::cout << rules_[i] << std::endl;
+	}
 }
 
-ConfigInterpreter::~ConfigInterpreter(void) {}
+ConfigInterpreter::ConfigInterpreter(const ConfigInterpreter& other)
+{
+	(void) other;
+}
+
+ConfigInterpreter::~ConfigInterpreter(void)
+{}
+
+// =============================================================================
+// Operators Overload
+// =============================================================================
+
+ConfigInterpreter&	ConfigInterpreter::operator=(const ConfigInterpreter& rhs)
+{
+	(void) rhs;
+	return (*this);
+}
 
 // =============================================================================
 // Public Methods
 // =============================================================================
 
-Config ConfigInterpreter::interpret(ConfigParserBlock* root)
+void	ConfigInterpreter::addRule(const ConfigInterpreterRule& rule)
 {
-	std::vector<std::string> context;
-	std::vector<ConfigParserNode*> nodes = root->getNodes();
+	rules_.push_back(rule);
+}
+
+Config	ConfigInterpreter::interpret(ConfigParserBlock* root)
+{
+	std::vector<std::string>		context;
+	std::vector<ConfigParserNode*>	nodes;
+
+	nodes = root->getNodes();
 	context.push_back(root->getName());
-	
 	for (size_t i = 0; i != nodes.size(); ++i)
 	{
 		interpret(nodes[i], context);
 	}
-	
 	Config config;
-	return config;
+	return (config);
 }
 
 // =============================================================================
 // Private Methods
 // =============================================================================
 
-void ConfigInterpreter::interpret(ConfigParserNode* node, std::vector<std::string>& context)
+void	ConfigInterpreter::interpret(
+	ConfigParserNode* node,
+	std::vector<std::string>& context)
 {
 	ConfigParserBlock* block = dynamic_cast<ConfigParserBlock*>(node);
-	
-	if (block) {
-		std::cout << "Block : `" << node->getName() << "` in context : `" << getDisplayableContext(context) << "`" << std::endl;
-
+	// --- Block ---
+	if (block)
+	{
+		std::cout << "Block : `" << node->getName() << "` in context : `" << join(context, "->") << "`" << std::endl;
 		if (!isBlockValidInContext(node->getName(), context))
-			throw std::runtime_error("The block `" + node->getName() + "` is invalid in context `" + getDisplayableContext(context) + "`");
+			throw std::runtime_error("The block `" + node->getName() + "` is invalid in context `" + join(context, "->") + "`");
 
-		std::vector<ConfigParserNode*> nodes = block->getNodes();
+		// --- Recursively treating the content of the block ---
+		std::vector<ConfigParserNode*>	nodes;
+		nodes = block->getNodes();
 		context.push_back(block->getName());
-		
 		for (size_t i = 0; i != nodes.size(); ++i)
 		{
 			interpret(nodes[i], context);
 		}
-
 		context.pop_back();
-	} else {
-		std::cout << "\tDirective : `" << node->getName() << "` in context : `" << getDisplayableContext(context) << "`" << std::endl;
-
-		if (!isDirectiveValidInContext(node->getName(), context))
-			throw std::runtime_error("The directive `" + node->getName() + "` is invalid in context `" + getDisplayableContext(context) + "`");
-
-		// Call the appropriate handler for the directive
-		if (directiveHandlers_.find(node->getName()) != directiveHandlers_.end()) {
-			(this->*directiveHandlers_[node->getName()])(node);
-		}
 	}
+	// --- Directive ---
+	else
+	{
+		std::cout << "\tDirective : `" << node->getName() << "` in context : `" << join(context, "->") << "`" << std::endl;
+		if (!isDirectiveValidInContext(node->getName(), context))
+			throw std::runtime_error("The directive `" + node->getName() + "` is invalid in context `" + join(context, "->") + "`");
+	}
+}
+
+ConfigInterpreterRule*	ConfigInterpreter::getRule(std::vector<std::string>& context)
+{
+	for (size_t i = 0; i != rules_.size(); ++i)
+	{
+		if (rules_[i].getContext() == context)
+			return (&rules_[i]);
+	}
+	return (0);
+}
+
+bool	ConfigInterpreter::isBlockValidInContext(std::string block, std::vector<std::string>& context)
+{
+    ConfigInterpreterRule* rule = getRule(context);
+    if (rule)
+		return (rule->isValidBlock(block));
+    return false;
+}
+
+bool	ConfigInterpreter::isDirectiveValidInContext(std::string directive, std::vector<std::string>& context)
+{
+    ConfigInterpreterRule* rule = getRule(context);
+    if (rule)
+		return (rule->isValidDirective(directive));
+    return false;
 }
 
 // =============================================================================
 // Handlers
 // =============================================================================
 
-void ConfigInterpreter::handleServerName(ConfigParserNode* node)
-{
-	// Implementation for handling server_name
-}
-
-void ConfigInterpreter::handleServerListen(ConfigParserNode* node)
-{
-	// Implementation for handling listen
-}
-
-void ConfigInterpreter::handleServerIndex(ConfigParserNode* node)
-{
-	// Implementation for handling index
-}
-
-void ConfigInterpreter::handleServerErrorPage(ConfigParserNode* node)
-{
-	// Implementation for handling error_page
-}
-
-void ConfigInterpreter::handleServerClientMaxBodySize(ConfigParserNode* node)
-{
-	// Implementation for handling client_max_body_size
-}
-
-void ConfigInterpreter::handleServerReturn(ConfigParserNode* node)
-{
-	// Implementation for handling return
-}
-
-// =============================================================================
-// Checkers
-// =============================================================================
-
-bool ConfigInterpreter::isBlockValidInContext(const std::string& block, const std::vector<std::string>& context)
-{
-	std::map<std::vector<std::string>, std::vector<std::string>>::iterator it = validBlocks_.find(context);
-	if (it != validBlocks_.end()) {
-		for (size_t i = 0; i != it->second.size(); ++i) {
-			if (it->second[i] == block)
-				return true;
-		}
-	}
-	return false;
-}
-
-bool ConfigInterpreter::isDirectiveValidInContext(const std::string& directive, const std::vector<std::string>& context)
-{
-	std::map<std::vector<std::string>, std::vector<std::string>>::iterator it = validDirectives_.find(context);
-	if (it != validDirectives_.end()) {
-		for (size_t i = 0; i != it->second.size(); ++i) {
-			if (it->second[i] == directive)
-				return true;
-		}
-	}
-	return false;
-}
-
-// =============================================================================
-// Utility Functions
-// =============================================================================
-
-void ConfigInterpreter::addValidItemsToContext(
-	const std::vector<std::string>& context,
-	const std::vector<std::string>& validBlocks,
-	const std::vector<std::string>& validDirectives
-)
-{
-	validBlocks_[context] = validBlocks;
-	validDirectives_[context] = validDirectives;
-}
-
-std::string ConfigInterpreter::getDisplayableContext(const std::vector<std::string>& context)
-{
-	std::string displayableContext;
-	for (size_t i = 0; i != context.size(); ++i)
-	{
-		displayableContext.append(context[i]);
-		if (i != context.size() - 1)
-			displayableContext.append("->");
-	}
-	return displayableContext;
-}
+void	ConfigInterpreter::handleServerName(ConfigParserNode* node)
+{}
+void	ConfigInterpreter::handleListen(ConfigParserNode* node)
+{}
+void	ConfigInterpreter::handleIndex(ConfigParserNode* node)
+{}
+void	ConfigInterpreter::handleErrorPage(ConfigParserNode* node)
+{}
+void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node)
+{}
+void	ConfigInterpreter::handleReturn(ConfigParserNode* node)
+{}

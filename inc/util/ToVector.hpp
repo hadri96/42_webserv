@@ -3,13 +3,13 @@
 
 # include <stddef.h>
 # include <vector>
+# include <string>
 
-template <typename T, size_t N>
-std::vector<T> toVector(T (&arr)[N]);
+/*template <typename T, size_t N>
+std::vector<T> toVector(T (&arr)[N]);*/
 
-template <size_t N>
-std::vector<std::string> toVector(const char* (&arr)[N]);
+std::vector<std::string> toVector(const char* array[]);
 
-# include "ToVector.tpp"
+//# include "ToVector.tpp"
 
 #endif

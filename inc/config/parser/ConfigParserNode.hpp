@@ -2,6 +2,7 @@
 # define CONFIG_PARSER_NODE_HPP
 
 # include <string>
+# include <vector>
 
 class	ConfigParserNode
 {

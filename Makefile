@@ -18,7 +18,7 @@ UNAME_S := $(shell uname -s)
 
 # Source File names:
 MAIN = main Webserv
-UTIL = Logger ToString ToInts
+UTIL = Logger ToString ToInt Join ToVector
 HTTP = HttpResponse HttpRequest Header RequestLine RequestInterpreter
 SERVER = Observer Client Server
 CONFIG = 	File \
@@ -35,7 +35,8 @@ CONFIG = 	File \
 			parser/ConfigParserNode \
 			parser/ConfigParserBlock \
 			parser/ConfigParserDirective \
-			interpreter/ConfigInterpreter
+			interpreter/ConfigInterpreter \
+			interpreter/ConfigInterpreterRule
 
 # Source directory
 SRCS_DIR = src
