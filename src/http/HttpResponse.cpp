@@ -22,6 +22,7 @@ HttpResponse::~HttpResponse() {}
 // Public Methods
 // =============================================================================
 
+
 // So far this function only handles static GET requests and Error pages
 std::string     HttpResponse::generateStaticResponse(File& file)
 {    
@@ -45,6 +46,29 @@ std::string     HttpResponse::generateStaticResponse(ErrorPage& errorPage)
     return (fullResponse_);
 }
 
+HttpResponse&   HttpResponse::generateError(Config& config, int errorCode)
+{
+    ErrorPage       errorPage = config.getErrorPage(errorCode);
+    generateStaticResponse(errorPage);
+
+    Logger::logger()->log(LOG_DEBUG, "Error generated : " + toString(errorCode));
+    return (*this);
+}
+
+// =============================================================================
+// Getters & Setters
+// =============================================================================
+
+std::string     HttpResponse::getFullResponse() const
+{
+    return (fullResponse_);
+}
+
+std::string     HttpResponse::getHeaders() const
+{
+    return (headers_);
+}
+
 // =============================================================================
 // Private Methods 
 // =============================================================================
@@ -52,23 +76,23 @@ std::string     HttpResponse::generateStaticResponse(ErrorPage& errorPage)
 // --- General Methods ---
 
 
-std::string     HttpResponse::getCurrentTime() const
-{
-	std::time_t currentTime;
-	std::tm* 	localTime;
-	char		timeBuffer[20];
+// std::string     HttpResponse::getCurrentTime() const
+// {
+// 	std::time_t currentTime;
+// 	std::tm* 	localTime;
+// 	char		timeBuffer[20];
 
-	currentTime = std::time(0);
-	localTime = std::localtime(&currentTime);
-	std::strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d %H:%M:%S", localTime);
-	return (std::string(timeBuffer));
-}
+// 	currentTime = std::time(0);
+// 	localTime = std::localtime(&currentTime);
+// 	std::strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d %H:%M:%S", localTime);
+// 	return (std::string(timeBuffer));
+// }
 
 void    HttpResponse::generateBasicHeaders()
 {
     std::ostringstream headers;
 
-    headers << "Date: " << getCurrentTime() << "\r\n";
+    // headers << "Date: " << getCurrentTime() << "\r\n";
     headers << "Server: Webserv\r\n";
     headers << "Content-Type: text/html; charset=UTF-8\r\n";
     headers << "Content-Length: " << body_.size() << "\r\n";
@@ -93,7 +117,7 @@ std::string     HttpResponse::extractStatusText() const
     std::size_t     titleEnd = body_.find("</title>");
 
     if (titleStart != std::string::npos && titleEnd != std::string::npos) 
-        return body_.substr(titleStart + 7, titleEnd - titleStart - 7);
+        return (body_.substr(titleStart + 7, titleEnd - titleStart - 7));
 
     return ("Unknown Error");
 }

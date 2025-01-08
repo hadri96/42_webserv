@@ -35,7 +35,7 @@ class	Config
 		const std::string&				getServerName(void) const;
 		int								getClientMaxBodySize(void) const;
 		const std::vector<ErrorPage>&	getErrorPages(void) const;
-		const Path&						getErrorPage(int statusCode);							
+		const ErrorPage					getErrorPage(int statusCode);							
 		const std::vector<Route>&		getRoutes(void) const;
 		const Path&						getPathFromUri(Uri& uri) const;
 

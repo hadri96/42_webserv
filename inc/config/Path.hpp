@@ -24,15 +24,16 @@ class	Path
 		std::string			getPath(Config& config) const;
 		std::string			addUriAndGet(Uri& uri);
 
+
+		// --- Public Methods ---
 		const Path			addUri(const Uri& uri) const;
+		bool				isInFileSystem() const;
     
 
 	private:
 		// --- Private Attributes ---
 		std::string	path_;
 
-		// --- Private Methods ---
-		bool	isInFileSystem() const;
 		// bool	isInConfig(Config& config) const;
 
 };

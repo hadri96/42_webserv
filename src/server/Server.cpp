@@ -260,7 +260,7 @@ void	Server::handleRequestFromClient(int clientFd)
     Client              *client = getClient(clientFd);
     HttpRequest         request;
     
-    client->assignRequest(&request);
+    client->assignRequest(request);
     
     while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) -1, 0)) > 0)
     {
@@ -277,22 +277,19 @@ void	Server::handleRequestFromClient(int clientFd)
 
 void	Server::runInterpreter(HttpRequest& request, int clientFd)
 {
-	// Should interpret request to generate response 
-	// and add the response to the client object 
-	RequestInterpreter	interpreter = RequestInterpreter(this);
-	HttpResponse		response;
-   	Client*				client = getClient(clientFd);
+	RequestInterpreter interpreter = RequestInterpreter(this);
+	Client* client = getClient(clientFd);
 
 	try 
 	{
-		// interpreter should probably generate response (then assigned to client) 
-		interpreter.interpret(request, config_);
+		HttpResponse response = interpreter.interpret(request, config_);
+		client->assignResponse(response); // Pass by value
+		Logger::logger()->log(LOG_DEBUG, "HEADERS : \n" + response.getHeaders());
 	}
 	catch (std::exception& e)
 	{
 		Logger::logger()->log(LOG_ERROR, e.what());
 	}
-	client->assignResponse(&response);
 }
 
 // --- sendResponseBuffer et handleClientWrite ---
@@ -301,11 +298,14 @@ void    Server::sendResponseToClient(int clientFd)
 {
 	// Should call getClient, and reach the response through the Client class
 	// Client*			client = getClient(clientFd);
-	HttpResponse	response;
-	Path			path("www/errors/404.html");
+	// HttpResponse	response;
+	// Path			path("www/errors/404.html");
 	// File			file(path);
-	ErrorPage		error404(404, path);
-	std::string		fullResponse = response.generateStaticResponse(error404);
+	// ErrorPage		error404(404, path);
+	// if (client == NULL)
+	Logger::logger()->log(LOG_DEBUG, "SENDING RESPONSE STRING");
+	std::string		fullResponse = getClient(clientFd)->getResponseString();
+	Logger::logger()->log(LOG_DEBUG, "after getting response string");
 	size_t			bufferSize = 1024;
     size_t			totalSize = fullResponse.size();
     size_t			bytesSent = 0;

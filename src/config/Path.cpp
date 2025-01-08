@@ -62,19 +62,19 @@ std::string	Path::getPath(Config& config) const
 	}
 }
 
+// =============================================================================
+// Public Methods
+// =============================================================================
+
 const Path	Path::addUri(const Uri& uri) const
 {
     return (Path(path_ + uri.getUri()));
 }
 
-// =============================================================================
-// Private Methods
-// =============================================================================
-
 bool	Path::isInFileSystem() const
 {
 	// Check if path is actually in the file system
-	return (true);
+	return (false);
 }
 
 

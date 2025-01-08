@@ -28,10 +28,11 @@ RequestInterpreter::~RequestInterpreter() {}
 // Public Methods 
 // =============================================================================
 
-void    RequestInterpreter::interpret(HttpRequest& request, Config& config)
+HttpResponse   RequestInterpreter::interpret(HttpRequest& request, Config& config)
 {
     HttpMethodType      method = request.getMethod();
-    
+    HttpResponse        response;
+
     if (!isAllowedMethod(config))
         Logger::logger()->log(LOG_ERROR, "Method not allowed by server");
     if (config.getClientMaxBodySize() < request.getBodySize())
@@ -41,20 +42,21 @@ void    RequestInterpreter::interpret(HttpRequest& request, Config& config)
     {
         case GET:
             Logger::logger()->log(LOG_INFO, "CLient sent a GET request");
-            handleGetRequest(config, request);
+            response = handleGetRequest(config, request);
             break;
         case POST:
             Logger::logger()->log(LOG_INFO, "CLient sent a POST request");
             // get request content length header (if too big --> 403)
-            handlePostRequest(config, request);
+            response = handlePostRequest(config, request);
             break;
         case DELETE:
             Logger::logger()->log(LOG_INFO, "CLient sent a DELETE request");
-            handleDeleteRequest(config, request);
+            response = handleDeleteRequest(config, request);
             break;
         case UNDEFINED:
             throw (RequestInterpreter::BadRequest());
     }
+    return (response);
 }
 
 // =============================================================================
@@ -69,17 +71,26 @@ bool    RequestInterpreter::isAllowedMethod(Config& config)
     return (true);
 }
 
-void    RequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
+Path   RequestInterpreter::buildFullPath(Config& config, HttpRequest& request)
 {
     Uri     uri = request.getRelativeUri(); // "/index.html"
     Path    configPath = config.getPathFromUri(uri); // "www/html/"
-    Path    newPath = configPath.addUri(uri); // "www/html/index.html"
+    Path    fullPath = configPath.addUri(uri); // "www/html/index.html"
 
-    Logger::logger()->log(LOG_INFO, "relative Uri: " + uri.getUri());
-    Logger::logger()->log(LOG_INFO, "newPath: " + newPath.getPath());
+    Logger::logger()->log(LOG_INFO, "fullPath: " + fullPath.getPath());
 
+    return (fullPath);
+}
+
+HttpResponse    RequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
+{
+    HttpResponse    response;
+    Path            fullPath = buildFullPath(config, request);
+    
     // check if resource exists within server -->
-
+    if (!fullPath.isInFileSystem()) // function still needs to be implemented
+        return (response.generateError(config, 500));
+    return (response);
     // check if redirection 
     // get filepath or redirection path
     // check if directory or file 
@@ -90,20 +101,23 @@ void    RequestInterpreter::handleGetRequest(Config& config, HttpRequest& reques
     // build HttpResponse with 200 OK
 }
 
-void    RequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
+HttpResponse    RequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
 {
+    HttpResponse	response;
     Uri     uri = request.getRelativeUri();
 
     Logger::logger()->log(LOG_INFO, config.getServerName());
     // check if resource exists
     // check if resource is allowed
     // get request content length header (check not too big --> 403)
-
+    return (response);
 }
 
-void    RequestInterpreter::handleDeleteRequest(Config& config, HttpRequest& request)
+HttpResponse    RequestInterpreter::handleDeleteRequest(Config& config, HttpRequest& request)
 {
-    Uri     uri = request.getRelativeUri();
+    HttpResponse	response;
+    Uri             uri = request.getRelativeUri();
 
     Logger::logger()->log(LOG_INFO, config.getServerName());
+    return (response);
 }

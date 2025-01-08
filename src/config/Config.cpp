@@ -112,6 +112,16 @@ const std::vector<ErrorPage>&	Config::getErrorPages(void) const
 	return (errorPages_);
 }
 
+const ErrorPage	Config::getErrorPage(int statusCode)
+{
+	for( std::vector<ErrorPage>::const_iterator it = errorPages_.begin(); it != errorPages_.end(); it++)
+	{
+		if (it->getErrorCode() == statusCode)
+			return (*it);
+	}
+	return (ErrorPage());
+}
+
 const std::vector<Route>&	Config::getRoutes(void) const
 {
 	return (routes_);
