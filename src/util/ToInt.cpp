@@ -2,9 +2,9 @@
 
 #include <sstream>
 
-int	toInt(std::string)
+int	toInt(std::string str)
 {
-	std::stringstream ss;
+	std::stringstream ss(str);
 	int n;
 
 	ss >> n;

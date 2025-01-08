@@ -1,4 +1,5 @@
 #include "ConfigInterpreterRule.hpp"
+#include "ConfigInterpreter.hpp"
 
 #include "ToVector.hpp"
 #include "Join.hpp"
@@ -24,14 +25,16 @@ ConfigInterpreterRule::ConfigInterpreterRule(const ConfigInterpreterRule& other)
 	validDirectives_ = other.validDirectives_;
 }
 
-ConfigInterpreterRule::    ConfigInterpreterRule(
+ConfigInterpreterRule::ConfigInterpreterRule(
 	const char* context[],
 	const char* validBlocks[],
-	const char* validDirectives[]
+	const char* validDirectives[]//,
+	//void (ConfigInterpreter::*handlers[])(ConfigParserNode* node)
 ) :
 	context_(toVector(context)),
 	validBlocks_(toVector(validBlocks)),
-	validDirectives_(toVector(validDirectives))
+	validDirectives_(toVector(validDirectives))//,
+	//handlers_(toVector(handlers))
 {}
 
 ConfigInterpreterRule::~ConfigInterpreterRule(void)

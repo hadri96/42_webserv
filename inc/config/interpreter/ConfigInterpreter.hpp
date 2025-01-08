@@ -18,14 +18,16 @@ class	ConfigInterpreter
 		ConfigInterpreter&	operator=(const ConfigInterpreter& rhs);
 
 		// --- Public Methods ---
-		void					addRule(const ConfigInterpreterRule& rule);
+		void				addRule(const ConfigInterpreterRule& rule);
 
 		Config				interpret(ConfigParserBlock* root); // or getConfig
 	
 	private:
 		// --- Private Attributes ---
 		std::vector<ConfigInterpreterRule>	rules_;
-		//std::vector<Config*>					servers_;
+
+		int									currentConfig_;
+		std::vector<Config>					configs_;
 
 		// --- Private Methods ---
 		void 				interpret(ConfigParserNode* node, std::vector<std::string>& context);
@@ -37,6 +39,8 @@ class	ConfigInterpreter
 
 		ConfigInterpreterRule*	getRule(std::vector<std::string>& context);
 
+		bool				checkNumberOfParameters(int has, int must);
+
 		// --- Handlers ---
 		void				handleServerName(ConfigParserNode* node);
 		void				handleListen(ConfigParserNode* node);
@@ -44,6 +48,9 @@ class	ConfigInterpreter
 		void				handleErrorPage(ConfigParserNode* node);
 		void				handleClientMaxBodySize(ConfigParserNode* node);
 		void				handleReturn(ConfigParserNode* node);
+		void				handleRoot(ConfigParserNode* node);
+		void				handleAutoIndex(ConfigParserNode* node);
+		void				handleDeny(ConfigParserNode* node);
 };
 
 #endif
