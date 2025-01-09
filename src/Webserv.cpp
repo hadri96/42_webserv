@@ -32,6 +32,7 @@ Webserv::Webserv(const std::string& configFile)
 
 	ConfigInterpreter interpreter;
 	interpreter.interpret(parser.getRoot());
+	interpreter.displayConfigs();
 }
 
 Webserv::~Webserv(void)

@@ -21,6 +21,8 @@ class	ConfigInterpreter
 		void				addRule(const ConfigInterpreterRule& rule);
 
 		Config				interpret(ConfigParserBlock* root); // or getConfig
+
+		void				displayConfigs(void);
 	
 	private:
 		// --- Private Attributes ---
@@ -42,12 +44,16 @@ class	ConfigInterpreter
 		bool				checkNumberOfParameters(int has, int must);
 
 		// --- Handlers ---
+		void				handleBlock(ConfigParserNode* node);
+		void				handleDirective(ConfigParserNode* node);
+
 		void				handleServerName(ConfigParserNode* node);
 		void				handleListen(ConfigParserNode* node);
 		void				handleIndex(ConfigParserNode* node);
 		void				handleErrorPage(ConfigParserNode* node);
 		void				handleClientMaxBodySize(ConfigParserNode* node);
 		void				handleReturn(ConfigParserNode* node);
+
 		void				handleRoot(ConfigParserNode* node);
 		void				handleAutoIndex(ConfigParserNode* node);
 		void				handleDeny(ConfigParserNode* node);

@@ -41,7 +41,7 @@ int	main(void)
 	c1.setClientMaxBodySize(10);
 
 	// Redirection
-	c1.setRedirection(HttpRedirection(301, Path("/www/redirection.html")));
+	c1.setRedirection(HttpRedirection(301, Uri("/redirection.html")));
 
 	// Error Pages
 	c1.addErrorPage(ErrorPage(404, Path("/www/404.html")));

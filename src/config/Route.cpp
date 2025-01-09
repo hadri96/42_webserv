@@ -52,30 +52,41 @@ Route&	Route::operator=(const Route& rhs)
 	return (*this);
 }
 
+std::ostream&	operator<<(std::ostream& os, Route& object)
+{
+	os << "--- Route ---" << std::endl;
+	os << "  uri : " << object.getUri().getUri() << std::endl;
+	os << "  root path : " << object.getRootPath().getPath() << std::endl;
+	os << "  autoindex : " << object.getAutoIndex() << std::endl;
+	
+	// limit except ?
+	return (os);
+}
+
 // =============================================================================
 // Setters and Getters
 // =============================================================================
 
 // --- Setters ---
 
-void	Route::setUri(const Uri& uri)
+void	Route::setUri(Uri uri)
 {
 	uri_ = uri;
 }
 
-void	Route::setRootPath(const Path& rootPath)
+void	Route::setRootPath(Path rootPath)
 {
 	rootPath_ = rootPath;
-}
-
-void	Route::setRedirection(const HttpRedirection& redirection)
-{
-	redirection_ = redirection;
 }
 
 void	Route::setAutoIndex(bool autoIndex)
 {
 	autoIndex_ = autoIndex;
+}
+
+void	Route::setRedirection(const HttpRedirection& redirection)
+{
+	redirection_ = redirection;
 }
 
 void	Route::setDefaultFile(const Path& defaultFile)

@@ -44,6 +44,32 @@ Config&	Config::operator=(const Config& rhs)
 	return (*this);
 }
 
+std::ostream&	operator<<(std::ostream& os, Config& object)
+{
+	os << "### Config ###" << std::endl;
+	os << "  server_name : " << object.getServerName() << std::endl;
+	os << "  host : " << object.getHost() << std::endl;
+	os << "  port : " << object.getPort() << std::endl;
+
+	// Error pages
+	for (size_t i = 0; i != object.getErrorPages().size(); ++i)
+	{
+		os << object.getErrorPages()[i];
+	}
+	os << "  client_max_body_size : " << object.getClientMaxBodySize() << std::endl;
+
+	// Redirection
+	os << object.getHttpRedirection();
+
+	// Routes
+	for (size_t i = 0; i != object.getRoutes().size(); ++i)
+	{
+		os << object.getRoutes()[i];
+	}
+
+	return (os);
+}
+
 // =============================================================================
 // Setters and Getters
 // =============================================================================
@@ -102,17 +128,22 @@ const std::string&	Config::getServerName(void) const
 	return (serverName_);
 }
 
+HttpRedirection&	Config::getHttpRedirection(void)
+{
+	return (redirection_);
+}
+
 int	Config::getClientMaxBodySize(void) const
 {
 	return (clientMaxBodySize_);
 }
 
-const std::vector<ErrorPage>&	Config::getErrorPages(void) const
+std::vector<ErrorPage>&	Config::getErrorPages(void)
 {
 	return (errorPages_);
 }
 
-const std::vector<Route>&	Config::getRoutes(void) const
+std::vector<Route>&	Config::getRoutes(void)
 {
 	return (routes_);
 }

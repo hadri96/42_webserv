@@ -1,3 +1,12 @@
+/*
+ TO DO :
+
+ handle redirections outside a route...
+ handle error pages
+ handle limit_except
+ 
+*/
+
 #include "ConfigInterpreter.hpp"
 #include "ConfigInterpreterRule.hpp"
 
@@ -16,7 +25,6 @@
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
-
 
 ConfigInterpreter::ConfigInterpreter(void) :
 	currentConfig_(-1)
@@ -48,8 +56,6 @@ ConfigInterpreter::ConfigInterpreter(void) :
 	const char* context5[]		= {"root", "http", "server", "location", "limit_except", 0};
 	const char* blocks5[]		= {0};
 	const char* directives5[]	= {"deny", 0};
-
-	//void (ConfigInterpreter::*handlers5[])(ConfigParserNode*) = {0};
 
 	addRule(ConfigInterpreterRule(context1, blocks1, directives1));
 	addRule(ConfigInterpreterRule(context2, blocks2, directives2));
@@ -105,6 +111,14 @@ Config	ConfigInterpreter::interpret(ConfigParserBlock* root)
 	return (config);
 }
 
+void	ConfigInterpreter::displayConfigs(void)
+{
+	for (size_t i = 0; i != configs_.size(); ++i)
+	{
+		std::cout << C_BLU << configs_[i] << RESET << std::endl;
+	}
+}
+
 // =============================================================================
 // Private Methods
 // =============================================================================
@@ -121,23 +135,8 @@ void	ConfigInterpreter::interpret(
 		if (!isBlockValidInContext(node->getName(), context))
 			throw std::runtime_error("The block `" + node->getName() + "` is invalid in context `" + join(context, "->") + "`");
 
-		if (node->getName() == "server")
-		{
-			Config newConfig;
-			configs_.push_back(newConfig);
-		}
-		/*else if (node->getName() == "location")
-		{
-			if (node->getParameters().size() != 1)
-				throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
-
-			Route newRoute;
-			Uri newUri;
-			configs_.back().addRoute(newRoute);
-
-			newUri.setUri(node->getParameters[0]);
-			configs_.back().getRoutes().back().setUri(newUri);
-		}*/
+		// --- Handle block ---
+		handleBlock(node);
 
 		// --- Recursively treating the content of the block ---
 		std::vector<ConfigParserNode*>	nodes;
@@ -156,24 +155,8 @@ void	ConfigInterpreter::interpret(
 		if (!isDirectiveValidInContext(node->getName(), context))
 			throw std::runtime_error("The directive `" + node->getName() + "` is invalid in context `" + join(context, "->") + "`");
 
-		if (node->getName() == "server_name")
-			handleServerName(node);
-		else if (node->getName() == "listen")
-			handleListen(node);
-		else if (node->getName() == "index")
-			handleIndex(node);
-		else if (node->getName() == "error_page")
-			handleErrorPage(node);
-		else if (node->getName() == "client_max_body_size")
-			handleClientMaxBodySize(node);
-		else if (node->getName() == "return")
-			handleReturn(node);
-		/*else if (node->getName() == "root")
-			handleRoot(node);
-		else if (node->getName() == "autoindex")
-			handleAutoIndex(node);
-		else if (node->getName() == "deny")
-			handleDeny(node);*/
+		// --- Handle directive ---
+		handleDirective(node);
 	}
 }
 
@@ -206,6 +189,52 @@ bool	ConfigInterpreter::isDirectiveValidInContext(std::string directive, std::ve
 // =============================================================================
 // Handlers
 // =============================================================================
+
+
+void	ConfigInterpreter::handleBlock(ConfigParserNode* node)
+{
+	Config& currentConfig = configs_.back();
+	if (node->getName() == "server")
+	{
+		Config newConfig;
+		configs_.push_back(newConfig);
+	}
+	else if (node->getName() == "location")
+	{
+		if (node->getParameters().size() != 1)
+			throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
+
+		Route newRoute;
+		currentConfig.addRoute(newRoute);
+		
+		Route& currentRoute = currentConfig.getRoutes().back();
+		currentRoute.setUri(Uri(node->getParameters()[0]));
+	}
+}
+
+void	ConfigInterpreter::handleDirective(ConfigParserNode* node)
+{
+	if (node->getName() == "server_name")
+		handleServerName(node);
+	else if (node->getName() == "listen")
+		handleListen(node);
+	else if (node->getName() == "index")
+		handleIndex(node);
+	else if (node->getName() == "error_page")
+		handleErrorPage(node);
+	else if (node->getName() == "client_max_body_size")
+		handleClientMaxBodySize(node);
+	else if (node->getName() == "return")
+		handleReturn(node);
+	else if (node->getName() == "root")
+		handleRoot(node);
+	else if (node->getName() == "autoindex")
+		handleAutoIndex(node);
+	else if (node->getName() == "deny")
+		handleDeny(node);
+}
+
+// --- Directive handlers ---
 
 void	ConfigInterpreter::handleServerName(ConfigParserNode* node)
 {
@@ -262,22 +291,98 @@ void	ConfigInterpreter::handleErrorPage(ConfigParserNode* node)
 	(void) node;
 	std::cout << "handleErrorPage..." << std::endl;
 
-	if (node->getParameters().size() >= 2)
+	if (node->getParameters().size() < 2)
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have at least two parameters");
 }
 void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node)
 {
-	(void) node;
-	std::cout << "handleClientMaxBodySize..." << std::endl;
+    (void) node;
+    std::cout << "handleClientMaxBodySize..." << std::endl;
 
-	if (node->getParameters().size() != 1)
-		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
+    if (node->getParameters().size() != 1)
+        throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
+
+    std::string parameter = node->getParameters()[0];
+    size_t len = parameter.size();
+
+    if (len == 0)
+        throw std::runtime_error("Directive `" + node->getName() + "` : parameter cannot be empty");
+
+    char unit = parameter[len - 1];
+    int factor = 1;
+    std::string numberPart = parameter;
+
+    if (!std::isdigit(unit))
+    {
+        if (unit == 'M' || unit == 'm')
+            factor = 1000000;
+        else if (unit == 'K' || unit == 'k')
+            factor = 1000;
+        else
+            throw std::runtime_error("Directive `" + node->getName() + "` : wrong unit ; must be `M/m`, `K/k` or none (size given in bytes)");
+
+        numberPart = parameter.substr(0, len - 1);
+    }
+
+    if (!allOf(numberPart, std::isdigit))
+        throw std::runtime_error("Directive `" + node->getName() + "` : size must be a number with or without unit (`M/m` or `K/k`)");
+
+    configs_.back().setClientMaxBodySize(factor * toInt(numberPart));
 }
 void	ConfigInterpreter::handleReturn(ConfigParserNode* node)
 {
 	(void) node;
 	std::cout << "handleReturn.." << std::endl;
 
-	if (node->getParameters().size() != 2)
+	if (node->getParameters().size() != 2) // also could be 1 parameter ; see that case later
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have 2 parameters");
+
+	std::string statusCodePart = node->getParameters()[0];
+
+    if (!allOf(statusCodePart, std::isdigit))
+		throw std::runtime_error("Directive `" + node->getName() + "` : status code must be a number");
+	
+	int statusCode = toInt(statusCodePart);
+	std::cout << statusCode << std::endl;
+
+	if (statusCode != 301 && statusCode != 302)
+		throw std::runtime_error("Directive `" + node->getName() + "` : invalid status code");
+
+	std::string uri = node->getParameters()[1];
+	configs_.back().setRedirection(HttpRedirection(statusCode, Uri(uri)));
+}
+
+// --- Handle location ---
+
+void	ConfigInterpreter::handleRoot(ConfigParserNode* node)
+{
+	if (node->getParameters().size() != 1)
+		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
+
+	Config& currentConfig = configs_.back();
+	Route& currentRoute = currentConfig.getRoutes().back();
+
+	currentRoute.setRootPath(Path(node->getParameters()[0]));
+}
+
+void	ConfigInterpreter::handleAutoIndex(ConfigParserNode* node)
+{
+	if (node->getParameters().size() != 1)
+		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
+
+	if (node->getParameters()[0] != "on" && node->getParameters()[0] != "off")
+		throw std::runtime_error("Directive `" + node->getName() + "` : parameter must be either `on` or `off");
+
+	Config& currentConfig = configs_.back();
+	Route& currentRoute = currentConfig.getRoutes().back();
+
+	if (node->getParameters()[0] == "on")
+		currentRoute.setAutoIndex(true);
+	else
+		currentRoute.setAutoIndex(false);
+}
+
+void	ConfigInterpreter::handleDeny(ConfigParserNode* node)
+{
+	(void) node;
 }

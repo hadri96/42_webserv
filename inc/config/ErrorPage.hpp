@@ -1,6 +1,7 @@
 #ifndef CONFIG_ERROR_PAGE
 # define CONFIG_ERROR_PAGE
 
+# include <ostream>
 # include <string>
 
 # include "Path.hpp"
@@ -32,5 +33,7 @@ class	ErrorPage
 		int					errorCode_;
 		File				errorFile_;
 };
+
+std::ostream&	operator<<(std::ostream& os, ErrorPage& object);
 
 #endif
