@@ -141,7 +141,7 @@ void	ConfigInterpreter::interpret(
 	// --- Block ---
 	if (block)
 	{
-		oss << "Bmakelock : [`" << node->getName() << "`] in context : `" << join(context, "->") << "`";
+		oss << "Block : [`" << node->getName() << "`] in context : `" << join(context, "->") << "`";
 		Logger::logger()->log(LOG_DEBUG, oss);
 
 		if (!isBlockValidInContext(node->getName(), context))
