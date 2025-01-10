@@ -37,6 +37,15 @@ ErrorPage&	ErrorPage::operator=(const ErrorPage& rhs)
 	return (*this);
 }
 
+std::ostream&	operator<<(std::ostream& os, ErrorPage& object)
+{
+	os << "--- Error page ---" << std::endl;
+	os << "  error code : " << object.getErrorCode() << std::endl;
+	os << "  error file path : " << object.getErrorPath().getPath() << std::endl;
+
+	return (os);
+}
+
 // =============================================================================
 // Setters and Getters
 // =============================================================================

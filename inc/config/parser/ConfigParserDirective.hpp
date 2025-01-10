@@ -20,6 +20,10 @@ class	ConfigParserDirective : public ConfigParserNode
 		// --- Operators Overload ---
 		ConfigParserDirective&			operator=(const ConfigParserDirective& rhs);
 
+		// --- Setters and Getters ---
+		std::string						getName(void) const;
+		std::vector<std::string>		getParameters(void) const;
+
 		// --- Public Methods ---
 		void							display(void) const;
 		void							display(int nestingLevel) const;

@@ -21,16 +21,16 @@ class	ConfigLexer
 		ConfigLexer&					operator=(const ConfigLexer& rhs);
 
 		// --- Setters and Getters ---
-		const std::vector<ConfigToken>&	getTokens(void) const;
+		//const std::vector<ConfigToken>&	getTokens(void) const;
 
 		// --- Public Methods ---
-		void							tokenize(const std::string& input);
+		//void							tokenize(const std::string& input);
 		ConfigToken						nextToken(void);
-		void							display(void) const;
+		//void							display(void) const;
 
 	private:
 		// --- Private Attributes ---
-		std::vector<ConfigToken>		tokens_;
+		//std::vector<ConfigToken>		tokens_;
 		std::string						input_;
 		size_t							position_;
 
