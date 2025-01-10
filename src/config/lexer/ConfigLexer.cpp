@@ -35,15 +35,18 @@ ConfigLexer&	ConfigLexer::operator=(const ConfigLexer& rhs)
 // Setters and Getters
 // =============================================================================
 
+/*
 const std::vector<ConfigToken>&	ConfigLexer::getTokens(void) const
 {
 	return (tokens_);
 }
+*/
 
 // =============================================================================
 // Public Methods
 // =============================================================================
 
+/*
 void	ConfigLexer::tokenize(const std::string& input)
 {
 	size_t						i;
@@ -90,7 +93,9 @@ void	ConfigLexer::tokenize(const std::string& input)
 		}
 	}
 }
+*/
 
+/*
 void	ConfigLexer::display(void) const
 {
 	for (size_t i = 0; i != tokens_.size(); ++i)
@@ -100,6 +105,7 @@ void	ConfigLexer::display(void) const
 			<< " Value : " << tokens_[i].getValue() << std::endl;
 	}
 }
+*/
 
 ConfigToken	ConfigLexer::nextToken(void)
 {

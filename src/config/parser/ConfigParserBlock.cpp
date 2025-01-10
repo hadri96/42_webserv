@@ -56,6 +56,16 @@ const std::vector<ConfigParserNode*>& ConfigParserBlock::getNodes(void) const
 	return (nodes_);
 }
 
+std::string	ConfigParserBlock::getName(void) const
+{
+	return (block_);
+}
+
+std::vector<std::string>	ConfigParserBlock::getParameters(void) const
+{
+	return (parameters_);
+}
+
 // =============================================================================
 // Public Methods
 // =============================================================================
@@ -75,15 +85,15 @@ void	ConfigParserBlock::display(int nestingLevel) const
 {
 	std::string indent(nestingLevel, '\t');
 
-    std::cout << indent << "block : " << block_ << std::endl;
-    for (size_t i = 0; i != parameters_.size(); ++i)
-    {
-        std::cout << indent << "parameter : " << parameters_[i] << std::endl;
-    }
+	std::cout << indent << "block : " << block_ << std::endl;
+	for (size_t i = 0; i != parameters_.size(); ++i)
+	{
+		std::cout << indent << "parameter : " << parameters_[i] << std::endl;
+	}
 
-    for (size_t i = 0; i != nodes_.size(); ++i)
-    {
-        if (nodes_[i])
-            nodes_[i]->display(++nestingLevel);
-    }
+	for (size_t i = 0; i != nodes_.size(); ++i)
+	{
+		if (nodes_[i])
+			nodes_[i]->display(++nestingLevel);
+	}
 }

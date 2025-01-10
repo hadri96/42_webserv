@@ -2,7 +2,7 @@ NAME = webserv
 
 MAKEFLAGS = --no-print-directory
 
-INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/http -I inc/util
+INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/config/interpreter -I inc/http -I inc/util
 
 CC = c++
 
@@ -18,7 +18,7 @@ UNAME_S := $(shell uname -s)
 
 # Source File names:
 MAIN = main Webserv
-UTIL = Logger ToString
+UTIL = Logger ToString ToInt Join ToVector AllOf IsIp
 HTTP = HttpResponse HttpRequest Header RequestLine RequestInterpreter
 SERVER = Observer Client Server
 CONFIG = 	File \
@@ -34,7 +34,9 @@ CONFIG = 	File \
 			parser/ConfigParser \
 			parser/ConfigParserNode \
 			parser/ConfigParserBlock \
-			parser/ConfigParserDirective
+			parser/ConfigParserDirective \
+			interpreter/ConfigInterpreter \
+			interpreter/ConfigInterpreterRule
 
 # Source directory
 SRCS_DIR = src

@@ -6,17 +6,17 @@
 
 HttpRedirection::HttpRedirection(void) :
 	statusCode_(0),
-	path_()
+	uri_()
 {}
 
 HttpRedirection::HttpRedirection(const HttpRedirection& other) :
 	statusCode_(other.statusCode_),
-	path_(other.path_)
+	uri_(other.uri_)
 {}
 
-HttpRedirection::HttpRedirection(int statusCode, const Path& path) :
+HttpRedirection::HttpRedirection(int statusCode, Uri uri) :
 	statusCode_(statusCode),
-	path_(path)
+	uri_(uri)
 {}
 
 HttpRedirection::~HttpRedirection(void)
@@ -32,9 +32,18 @@ HttpRedirection&	HttpRedirection::operator=(const HttpRedirection& rhs)
 		return (*this);
 
 	statusCode_ = rhs.statusCode_;
-	path_ = rhs.path_;
+	uri_ = rhs.uri_;
 
 	return (*this);
+}
+
+std::ostream&	operator<<(std::ostream& os, HttpRedirection& object)
+{
+	os << "--- Redirection ---" << std::endl;
+	os << "  status code : " << object.getStatusCode() << std::endl;
+	os << "  uri : " << object.getUri().getUri() << std::endl;
+
+	return (os);
 }
 
 // =============================================================================
@@ -46,7 +55,7 @@ int	HttpRedirection::getStatusCode(void) const
 	return (statusCode_);
 }
 
-const Path&	HttpRedirection::getPath(void) const
+const Uri&	HttpRedirection::getUri(void) const
 {
-	return (path_);
+	return (uri_);
 }

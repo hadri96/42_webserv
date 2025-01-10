@@ -3,6 +3,7 @@
 #include "File.hpp"
 #include "ConfigLexer.hpp"
 #include "ConfigParser.hpp"
+#include "ConfigInterpreter.hpp"
 
 #include <iostream>
 
@@ -28,6 +29,10 @@ Webserv::Webserv(const std::string& configFile)
 	ConfigParser parser = ConfigParser(content);
 	parser.parse();
 	parser.display();
+
+	ConfigInterpreter interpreter;
+	interpreter.interpret(parser.getRoot());
+	interpreter.displayConfigs();
 }
 
 Webserv::~Webserv(void)

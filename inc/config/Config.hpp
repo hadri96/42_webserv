@@ -1,6 +1,7 @@
 #ifndef CONFIG_HPP
 # define CONFIG_HPP
 
+# include <ostream>
 # include <string>
 # include <vector>
 
@@ -34,9 +35,12 @@ class	Config
 		int								getPort(void) const;
 		const std::string&				getServerName(void) const;
 		int								getClientMaxBodySize(void) const;
-		const std::vector<ErrorPage>&	getErrorPages(void) const;
-		const Path&						getErrorPage(int statusCode);							
-		const std::vector<Route>&		getRoutes(void) const;
+		HttpRedirection&				getHttpRedirection(void);
+
+		std::vector<ErrorPage>&			getErrorPages(void);
+		const Path&						getErrorPage(int statusCode);				
+					
+		std::vector<Route>&				getRoutes(void);
 		const Route&					getRoute(Uri uri);
 
 		// const Path						getPathFromUri(Uri uri);
@@ -75,5 +79,7 @@ class	Config
 
 		std::vector<Route>				routes_;
 };
+
+std::ostream&	operator<<(std::ostream& os, Config& object);
 
 #endif

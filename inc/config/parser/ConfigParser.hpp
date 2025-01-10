@@ -20,6 +20,9 @@ class	ConfigParser
 		// --- Operators Overload ---
 		ConfigParser&		operator=(const ConfigParser& rhs);
 
+		// --- Setters and Getters ---
+		ConfigParserBlock*	getRoot(void) const;
+
 		// --- Public Methods ---
 		void				parse(void);
 		void				display(void);

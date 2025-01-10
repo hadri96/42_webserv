@@ -1,6 +1,7 @@
 #ifndef ROUTE_HPP
 # define ROUTE_HPP
 
+# include <ostream>
 # include <vector>
 
 # include "HttpMethodType.hpp"
@@ -21,10 +22,11 @@ class	Route
 	Route&								operator=(const Route& rhs);
 
 	// --- Setters and Getters ---
-	void								setUri(const Uri& uri);
-	void								setRootPath(const Path& rootPath);
-	void								setRedirection(const HttpRedirection& redirection);
+	void								setUri(Uri uri);
+	void								setRootPath(Path rootPath);
 	void								setAutoIndex(bool autoIndex);
+
+	void								setRedirection(const HttpRedirection& redirection);
 	void								setDefaultFile(const Path& defaultFile);
 	void								setUploadDirectory(const Path& uploadDirectory);
 	void								setIsCgi(bool isCgi);
@@ -41,7 +43,7 @@ class	Route
 	const Cgi&							getCgi(void) const;
 	const std::vector<HttpMethodType>&	getAllowedMethods(void) const;
 
-	private: // gallery/
+	private:
 		// --- Private Attributes ---
 		Uri								uri_; // = uriSegment_;
 		Path							rootPath_; 
@@ -57,5 +59,7 @@ class	Route
 		bool							isCgi_;
 		Cgi								cgi_;
 };
+
+std::ostream&							operator<<(std::ostream&, Route& object);
 
 #endif

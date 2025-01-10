@@ -1,7 +1,8 @@
 #ifndef HTTP_REDIRECTION_HPP
 # define HTTP_REDIRECTION_HPP
 
-# include "Path.hpp"
+# include <ostream>
+# include "Uri.hpp"
 
 class	HttpRedirection
 {
@@ -10,7 +11,7 @@ class	HttpRedirection
 							HttpRedirection(void);
 							HttpRedirection(const HttpRedirection& other);
 
-							HttpRedirection(int statusCode, const Path& path);
+							HttpRedirection(int statusCode, Uri uri);
 
 							~HttpRedirection(void);
 
@@ -19,12 +20,14 @@ class	HttpRedirection
 
 		// --- Setters and Getters ---
 		int					getStatusCode(void) const;
-		const Path&			getPath(void) const;
+		const Uri&			getUri(void) const;
 
 	private:
 		// --- Private Attributes ---
 		int					statusCode_;
-		Path				path_;
+		Uri					uri_;
 };
+
+std::ostream&	operator<<(std::ostream&, HttpRedirection& object);
 
 #endif
