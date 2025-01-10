@@ -37,6 +37,8 @@ class	Logger
 		// --- Public Methods ---
 		static Logger*	logger(void);
 		void			logTitle(LogLevel level, const std::string& title, int titleLevel = 1) const;
+		void			logTitle(LogLevel level, const std::ostringstream& oss, int titleLevel = 1) const;
+
 		void			log(LogLevel level, const std::string& message) const;
 		void			log(LogLevel level, const std::ostringstream& oss, bool reset = true) const;
 		// void			logStream(std::stringstream ss);
