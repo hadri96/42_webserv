@@ -22,7 +22,7 @@ File::File(const std::string& filename)
 		throw std::runtime_error("File could not be opened");
 }
 
-File::File(const Path& path_) : path_(path_) {}
+File::File(const Path& path) : path_(path) {}
 
 File::~File(void)
 {
@@ -61,10 +61,10 @@ std::string	File::read(void) const
 {
 	std::string         line;
     std::string         content;
-    std::ifstream       fileStream(path_.getPath().c_str());
+    std::ifstream       fileStream(path_.getAbsPath().c_str());
 
     if (fileStream.is_open())
-        Logger::logger()->log(LOG_INFO, "File opened: " + path_.getPath());
+        Logger::logger()->log(LOG_INFO, "File opened: " + path_.getAbsPath());
     while (std::getline(fileStream, line))
         content.append(line, 0, line.length());
     fileStream.close();

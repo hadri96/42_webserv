@@ -22,12 +22,13 @@ class	Client
 
 		// --- Getters and Setters ---
 		int				getFd(void) const;
-		HttpResponse*	getCurrentResponse(void) const;
-        HttpRequest*	getCurrentRequest(void) const;
+		HttpResponse	getCurrentResponse(void) const;
+        HttpRequest		getCurrentRequest(void) const;
+		std::string		getResponseString(void) const;
 
 		// --- Public Methods ---
-		void			assignRequest(HttpRequest *request);
-		void			assignResponse(HttpResponse *response);
+		void			assignRequest(HttpRequest request);
+		void			assignResponse(HttpResponse response);
 
 	private:
 		// --- Private Attributes ---
@@ -35,8 +36,8 @@ class	Client
 		std::string		ip_;
 		int				port_;
 
-		HttpRequest*	currentRequest_;
-		HttpResponse*	currentResponse_;
+		HttpRequest	currentRequest_;
+		HttpResponse	currentResponse_;
 
 };
 

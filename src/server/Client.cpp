@@ -4,13 +4,13 @@
 // Constructors and Destructor
 // =============================================================================
 
-Client::Client(void) : fd_(0), ip_("0.0.0.0"), port_(0), currentRequest_(0), currentResponse_(0)
+Client::Client(void) : fd_(0), ip_("0.0.0.0"), port_(0), currentRequest_(HttpRequest()), currentResponse_(HttpResponse())
 {}
 
-Client::Client(int fd, std::string ip, int port) : fd_(fd), ip_(ip), port_(port), currentRequest_(0), currentResponse_(0)
+Client::Client(int fd, std::string ip, int port) : fd_(fd), ip_(ip), port_(port), currentRequest_(HttpRequest()), currentResponse_(HttpResponse())
 {}
 
-Client::Client(const Client& other) : fd_(other.fd_), ip_(other.ip_), port_(other.port_), currentRequest_(0), currentResponse_(0)
+Client::Client(const Client& other) : fd_(other.fd_), ip_(other.ip_), port_(other.port_), currentRequest_(HttpRequest()), currentResponse_(HttpResponse())
 {}
 
 Client::~Client(void)
@@ -40,26 +40,32 @@ int		Client::getFd(void) const
 	return (fd_);
 }
 
-HttpRequest*	Client::getCurrentRequest(void) const
+HttpRequest		Client::getCurrentRequest(void) const
 {
     return (currentRequest_);
 }
 
-HttpResponse*	Client::getCurrentResponse(void) const
+HttpResponse	Client::getCurrentResponse(void) const
 {
     return (currentResponse_);
 }
+
+std::string	Client::getResponseString(void) const
+{
+	return (currentResponse_.getFullResponse());
+}
+
 
 // =============================================================================
 // Public Methods
 // =============================================================================
 
-void	Client::assignRequest(HttpRequest *request)
+void	Client::assignRequest(HttpRequest request)
 {
 	currentRequest_ = request;
 }
 
-void	Client::assignResponse(HttpResponse *response)
+void	Client::assignResponse(HttpResponse response)
 {
 	currentResponse_ = response;
 }

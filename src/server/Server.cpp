@@ -260,33 +260,30 @@ void	Server::handleRequestFromClient(int clientFd)
     Client              *client = getClient(clientFd);
     HttpRequest         request;
     
-    client->assignRequest(&request);
+    client->assignRequest(request);
     
     while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) -1, 0)) > 0)
     {
         request.appendRequest(buffer);
         if (request.getRawRequest().find("\r\n\r\n") != std::string::npos)
 			break ;
-		Logger::logger()->log(LOG_DEBUG, "Request looks like this: \n" + request.getRawRequest());
     }
+	Logger::logger()->log(LOG_DEBUG, "Request looks like this: \n" + request.getRawRequest());
 	if (bytesRead < 0)
 		closeClientConnection(clientFd, "read error");
-
 	runInterpreter(request, clientFd);
 }
 
-void	Server::runInterpreter(HttpRequest& request,int clientFd)
+void	Server::runInterpreter(HttpRequest& request, int clientFd)
 {
-	// Should interpret request to generate response 
-	// and add the response to the client object 
-	RequestInterpreter	interpreter = RequestInterpreter(this);
-	HttpResponse		response;
-   	Client*				client = getClient(clientFd);
+	RequestInterpreter 	interpreter = RequestInterpreter(this);
+	Client* 			client = getClient(clientFd);
 
-	client->assignResponse(&response);
+	Logger::logger()->log(LOG_DEBUG, "Run Interpreter");
 	try 
 	{
-		interpreter.interpret(request, config_);
+		HttpResponse response = interpreter.interpret(request, config_);
+		client->assignResponse(response);
 	}
 	catch (std::exception& e)
 	{
@@ -298,17 +295,13 @@ void	Server::runInterpreter(HttpRequest& request,int clientFd)
 
 void    Server::sendResponseToClient(int clientFd)
 {
-	// Should call getClient, and reach the response through the Client class
-	// Client*			client = getClient(clientFd);
-	HttpResponse	response;
-	Path			path("www/errors/404.html");
-	// File			file(path);
-	ErrorPage		error404(404, path);
-	std::string		fullResponse = response.generateStaticResponse(error404);
+	std::string		fullResponse = getClient(clientFd)->getResponseString();
 	size_t			bufferSize = 1024;
     size_t			totalSize = fullResponse.size();
     size_t			bytesSent = 0;
 
+	Logger::logger()->log(LOG_DEBUG, "sendResponseToClient");
+	Logger::logger()->log(LOG_DEBUG, fullResponse);
     while (bytesSent < totalSize) 
     {
         size_t      chunkSize = std::min(bufferSize, totalSize - bytesSent);
@@ -322,7 +315,6 @@ void    Server::sendResponseToClient(int clientFd)
         }
         bytesSent += sent;
     }
-	// closeClientConnection(clientFd, "Response sent");
 }
 
 void	Server::closeClientConnection(int clientFd, std::string message)

@@ -14,7 +14,7 @@ class RequestInterpreter
         ~RequestInterpreter();
 
     // --- Public Methods ---
-        void        interpret(HttpRequest& request, Config& config);
+        HttpResponse    interpret(HttpRequest& request, Config& config);
         
     // ··· Getters and utils ···  
 
@@ -35,12 +35,13 @@ class RequestInterpreter
         Server*     server_;
 
     // --- Private Methods ---
-        void        handleGetRequest(Config& config, HttpRequest& request);
-        void        handlePostRequest(Config& config, HttpRequest& request);
-        void        handleDeleteRequest(Config& config, HttpRequest& request);
+        HttpResponse    handleGetRequest(Config& config, HttpRequest& request);
+        HttpResponse    handlePostRequest(Config& config, HttpRequest& request);
+        HttpResponse    handleDeleteRequest(Config& config, HttpRequest& request);
 
-        bool        fileInServer(std::string uri, Config& config);
-        bool        isAllowedMethod(Config& config);
+        bool            fileInServer(std::string uri, Config& config);
+        bool            isAllowedMethod(Config& config);
+        Path            buildFullPath(Config& config, HttpRequest& request);
 };
 
 #endif

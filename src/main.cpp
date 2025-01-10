@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+
 int	main(void)
 {
 	Observer o;
@@ -16,7 +17,7 @@ int	main(void)
 	// =============================================================================
 	// Option A : Parsed Config File (how it should work in the end)
 	// =============================================================================
-
+	
 	try
 	{
 		std::cout << "--- Config parser ---" << std::endl;
@@ -48,8 +49,8 @@ int	main(void)
 	c1.addErrorPage(ErrorPage(403, Path("/www/403.html")));
 
 	// Routes
-	r1.setUri(Uri("/images"));
-	r1.setRootPath(Path("/www/images"));
+	r1.setUri(Uri("/html"));
+	r1.setRootPath(Path("/www/html"));
 	// r1.setRedirection(HttpRedirection(301, Path("/www/redirection.html")));
 	r1.setAutoIndex(true);
 	r1.setDefaultFile(Path("index.html"));
@@ -79,6 +80,7 @@ int	main(void)
 	s1.setConfig(c1);
 	s1.start();
 	Server s2("127.0.0.1", 8085, &o);
+	s2.setConfig(c1);
 	s2.start();
 
 	o.addServerToMonitor(&s1);

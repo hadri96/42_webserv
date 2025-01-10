@@ -143,6 +143,43 @@ std::vector<ErrorPage>&	Config::getErrorPages(void)
 	return (errorPages_);
 }
 
+const ErrorPage	Config::getErrorPage(int statusCode)
+{
+	for( std::vector<ErrorPage>::const_iterator it = errorPages_.begin(); it != errorPages_.end(); it++)
+	{
+		if (it->getErrorCode() == statusCode)
+			return (*it);
+	}
+	return (ErrorPage());
+}
+
+// Function should get the correct route according to the uri: 
+// Gets the substring between first and last slash of uriString and compares with config routes
+// This needs to be adapted depending on what the routes look like in the config file
+// It cannot be tested yet as we don't yet have multiple routes in our example Config
+const Path&	Config::getPathFromUri(Uri& uri) const
+{
+	std::string		uriString = uri.getUri(); 
+	std::string		routeSegment;
+	size_t			firstSlash = uriString.find('/');
+	size_t			lastSlash = uriString.rfind('/');
+
+	if (lastSlash != std::string::npos)
+		routeSegment = uriString.substr(firstSlash + 1, lastSlash - firstSlash - 1);
+	else if (firstSlash != std::string::npos)
+		routeSegment = uriString.substr(firstSlash + 1);
+	else
+		routeSegment = "";
+
+	for (std::vector<Route>::const_iterator it = routes_.begin(); it != routes_.end(); it++)
+	{
+		if (it->getRootPathString() == routeSegment)
+			return ((*it).getRootPath());
+	}
+	return (routes_[0].getRootPath());
+}
+
+
 std::vector<Route>&	Config::getRoutes(void)
 {
 	return (routes_);

@@ -5,9 +5,10 @@
 // =============================================================================
 
 ErrorPage::ErrorPage(void) :
-	errorCode_(0),
-	errorFile_()
+	errorCode_(500),
+	errorFile_(File(Path("www/errors/500.html")))
 {}
+
 ErrorPage::ErrorPage(const ErrorPage& other) :
 	errorCode_(other.errorCode_),
 	errorFile_(other.errorFile_)

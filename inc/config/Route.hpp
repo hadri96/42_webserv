@@ -35,6 +35,7 @@ class	Route
 
 	const Uri&							getUri(void) const;
 	const Path&							getRootPath(void) const;
+	const std::string					getRootPathString(void) const;
 	const HttpRedirection&				getRedirection(void) const;
 	bool								getAutoIndex(void) const;
 	const Path&							getDefaultFile(void) const;

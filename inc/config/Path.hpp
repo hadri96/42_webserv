@@ -21,19 +21,23 @@ class	Path
 
 		// --- Getters & Setters ---
 		std::string			getPath() const;
+		std::string			getRoot() const;
+		std::string			getAbsPath() const;
+
 		std::string			getPath(Config& config) const;
 		std::string			addUriAndGet(Uri& uri);
 
-		Path				addUri(const Uri& uri) const;
-    
+		// --- Public Methods ---
+		const Path			addUri(const Uri& uri) const;
+		bool				isInFileSystem() const;
+
+		static std::string	getWorkingDirectory();
 
 	private:
 		// --- Private Attributes ---
-		std::string	path_;
-
-		// --- Private Methods ---
-		bool	isInFileSystem() const;
-		bool	isInConfig(Config& config) const;
+		std::string			path_;
+		std::string			root_;
+		std::string			absPath_;
 
 };
 

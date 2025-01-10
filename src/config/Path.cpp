@@ -1,19 +1,26 @@
 #include "Path.hpp"
+#include <unistd.h>
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
 Path::Path(void) :
-	path_("")
+	path_(""),
+	root_(getWorkingDirectory()),
+	absPath_(root_ + path_)
 {}
 
 Path::Path(const Path& other) :
-	path_(other.path_)
+	path_(other.path_),
+	root_(getWorkingDirectory()),
+	absPath_(root_ + path_)
 {}
 
 Path::Path(const std::string path) :
-	path_(path)
+	path_(path),
+	root_(getWorkingDirectory()),
+	absPath_(root_ + path_)
 {}
 
 Path::~Path(void)
@@ -46,20 +53,24 @@ std::string	Path::getPath() const
 	return (path_);
 }
 
+std::string	Path::getRoot() const
+{
+	return (root_);
+}
+
+std::string	Path::getAbsPath() const
+{
+	return (absPath_);
+}
+
 std::string	Path::getPath(Config& config) const
 {
+	(void)config;
+
 	if (isInFileSystem())
 	{
-		if (isInConfig(config))
-		{
-			Logger::logger()->log(LOG_INFO, "Path is valid.");
-			return (path_);
-		}
-		else
-		{
-			Logger::logger()->log(LOG_ERROR, "Requested path " + path_ + " is not valid in Config.");
-			return ("");
-		}
+		Logger::logger()->log(LOG_INFO, "Path is valid.");
+		return (path_);
 	}
 	else
 	{
@@ -68,26 +79,31 @@ std::string	Path::getPath(Config& config) const
 	}
 }
 
-Path	Path::addUri(const Uri& uri) const
+// =============================================================================
+// Public Methods
+// =============================================================================
+
+const Path	Path::addUri(const Uri& uri) const
 {
     return (Path(path_ + uri.getUri()));
 }
 
-// =============================================================================
-// Private Methods
-// =============================================================================
-
 bool	Path::isInFileSystem() const
 {
-	// Check if path is actually in the file system
-	return (true);
+	if (access((absPath_).c_str(), F_OK) == 0)
+	{
+		Logger::logger()->log(LOG_DEBUG, absPath_ + " can be accessed");
+		return (true);
+	}
+	Logger::logger()->log(LOG_DEBUG, absPath_ + " cannot be accessed");
+	return (false);
 }
 
-// Cette fonction devrait etre faite par le config : Config->isAvailablePath(Path& path)
-bool	Path::isInConfig(Config& config) const
+std::string Path::getWorkingDirectory()
 {
-	// Check if path corresponds to the path given in the config file
-	// config file path can be found here: request.getRequestLine().getRequestTarget().getPath(config)
-	(void)config;
-	return (true);
+    char 	cwd[1024];
+
+    if (getcwd(cwd, sizeof(cwd)) == NULL)
+        throw (std::runtime_error("Failed to get current working directory"));
+    return (std::string(cwd));
 }

@@ -126,6 +126,11 @@ const Path& 	Route::getRootPath(void) const
 	return (rootPath_);
 }
 
+const std::string 	Route::getRootPathString(void) const
+{
+	return (rootPath_.getPath());
+}
+
 const HttpRedirection&	Route::getRedirection(void) const
 {
 	return (redirection_);
