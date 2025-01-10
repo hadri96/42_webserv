@@ -25,7 +25,6 @@ class HttpResponse
     private:
     // --- Private Methods ---
         void                        generateBasicHeaders();
-        // std::string                 getCurrentTime() const;
         void                        composeFullResponse();
 
         // --- Error Response Methods ---
@@ -42,8 +41,6 @@ class HttpResponse
         std::string     statusLine_;
         std::string     body_;
         std::string     fullResponse_;
-
-        // Header          header_;
 };
 
 #endif
