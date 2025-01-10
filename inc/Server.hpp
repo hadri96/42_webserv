@@ -20,7 +20,7 @@ class	Server
 								Server(void);
 
 								Server(std::string host, int port, Observer* observer);
-								//Server(const Config& config, Observer* observer);
+								Server(Config& config, Observer* observer);
 
 								Server(const Server& other);
 								~Server(void);

@@ -47,8 +47,14 @@ Server::Server(std::string host, int port, Observer* observer) :
 	Logger::logger()->log(LOG_INFO, "Created a server block " + getInfoHostPort());
 }
 
-/*Server::Server(const Config& config, Observer* observer)
-{}*/
+Server::Server(Config& config, Observer* observer) :
+	config_(config),
+	observer_(observer),
+	fd_(0)
+{
+	host_ = config.getHost(); // See if necessary, maybe its redudndant with the stored config object...
+	port_ = config.getPort();
+}
 
 Server::~Server(void)
 {}
