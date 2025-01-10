@@ -77,20 +77,28 @@ Path   RequestInterpreter::buildFullPath(Config& config, HttpRequest& request)
     Path    configPath = config.getPathFromUri(uri); // "www/html/"
     Path    fullPath = configPath.addUri(uri); // "www/html/index.html"
 
-    Logger::logger()->log(LOG_INFO, "fullPath: " + fullPath.getPath());
+    Logger::logger()->log(LOG_INFO, "fullPath: " + fullPath.getAbsPath());
 
     return (fullPath);
 }
 
 HttpResponse    RequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
 {
-    HttpResponse    response;
     Path            fullPath = buildFullPath(config, request);
-    
+
     // check if resource exists within server -->
-    if (!fullPath.isInFileSystem()) // function still needs to be implemented
-        return (response.generateError(config, 500));
-    return (response);
+    if (!fullPath.isInFileSystem())
+    {
+        ErrorPage       errorPage = config.getErrorPage(500);
+        
+        return (errorPage);
+    }
+
+    File            requestedResource(fullPath);
+    
+    return (HttpResponse(requestedResource));
+
+    // return (response);
     // check if redirection 
     // get filepath or redirection path
     // check if directory or file 

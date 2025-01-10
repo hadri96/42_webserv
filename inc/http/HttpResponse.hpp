@@ -11,19 +11,16 @@ class HttpResponse
     public:
     // --- Constructors and Destructor ---
         HttpResponse();
+        HttpResponse(File& file);
+        HttpResponse(ErrorPage& errorPage);
         ~HttpResponse();
 
     // --- Public Methods ---
         // ··· Getters and utils ···  
-        std::string         generateStaticResponse(File& file);
-        std::string         generateStaticResponse(ErrorPage& errorPage);
         HttpResponse&       generateError(Config& config, int errorCode);
 
         std::string         getFullResponse() const;
         std::string         getHeaders() const;
-        // std::string         generateStaticResponse(std:::string html);
-        // std::string         generateStaticResponse(File& html);
-        // std::string         generateStaticResponse(int statusCode, File& errorPage);
     
     private:
     // --- Private Methods ---

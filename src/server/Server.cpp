@@ -271,20 +271,19 @@ void	Server::handleRequestFromClient(int clientFd)
 	Logger::logger()->log(LOG_DEBUG, "Request looks like this: \n" + request.getRawRequest());
 	if (bytesRead < 0)
 		closeClientConnection(clientFd, "read error");
-
 	runInterpreter(request, clientFd);
 }
 
 void	Server::runInterpreter(HttpRequest& request, int clientFd)
 {
-	RequestInterpreter interpreter = RequestInterpreter(this);
-	Client* client = getClient(clientFd);
+	RequestInterpreter 	interpreter = RequestInterpreter(this);
+	Client* 			client = getClient(clientFd);
 
+	Logger::logger()->log(LOG_DEBUG, "Run Interpreter");
 	try 
 	{
 		HttpResponse response = interpreter.interpret(request, config_);
-		client->assignResponse(response); // Pass by value
-		Logger::logger()->log(LOG_DEBUG, "HEADERS : \n" + response.getHeaders());
+		client->assignResponse(response);
 	}
 	catch (std::exception& e)
 	{
@@ -296,20 +295,13 @@ void	Server::runInterpreter(HttpRequest& request, int clientFd)
 
 void    Server::sendResponseToClient(int clientFd)
 {
-	// Should call getClient, and reach the response through the Client class
-	// Client*			client = getClient(clientFd);
-	// HttpResponse	response;
-	// Path			path("www/errors/404.html");
-	// File			file(path);
-	// ErrorPage		error404(404, path);
-	// if (client == NULL)
-	Logger::logger()->log(LOG_DEBUG, "SENDING RESPONSE STRING");
 	std::string		fullResponse = getClient(clientFd)->getResponseString();
-	Logger::logger()->log(LOG_DEBUG, "after getting response string");
 	size_t			bufferSize = 1024;
     size_t			totalSize = fullResponse.size();
     size_t			bytesSent = 0;
 
+	Logger::logger()->log(LOG_DEBUG, "sendResponseToClient");
+	Logger::logger()->log(LOG_DEBUG, fullResponse);
     while (bytesSent < totalSize) 
     {
         size_t      chunkSize = std::min(bufferSize, totalSize - bytesSent);
@@ -323,7 +315,6 @@ void    Server::sendResponseToClient(int clientFd)
         }
         bytesSent += sent;
     }
-	// closeClientConnection(clientFd, "Response sent");
 }
 
 void	Server::closeClientConnection(int clientFd, std::string message)

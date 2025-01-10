@@ -15,43 +15,37 @@
 
 HttpResponse::HttpResponse() {}
 
-HttpResponse::~HttpResponse() {}
-
-
-// =============================================================================
-// Public Methods
-// =============================================================================
-
-
-// So far this function only handles static GET requests and Error pages
-std::string     HttpResponse::generateStaticResponse(File& file)
-{    
+HttpResponse::HttpResponse(File& file) 
+{
     body_ = file.read();
     Logger::logger()->log(LOG_DEBUG, body_);
     staticStatusLine();
     generateBasicHeaders();
     composeFullResponse();
-
-    return (fullResponse_);
 }
 
-std::string     HttpResponse::generateStaticResponse(ErrorPage& errorPage)
+HttpResponse::HttpResponse(ErrorPage& errorPage) 
 {
     body_ = errorPage.read();
     Logger::logger()->log(LOG_DEBUG, body_);
     errorStatusLine(errorPage);
     generateBasicHeaders();
     composeFullResponse();
-
-    return (fullResponse_);
 }
 
-HttpResponse&   HttpResponse::generateError(Config& config, int errorCode)
-{
-    ErrorPage       errorPage = config.getErrorPage(errorCode);
-    generateStaticResponse(errorPage);
+HttpResponse::~HttpResponse() {}
 
+// =============================================================================
+// Public Methods
+// =============================================================================
+
+HttpResponse& HttpResponse::generateError(Config& config, int errorCode) 
+{
+    ErrorPage   errorPage = config.getErrorPage(errorCode);
+    
+    *this = HttpResponse(errorPage);
     Logger::logger()->log(LOG_DEBUG, "Error generated : " + toString(errorCode));
+    
     return (*this);
 }
 
@@ -75,24 +69,10 @@ std::string     HttpResponse::getHeaders() const
 
 // --- General Methods ---
 
-
-// std::string     HttpResponse::getCurrentTime() const
-// {
-// 	std::time_t currentTime;
-// 	std::tm* 	localTime;
-// 	char		timeBuffer[20];
-
-// 	currentTime = std::time(0);
-// 	localTime = std::localtime(&currentTime);
-// 	std::strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d %H:%M:%S", localTime);
-// 	return (std::string(timeBuffer));
-// }
-
 void    HttpResponse::generateBasicHeaders()
 {
     std::ostringstream headers;
 
-    // headers << "Date: " << getCurrentTime() << "\r\n";
     headers << "Server: Webserv\r\n";
     headers << "Content-Type: text/html; charset=UTF-8\r\n";
     headers << "Content-Length: " << body_.size() << "\r\n";

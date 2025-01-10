@@ -1,19 +1,26 @@
 #include "Path.hpp"
+#include <unistd.h>
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
 Path::Path(void) :
-	path_("")
+	path_(""),
+	root_(getWorkingDirectory()),
+	absPath_(root_ + path_)
 {}
 
 Path::Path(const Path& other) :
-	path_(other.path_)
+	path_(other.path_),
+	root_(getWorkingDirectory()),
+	absPath_(root_ + path_)
 {}
 
 Path::Path(const std::string path) :
-	path_(path)
+	path_(path),
+	root_(getWorkingDirectory()),
+	absPath_(root_ + path_)
 {}
 
 Path::~Path(void)
@@ -46,6 +53,16 @@ std::string	Path::getPath() const
 	return (path_);
 }
 
+std::string	Path::getRoot() const
+{
+	return (root_);
+}
+
+std::string	Path::getAbsPath() const
+{
+	return (absPath_);
+}
+
 std::string	Path::getPath(Config& config) const
 {
 	(void)config;
@@ -73,8 +90,20 @@ const Path	Path::addUri(const Uri& uri) const
 
 bool	Path::isInFileSystem() const
 {
-	// Check if path is actually in the file system
+	if (access((absPath_).c_str(), F_OK) == 0)
+	{
+		Logger::logger()->log(LOG_DEBUG, absPath_ + " can be accessed");
+		return (true);
+	}
+	Logger::logger()->log(LOG_DEBUG, absPath_ + " cannot be accessed");
 	return (false);
 }
 
+std::string Path::getWorkingDirectory()
+{
+    char 	cwd[1024];
 
+    if (getcwd(cwd, sizeof(cwd)) == NULL)
+        throw (std::runtime_error("Failed to get current working directory"));
+    return (std::string(cwd));
+}

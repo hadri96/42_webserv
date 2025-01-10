@@ -68,8 +68,12 @@ void	Observer::monitorEvents(void)
 				{	
 					Logger::logger()->log(LOG_DEBUG, toString(fds_[i].fd) + " is POLLIN");
 					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_SENDING_REQUEST, fds_[i].fd);
+					updatePollEvent(fds_[i].fd, POLLOUT);
 					if (fds_[i].revents & POLLOUT)
+					{	
 						getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_EXPECTING_RESPONSE, fds_[i].fd);
+						updatePollEvent(fds_[i].fd, POLLIN);
+					}
 				}
 				// 	Logger::logger()->log(LOG_WARNING, toString(fds_[i].fd) + " is POLLOUT");
 				// else if (fds_[i].revents & POLLHUP)

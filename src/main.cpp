@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+
 int	main(void)
 {
 	Observer o;
@@ -16,7 +17,7 @@ int	main(void)
 	// =============================================================================
 	// Option A : Parsed Config File (how it should work in the end)
 	// =============================================================================
-
+	
 	try
 	{
 		std::cout << "--- Config parser ---" << std::endl;
