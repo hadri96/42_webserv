@@ -30,12 +30,12 @@ void	Logger::logTitle(LogLevel level, const std::string& title, int titleLevel) 
 {
 	std::string decoration;
 
-	int n = 138 + (2 * titleLevel); 
+	int n = 58 + (2 * titleLevel);
 	decoration = std::string(n, '-');
-	
+
 	std::cout	<< getColor(level)
-				<< getCurrentTime() 
-				<< std::left << std::setw(width_) << getLevel(level) 
+				<< getCurrentTime()
+				<< std::left << std::setw(width_) << getLevel(level)
 				<< decoration
 				<< " " << title << " "
 				//<< decoration
@@ -43,30 +43,37 @@ void	Logger::logTitle(LogLevel level, const std::string& title, int titleLevel) 
 				<< std::endl;
 }
 
-void	Logger::logTitle(LogLevel level, const std::ostringstream& oss, int titleLevel) const
+void	Logger::logTitle(LogLevel level, const std::ostringstream& oss, int titleLevel, bool reset) const
 {
 	std::string decoration;
 
-	int n = 138 + (2 * titleLevel); 
+	int n = 58 + (2 * titleLevel);
 	decoration = std::string(n, '-');
-	
+
 	std::cout	<< getColor(level)
-				<< getCurrentTime() 
-				<< std::left << std::setw(width_) << getLevel(level) 
+				<< getCurrentTime()
+				<< std::left << std::setw(width_) << getLevel(level)
 				<< decoration
 				<< " " << oss.str() << " "
 				//<< decoration
 				<< RESET
 				<< std::endl;
+
+    if (reset)
+    {
+        // Reset the stream by clearing it
+        const_cast<std::ostringstream&>(oss).str("");   // Clear the string content
+        const_cast<std::ostringstream&>(oss).clear();   // Reset the stream's state
+    }
 }
 
 // --- Message ---
 void	Logger::log(LogLevel level, const std::string& message) const
 {
 	std::cout	<< getColor(level)
-				<< getCurrentTime() 
-				<< std::left << std::setw(width_) << getLevel(level) 
-				<< message 
+				<< getCurrentTime()
+				<< std::left << std::setw(width_) << getLevel(level)
+				<< message
 				<< RESET
 				<< std::endl;
 }
@@ -74,8 +81,8 @@ void	Logger::log(LogLevel level, const std::string& message) const
 void	Logger::log(LogLevel level, const std::ostringstream& oss, bool reset) const
 {
 	std::cout	<< getColor(level)
-				<< getCurrentTime() 
-				<< std::left << std::setw(width_) << getLevel(level) 
+				<< getCurrentTime()
+				<< std::left << std::setw(width_) << getLevel(level)
 				<< oss.str();
 
 	if (reset)
@@ -84,7 +91,7 @@ void	Logger::log(LogLevel level, const std::ostringstream& oss, bool reset) cons
         const_cast<std::ostringstream&>(oss).str("");   // Clear the string content
         const_cast<std::ostringstream&>(oss).clear();   // Reset the stream's state
     }
-				
+
 	std::cout	<< RESET
 				<< std::endl;
 }
@@ -104,10 +111,10 @@ std::string		Logger::getColor(int level) const
 		case LOG_WARNING:
 			return (C_MAG);
 		case LOG_DEBUG:
-			return (C_CYN); 
+			return (C_CYN);
 		default:
-			return (C_WHT); 
-	}	
+			return (C_WHT);
+	}
 }
 
 std::string		Logger::getCurrentTime(void) const
@@ -133,8 +140,8 @@ std::string	Logger::getLevel(LogLevel level) const
 		case LOG_WARNING:
 			return ("[WARNING]");
 		case LOG_DEBUG:
-			return ("[DEBUG]"); 
+			return ("[DEBUG]");
 		default:
-			return ("[UNKNOWN]"); 
-	}	
+			return ("[UNKNOWN]");
+	}
 }

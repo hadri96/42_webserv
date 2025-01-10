@@ -7,17 +7,17 @@
 
 Path::Path(void) :
 	path_(""),
-	absPath_(getWorkingDirectory() + path_)
+	absPath_(getWorkingDirectory() + "/" + path_)
 {}
 
 Path::Path(const Path& other) :
 	path_(other.path_),
-	absPath_(getWorkingDirectory() + path_)
+	absPath_(getWorkingDirectory() + "/" + path_)
 {}
 
 Path::Path(const std::string path) :
 	path_(path),
-	absPath_(getWorkingDirectory() + path_)
+	absPath_(getWorkingDirectory() + "/" + path_)
 {}
 
 Path::~Path(void)

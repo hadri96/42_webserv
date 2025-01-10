@@ -24,7 +24,7 @@ int	main(int argc, char** argv)
 	// =============================================================================
 	// Option A : Parsed Config File (how it should work in the end)
 	// =============================================================================
-	
+
 	try
 	{
 		Webserv webserv(configPath);
@@ -34,11 +34,11 @@ int	main(int argc, char** argv)
 	{
 		std::cerr << e.what() << '\n';
 	}
-	
+
 	// =============================================================================
 	// Option B : Configuration Object Sample (only for tests, will be later removed)
 	// =============================================================================
-	
+
 	/*
 	// General
 	c1.setHost("127.0.0.1");
@@ -81,6 +81,7 @@ int	main(int argc, char** argv)
 	// Option C : Server Constructors (only for tests, will be later removed)
 	// =============================================================================
 
+	/*
 	Logger::logger()->logTitle(LOG_INFO, "Servers starting");
 
 	Server s1("127.0.0.1", 8084, &o);
@@ -93,6 +94,7 @@ int	main(int argc, char** argv)
 	o.addServerToMonitor(&s1);
 	o.addServerToMonitor(&s2);
 	o.monitorEvents();
+	*/
 
 	return (0);
 }

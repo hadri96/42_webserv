@@ -25,7 +25,7 @@ Webserv::Webserv(const Webserv& other)
 Webserv::Webserv(const std::string& configFile)
 {
 	File file(configFile);
-	
+
 	file.setContent();
 	std::string content = file.getContent();
 
@@ -38,23 +38,25 @@ Webserv::Webserv(const std::string& configFile)
 	interpreter.displayConfigs();
 
 	std::vector<Config> configs = interpreter.getConfigs();
-	Observer o;
-	std::vector<Server> servers;
+	Observer* o = new Observer;
+	std::vector<Server*> servers;
 
-	Logger::logger()->logTitle(LOG_DEBUG, "Starting servers from configuration file");
+	Logger::logger()->logTitle(LOG_INFO, "Starting servers from configuration file");
 
 	for (size_t i = 0; i != configs.size(); ++i)
 	{
-		servers.push_back(Server(configs[0], &o));
+		servers.push_back(new Server(configs[i], o));
 	}
 
 	std::ostringstream oss;
 	for (size_t i = 0; i != servers.size(); ++i)
 	{
-		oss << "Starting server : " << servers[i].getInfoHostPort();
-		Logger::logger()->logTitle(LOG_DEBUG, oss, 2);
-		servers[i].start();
+		oss << "Starting server no. " << (i + 1) << " : " << servers[i]->getInfoHostPort();
+		Logger::logger()->logTitle(LOG_INFO, oss, 2);
+		servers[i]->start();
+		o->addServerToMonitor(servers[i]);
 	}
+	o->monitorEvents();
 }
 
 Webserv::~Webserv(void)
