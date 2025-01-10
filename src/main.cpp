@@ -7,8 +7,15 @@
 #include <iostream>
 
 
-int	main(void)
+int	main(int argc, char** argv)
 {
+	std::string configPath;
+
+	if (argc == 1)
+		configPath = "src/config/minimal.conf";
+	else if (argc == 2)
+		configPath = argv[1];
+
 	Observer o;
 	Config c1;
 	Route r1;
@@ -20,7 +27,7 @@ int	main(void)
 	
 	try
 	{
-		Webserv webserv("src/config/test.conf");
+		Webserv webserv(configPath);
 		//webserv.start();
 	}
 	catch(const std::exception& e)
@@ -32,6 +39,7 @@ int	main(void)
 	// Option B : Configuration Object Sample (only for tests, will be later removed)
 	// =============================================================================
 	
+	/*
 	// General
 	c1.setHost("127.0.0.1");
 	c1.setPort(8084);
@@ -56,19 +64,18 @@ int	main(void)
 	r1.setUploadDirectory(Path("/www/upload"));
 	r1.addAllowedMethod(GET);
 	r1.addAllowedMethod(POST);
+	*/
 
 	// Routes : CGI
-	/*
-	r1.setIsCgi(true);
-	cgi1.setFileExtension(".php");
-	cgi1.setRootPath(Path("/www/cgi"));
-	cgi1.setScriptPath(Path("/www/cgi/script.sh"));
-	cgi1.setWorkingDirectory(Path("/www/cgi/work"));
-	cgi1.addAllowedMethod(GET);
-	cgi1.addAllowedMethod(POST);
-	r1.setCgi(cgi1);
-	*/
-	c1.addRoute(r1);
+	//r1.setIsCgi(true);
+	//cgi1.setFileExtension(".php");
+	//cgi1.setRootPath(Path("/www/cgi"));
+	//cgi1.setScriptPath(Path("/www/cgi/script.sh"));
+	//cgi1.setWorkingDirectory(Path("/www/cgi/work"));
+	//cgi1.addAllowedMethod(GET);
+	//cgi1.addAllowedMethod(POST);
+	//r1.setCgi(cgi1);
+	//c1.addRoute(r1);
 
 	// =============================================================================
 	// Option C : Server Constructors (only for tests, will be later removed)
