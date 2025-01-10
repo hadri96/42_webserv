@@ -17,6 +17,9 @@ class	ConfigInterpreter
 		// --- Operators Overload ---
 		ConfigInterpreter&	operator=(const ConfigInterpreter& rhs);
 
+		// --- Getters and Setters ---
+		std::vector<Config>&	getConfigs(void);
+
 		// --- Public Methods ---
 		void				addRule(const ConfigInterpreterRule& rule);
 
