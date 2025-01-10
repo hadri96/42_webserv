@@ -25,7 +25,7 @@ Logger*	Logger::logger(void)
 		logger_ = new Logger();
 	return (logger_);
 }
-
+// --- Title ---
 void	Logger::logTitle(LogLevel level, const std::string& title, int titleLevel) const
 {
 	std::string decoration;
@@ -43,6 +43,24 @@ void	Logger::logTitle(LogLevel level, const std::string& title, int titleLevel) 
 				<< std::endl;
 }
 
+void	Logger::logTitle(LogLevel level, const std::ostringstream& oss, int titleLevel) const
+{
+	std::string decoration;
+
+	int n = 138 + (2 * titleLevel); 
+	decoration = std::string(n, '-');
+	
+	std::cout	<< getColor(level)
+				<< getCurrentTime() 
+				<< std::left << std::setw(width_) << getLevel(level) 
+				<< decoration
+				<< " " << oss.str() << " "
+				//<< decoration
+				<< RESET
+				<< std::endl;
+}
+
+// --- Message ---
 void	Logger::log(LogLevel level, const std::string& message) const
 {
 	std::cout	<< getColor(level)
