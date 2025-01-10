@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <ctime>
 
+#include "Colors.hpp"
 #include "Logger.hpp"
 
 Logger* Logger::logger_ = 0;
@@ -25,23 +26,71 @@ Logger*	Logger::logger(void)
 	return (logger_);
 }
 
-void	Logger::log(LogLevel level, const std::string& message) const
+void	Logger::logTitle(LogLevel level, const std::string& title, int titleLevel) const
 {
-	std::cout	<< getCurrentTime() 
+	std::string decoration;
+
+	int n = 138 + (2 * titleLevel); 
+	decoration = std::string(n, '-');
+	
+	std::cout	<< getColor(level)
+				<< getCurrentTime() 
 				<< std::left << std::setw(width_) << getLevel(level) 
-				<< message << std::endl;
+				<< decoration
+				<< " " << title << " "
+				//<< decoration
+				<< RESET
+				<< std::endl;
 }
 
-void	Logger::log(LogLevel level, const std::ostringstream& oss) const
+void	Logger::log(LogLevel level, const std::string& message) const
 {
-	std::cout	<< getCurrentTime() 
+	std::cout	<< getColor(level)
+				<< getCurrentTime() 
 				<< std::left << std::setw(width_) << getLevel(level) 
-				<< oss.str() << std::endl;
+				<< message 
+				<< RESET
+				<< std::endl;
+}
+
+void	Logger::log(LogLevel level, const std::ostringstream& oss, bool reset) const
+{
+	std::cout	<< getColor(level)
+				<< getCurrentTime() 
+				<< std::left << std::setw(width_) << getLevel(level) 
+				<< oss.str();
+
+	if (reset)
+    {
+        // Reset the stream by clearing it
+        const_cast<std::ostringstream&>(oss).str("");   // Clear the string content
+        const_cast<std::ostringstream&>(oss).clear();   // Reset the stream's state
+    }
+				
+	std::cout	<< RESET
+				<< std::endl;
 }
 
 // =============================================================================
 // Private Methods
 // =============================================================================
+
+std::string		Logger::getColor(int level) const
+{
+	switch(level)
+	{
+		case LOG_INFO:
+			return (C_GRN);
+		case LOG_ERROR:
+			return (C_RED);
+		case LOG_WARNING:
+			return (C_MAG);
+		case LOG_DEBUG:
+			return (C_CYN); 
+		default:
+			return (C_WHT); 
+	}	
+}
 
 std::string		Logger::getCurrentTime(void) const
 {
@@ -60,14 +109,14 @@ std::string	Logger::getLevel(LogLevel level) const
 	switch(level)
 	{
 		case LOG_INFO:
-			return ("\033[32m[INFO]\033[0m ");
+			return ("[INFO]");
 		case LOG_ERROR:
-			return ("\033[31m[ERROR]\033[0m ");
+			return ("[ERROR]");
 		case LOG_WARNING:
-			return ("\033[35m[WARNING]\033[0m ");
+			return ("[WARNING]");
 		case LOG_DEBUG:
-			return ("\033[34m[DEBUG]\033[0m "); 
+			return ("[DEBUG]"); 
 		default:
-			return ("\033[0m[UNKNOWN] "); 
+			return ("[UNKNOWN]"); 
 	}	
 }

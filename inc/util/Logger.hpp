@@ -31,12 +31,14 @@ class	Logger
 		// --- Private Methods ---
 		std::string		getCurrentTime(void) const;
 		std::string		getLevel(LogLevel level) const;
+		std::string		getColor(int level) const;
 
 	public:
 		// --- Public Methods ---
 		static Logger*	logger(void);
+		void			logTitle(LogLevel level, const std::string& title, int titleLevel = 1) const;
 		void			log(LogLevel level, const std::string& message) const;
-		void			log(LogLevel level, const std::ostringstream& oss) const;
+		void			log(LogLevel level, const std::ostringstream& oss, bool reset = true) const;
 		// void			logStream(std::stringstream ss);
 };
 
