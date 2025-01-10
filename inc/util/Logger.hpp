@@ -20,7 +20,7 @@ class	Logger
 						Logger(const Logger&);
 
 						~Logger(void);
-		
+
 		// --- Operators Overload ---
 		Logger&			operator=(const Logger&);
 
@@ -37,7 +37,7 @@ class	Logger
 		// --- Public Methods ---
 		static Logger*	logger(void);
 		void			logTitle(LogLevel level, const std::string& title, int titleLevel = 1) const;
-		void			logTitle(LogLevel level, const std::ostringstream& oss, int titleLevel = 1) const;
+		void			logTitle(LogLevel level, const std::ostringstream& oss, int titleLevel = 1, bool reset = true) const;
 
 		void			log(LogLevel level, const std::string& message) const;
 		void			log(LogLevel level, const std::ostringstream& oss, bool reset = true) const;
