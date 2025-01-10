@@ -7,20 +7,17 @@
 
 Path::Path(void) :
 	path_(""),
-	root_(getWorkingDirectory()),
-	absPath_(root_ + path_)
+	absPath_(getWorkingDirectory() + path_)
 {}
 
 Path::Path(const Path& other) :
 	path_(other.path_),
-	root_(getWorkingDirectory()),
-	absPath_(root_ + path_)
+	absPath_(getWorkingDirectory() + path_)
 {}
 
 Path::Path(const std::string path) :
 	path_(path),
-	root_(getWorkingDirectory()),
-	absPath_(root_ + path_)
+	absPath_(getWorkingDirectory() + path_)
 {}
 
 Path::~Path(void)
@@ -51,11 +48,6 @@ Path	operator+(const Path& path, const Uri& uri)
 std::string	Path::getPath() const
 {
 	return (path_);
-}
-
-std::string	Path::getRoot() const
-{
-	return (root_);
 }
 
 std::string	Path::getAbsPath() const

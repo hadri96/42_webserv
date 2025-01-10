@@ -98,7 +98,6 @@ HttpResponse    RequestInterpreter::handleGetRequest(Config& config, HttpRequest
     
     return (HttpResponse(requestedResource));
 
-    // return (response);
     // check if redirection 
     // get filepath or redirection path
     // check if directory or file 

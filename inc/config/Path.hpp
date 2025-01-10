@@ -21,7 +21,6 @@ class	Path
 
 		// --- Getters & Setters ---
 		std::string			getPath() const;
-		std::string			getRoot() const;
 		std::string			getAbsPath() const;
 
 		std::string			getPath(Config& config) const;
@@ -36,9 +35,7 @@ class	Path
 	private:
 		// --- Private Attributes ---
 		std::string			path_;
-		std::string			root_;
 		std::string			absPath_;
-
 };
 
 Path operator+(const Path& path, const Uri& uri);
