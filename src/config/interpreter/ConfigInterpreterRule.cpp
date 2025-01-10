@@ -11,6 +11,10 @@
 #include <ostream>
 #include <iostream>
 
+#include <sstream> // std::ostringstream
+#include "Logger.hpp"
+
+
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
@@ -50,12 +54,28 @@ ConfigInterpreterRule&	ConfigInterpreterRule::operator=(const ConfigInterpreterR
 	return (*this);
 }
 
-std::ostream&	operator<<(std::ostream& os, const ConfigInterpreterRule& object)
+/*std::ostream&	operator<<(std::ostream& os, const ConfigInterpreterRule& object)
 {
 	os << "--- Rule for context :" << C_YEL << join(object.getContext(), "->") << RESET << " ---" << std::endl;
 	os << "  Valid blocks in context : " C_YEL << join(object.getValidBlocks(), ", ") << RESET << std::endl;
 	os << "  Valid directives in context : " C_YEL << join(object.getValidDirectives(), ", ") << RESET;
 	return (os);
+}*/
+
+void	ConfigInterpreterRule::log(void)
+{
+	std::ostringstream oss;
+
+	Logger::logger()->logTitle(LOG_DEBUG, "Settings for the configuration interpreter rules");
+
+	oss << "Rule for context : " << join(getContext(), "->");
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	oss << "  Valid blocks in context : " << join(getValidBlocks(), ", ");
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	oss << "  Valid directives in context : " << join(getValidDirectives(), ", ");
+	Logger::logger()->log(LOG_DEBUG, oss);
 }
 
 // =============================================================================

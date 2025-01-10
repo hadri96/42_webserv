@@ -33,6 +33,8 @@ class	ConfigInterpreterRule
 		bool										isValidBlock(std::string block) const;
 		bool										isValidDirective(std::string directive) const;
 
+		void										log(void);
+
 	private:
 		std::vector<std::string>					context_;
 		std::vector<std::string>					validBlocks_;
@@ -40,7 +42,7 @@ class	ConfigInterpreterRule
 		std::vector<void (*)(ConfigParserNode*)>	directivesHandlers_;
 };
 
-std::ostream&	operator<<(std::ostream& os, const ConfigInterpreterRule& object);
+//std::ostream&	operator<<(std::ostream& os, const ConfigInterpreterRule& object);
 
 
 #endif
