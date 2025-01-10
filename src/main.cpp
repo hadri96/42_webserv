@@ -20,7 +20,6 @@ int	main(void)
 	
 	try
 	{
-		std::cout << "--- Config parser ---" << std::endl;
 		Webserv webserv("src/config/test.conf");
 		//webserv.start();
 	}
@@ -75,7 +74,8 @@ int	main(void)
 	// Option C : Server Constructors (only for tests, will be later removed)
 	// =============================================================================
 
-	std::cout << "--- Servers starting ---" << std::endl;
+	Logger::logger()->logTitle(LOG_INFO, "Servers starting");
+
 	Server s1("127.0.0.1", 8084, &o);
 	s1.setConfig(c1);
 	s1.start();

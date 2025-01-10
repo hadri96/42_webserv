@@ -22,12 +22,14 @@ class	HttpRedirection
 		int					getStatusCode(void) const;
 		const Uri&			getUri(void) const;
 
+		void				log(void);
+
 	private:
 		// --- Private Attributes ---
 		int					statusCode_;
 		Uri					uri_;
 };
 
-std::ostream&	operator<<(std::ostream&, HttpRedirection& object);
+//std::ostream&	operator<<(std::ostream&, HttpRedirection& object);
 
 #endif

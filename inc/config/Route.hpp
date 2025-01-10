@@ -44,6 +44,8 @@ class	Route
 	const Cgi&							getCgi(void) const;
 	const std::vector<HttpMethodType>&	getAllowedMethods(void) const;
 
+	void								log(void);
+
 	private:
 		// --- Private Attributes ---
 		Uri								uri_; // = uriSegment_;
@@ -61,6 +63,6 @@ class	Route
 		Cgi								cgi_;
 };
 
-std::ostream&							operator<<(std::ostream&, Route& object);
+//std::ostream&							operator<<(std::ostream&, Route& object);
 
 #endif

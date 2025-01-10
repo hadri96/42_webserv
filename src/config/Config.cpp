@@ -1,5 +1,8 @@
 #include "Config.hpp"
 
+#include "Logger.hpp"
+#include <sstream> // std::ostringstream
+
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
@@ -44,7 +47,7 @@ Config&	Config::operator=(const Config& rhs)
 	return (*this);
 }
 
-std::ostream&	operator<<(std::ostream& os, Config& object)
+/*std::ostream&	operator<<(std::ostream& os, Config& object)
 {
 	os << "### Config ###" << std::endl;
 	os << "  server_name : " << object.getServerName() << std::endl;
@@ -68,6 +71,41 @@ std::ostream&	operator<<(std::ostream& os, Config& object)
 	}
 
 	return (os);
+}*/
+
+void	Config::log(void)
+{
+	std::ostringstream oss;
+
+	Logger::logger()->logTitle(LOG_DEBUG, "Generated configuration object");
+
+	oss << "  server_name : " << getServerName();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	oss << "  host : " << getHost();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	oss << "  port : " << getPort();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	// Error pages
+	for (size_t i = 0; i != getErrorPages().size(); ++i)
+	{
+		oss << getErrorPages()[i];
+		Logger::logger()->log(LOG_DEBUG, oss);
+	}
+	oss << "  client_max_body_size : " << getClientMaxBodySize();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	// Redirection
+	getHttpRedirection().log();
+
+	// Routes
+	for (size_t i = 0; i != getRoutes().size(); ++i)
+	{
+		getRoutes()[i].log();
+		//Logger::logger()->log(LOG_DEBUG, oss);
+	}
 }
 
 // =============================================================================

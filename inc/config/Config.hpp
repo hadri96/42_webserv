@@ -43,6 +43,7 @@ class	Config
 		HttpRedirection&				getHttpRedirection(void);
 		const Route&					getRoute(Uri uri);
 
+		void							log(void);
 
 		/*
 		Methodes necessaires pour Interpreter:
@@ -76,6 +77,6 @@ class	Config
 		std::vector<Route>				routes_;
 };
 
-std::ostream&	operator<<(std::ostream& os, Config& object);
+//std::ostream&	operator<<(std::ostream& os, Config& object);
 
 #endif

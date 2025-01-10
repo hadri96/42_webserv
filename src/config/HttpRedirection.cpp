@@ -1,5 +1,9 @@
 #include "HttpRedirection.hpp"
 
+#include "Logger.hpp"
+
+#include <sstream>
+
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
@@ -37,13 +41,26 @@ HttpRedirection&	HttpRedirection::operator=(const HttpRedirection& rhs)
 	return (*this);
 }
 
-std::ostream&	operator<<(std::ostream& os, HttpRedirection& object)
+/*std::ostream&	operator<<(std::ostream& os, HttpRedirection& object)
 {
 	os << "--- Redirection ---" << std::endl;
-	os << "  status code : " << object.getStatusCode() << std::endl;
-	os << "  uri : " << object.getUri().getUri() << std::endl;
+
 
 	return (os);
+}*/
+
+void	HttpRedirection::log(void)
+{
+    std::ostringstream oss;
+
+	Logger::logger()->logTitle(LOG_DEBUG, "Redirection", 2);
+
+    oss << "  status code : " << getStatusCode();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+    oss << "  uri : " << getUri().getUri();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
 }
 
 // =============================================================================

@@ -20,6 +20,9 @@
 #include <string>
 #include <vector>
 
+#include <sstream> // std::ostringstream
+#include "Logger.hpp"
+
 #include "Colors.hpp"
 
 // =============================================================================
@@ -65,7 +68,7 @@ ConfigInterpreter::ConfigInterpreter(void) :
 
 	for (size_t i = 0; i != rules_.size(); ++i)
 	{
-		std::cout << rules_[i] << std::endl;
+		rules_[i].log();
 	}
 }
 
@@ -101,6 +104,8 @@ Config	ConfigInterpreter::interpret(ConfigParserBlock* root)
 	std::vector<std::string>		context;
 	std::vector<ConfigParserNode*>	nodes;
 
+	Logger::logger()->logTitle(LOG_DEBUG, "Configuration interpreter");
+
 	nodes = root->getNodes();
 	context.push_back(root->getName());
 	for (size_t i = 0; i != nodes.size(); ++i)
@@ -115,8 +120,11 @@ void	ConfigInterpreter::displayConfigs(void)
 {
 	for (size_t i = 0; i != configs_.size(); ++i)
 	{
-		std::cout << C_BLU << configs_[i] << RESET << std::endl;
+		//std::cout << C_BLU << configs_[i] << RESET << std::endl;
+		configs_[i].log();
 	}
+
+
 }
 
 // =============================================================================
@@ -128,10 +136,14 @@ void	ConfigInterpreter::interpret(
 	std::vector<std::string>& context)
 {
 	ConfigParserBlock* block = dynamic_cast<ConfigParserBlock*>(node);
+	std::ostringstream oss;
+
 	// --- Block ---
 	if (block)
 	{
-		std::cout << "Block : `" << node->getName() << "` in context : `" << join(context, "->") << "`" << std::endl;
+		oss << "Bmakelock : [`" << node->getName() << "`] in context : `" << join(context, "->") << "`";
+		Logger::logger()->log(LOG_DEBUG, oss);
+
 		if (!isBlockValidInContext(node->getName(), context))
 			throw std::runtime_error("The block `" + node->getName() + "` is invalid in context `" + join(context, "->") + "`");
 
@@ -151,7 +163,9 @@ void	ConfigInterpreter::interpret(
 	// --- Directive ---
 	else
 	{
-		std::cout << "\tDirective : `" << node->getName() << "` in context : `" << join(context, "->") << "`" << std::endl;
+		oss << " - Directive : [`" << node->getName() << "`] in context : `" << join(context, "->") << "`";
+		Logger::logger()->log(LOG_DEBUG, oss);
+
 		if (!isDirectiveValidInContext(node->getName(), context))
 			throw std::runtime_error("The directive `" + node->getName() + "` is invalid in context `" + join(context, "->") + "`");
 
@@ -238,7 +252,7 @@ void	ConfigInterpreter::handleDirective(ConfigParserNode* node)
 
 void	ConfigInterpreter::handleServerName(ConfigParserNode* node)
 {
-	std::cout << "handleServerName..." << std::endl;
+	//std::cout << "handleServerName..." << std::endl;
 
 	if (node->getParameters().size() != 1)
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
@@ -247,7 +261,7 @@ void	ConfigInterpreter::handleServerName(ConfigParserNode* node)
 void	ConfigInterpreter::handleListen(ConfigParserNode* node)
 {
 	(void) node;
-	std::cout << "handleListen..." << std::endl;
+	//std::cout << "handleListen..." << std::endl;
 
 	if (node->getParameters().size() != 1)
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
@@ -281,7 +295,7 @@ void	ConfigInterpreter::handleListen(ConfigParserNode* node)
 void	ConfigInterpreter::handleIndex(ConfigParserNode* node)
 {
 	(void) node;
-	std::cout << "handleIndex..." << std::endl;
+	//std::cout << "handleIndex..." << std::endl;
 
 	if (node->getParameters().size() != 1)
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
@@ -289,7 +303,7 @@ void	ConfigInterpreter::handleIndex(ConfigParserNode* node)
 void	ConfigInterpreter::handleErrorPage(ConfigParserNode* node)
 {
 	(void) node;
-	std::cout << "handleErrorPage..." << std::endl;
+	//std::cout << "handleErrorPage..." << std::endl;
 
 	if (node->getParameters().size() < 2)
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have at least two parameters");
@@ -297,7 +311,7 @@ void	ConfigInterpreter::handleErrorPage(ConfigParserNode* node)
 void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node)
 {
     (void) node;
-    std::cout << "handleClientMaxBodySize..." << std::endl;
+    //std::cout << "handleClientMaxBodySize..." << std::endl;
 
     if (node->getParameters().size() != 1)
         throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
@@ -332,7 +346,7 @@ void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node)
 void	ConfigInterpreter::handleReturn(ConfigParserNode* node)
 {
 	(void) node;
-	std::cout << "handleReturn.." << std::endl;
+	//std::cout << "handleReturn.." << std::endl;
 
 	if (node->getParameters().size() != 2) // also could be 1 parameter ; see that case later
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have 2 parameters");
@@ -343,7 +357,7 @@ void	ConfigInterpreter::handleReturn(ConfigParserNode* node)
 		throw std::runtime_error("Directive `" + node->getName() + "` : status code must be a number");
 	
 	int statusCode = toInt(statusCodePart);
-	std::cout << statusCode << std::endl;
+	//std::cout << statusCode << std::endl;
 
 	if (statusCode != 301 && statusCode != 302)
 		throw std::runtime_error("Directive `" + node->getName() + "` : invalid status code");

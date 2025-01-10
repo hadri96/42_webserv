@@ -1,6 +1,9 @@
 #include "ConfigParserDirective.hpp"
 
 #include <iostream>
+#include <sstream> // std::ostringstream
+
+#include "Logger.hpp"
 
 // =============================================================================
 // Constructors and Destructor
@@ -67,9 +70,13 @@ void	ConfigParserDirective::display(int nestingLevel) const
 {
 	std::string indent(nestingLevel, '\t');
 
-	std::cout << indent << "directive : " << directive_ << std::endl;
+	std::ostringstream oss;
+
+	oss << indent << "directive : " << directive_;
+	Logger::logger()->log(LOG_DEBUG, oss);
 	for (size_t i = 0; i != parameters_.size(); ++i)
 	{
-		std::cout << indent << "parameter : " << parameters_[i] << std::endl;
+		oss << indent << "parameter : " << parameters_[i];
+		Logger::logger()->log(LOG_DEBUG, oss);
 	}
 }

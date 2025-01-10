@@ -6,6 +6,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "Logger.hpp"
+
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
@@ -72,6 +74,7 @@ void	ConfigParser::parse(void)
 
 void	ConfigParser::display(void)
 {
+	Logger::logger()->logTitle(LOG_DEBUG, "Parsing the configuration file");
 	displayBlock(root_);
 }
 

@@ -52,7 +52,7 @@ Route&	Route::operator=(const Route& rhs)
 	return (*this);
 }
 
-std::ostream&	operator<<(std::ostream& os, Route& object)
+/*std::ostream&	operator<<(std::ostream& os, Route& object)
 {
 	os << "--- Route ---" << std::endl;
 	os << "  uri : " << object.getUri().getUri() << std::endl;
@@ -61,6 +61,40 @@ std::ostream&	operator<<(std::ostream& os, Route& object)
 	
 	// limit except ?
 	return (os);
+}*/
+
+/*
+std::ostream& operator<<(std::ostream& os, Route& object) {
+    std::ostringstream oss;
+
+    oss << "--- Route ---" << std::endl;
+    oss << "  uri : " << object.getUri().getUri() << std::endl;
+    oss << "  root path : " << object.getRootPath().getPath() << std::endl;
+    oss << "  autoindex : " << object.getAutoIndex() << std::endl;
+
+    Logger::logger()->log(LOG_DEBUG, oss.str()); // Log the message with the prefix
+    
+    // No longer output to 'os' here; remove os << oss.str();
+
+    return os;
+}
+*/
+
+void	Route::log(void)
+{
+    std::ostringstream oss;
+
+	Logger::logger()->logTitle(LOG_DEBUG, "Route", 2);
+
+    oss << "  uri : " << getUri().getUri();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+    oss << "  root path : " << getRootPath().getPath();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+    oss << "  autoindex : " << getAutoIndex();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
 }
 
 // =============================================================================

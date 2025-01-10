@@ -1,6 +1,9 @@
 #include "ConfigParserBlock.hpp"
 
 #include <iostream>
+#include <sstream> // std::ostringstream
+
+#include "Logger.hpp"
 
 // =============================================================================
 // Constructors and Destructor
@@ -85,10 +88,14 @@ void	ConfigParserBlock::display(int nestingLevel) const
 {
 	std::string indent(nestingLevel, '\t');
 
-	std::cout << indent << "block : " << block_ << std::endl;
+	std::ostringstream oss;
+
+	oss << indent << "block : " << block_;
+	Logger::logger()->log(LOG_DEBUG, oss);
 	for (size_t i = 0; i != parameters_.size(); ++i)
 	{
-		std::cout << indent << "parameter : " << parameters_[i] << std::endl;
+		oss << indent << "parameter : " << parameters_[i];
+		Logger::logger()->log(LOG_DEBUG, oss);
 	}
 
 	for (size_t i = 0; i != nodes_.size(); ++i)
