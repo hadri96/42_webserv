@@ -54,12 +54,12 @@ class	Server
 		Observer*				observer_;
 
 		int						fd_;
-		std::string				host_;
-		int						port_;
+		std::string				host_;	// To remove ? Since we use Config object ?
+		int						port_;	// To remove ?
 
 		struct sockaddr_in		address_;
 
-		int						maxConnections_;
+		int						maxConnections_;	// To remove ?
 		std::vector<Client*>	clients_;
 
 		// --- Private Methods ---

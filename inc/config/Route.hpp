@@ -26,7 +26,9 @@ class	Route
 	void								setRootPath(Path rootPath);
 	void								setAutoIndex(bool autoIndex);
 
-	void								setRedirection(const HttpRedirection& redirection);
+	void								setHttpRedirection(HttpRedirection redirection);
+	const HttpRedirection&				getHttpRedirection(void) const;
+
 	void								setDefaultFile(const Path& defaultFile);
 	void								setUploadDirectory(const Path& uploadDirectory);
 	void								setIsCgi(bool isCgi);
@@ -36,7 +38,6 @@ class	Route
 	const Uri&							getUri(void) const;
 	const Path&							getRootPath(void) const;
 	const std::string					getRootPathString(void) const;
-	const HttpRedirection&				getRedirection(void) const;
 	bool								getAutoIndex(void) const;
 	const Path&							getDefaultFile(void) const;
 	const Path&							getUploadDirectory(void) const;

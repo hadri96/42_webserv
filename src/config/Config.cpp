@@ -3,6 +3,8 @@
 #include "Logger.hpp"
 #include <sstream> // std::ostringstream
 
+#include <iostream>
+
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
@@ -21,6 +23,7 @@ Config::Config(const Config& other) :
 	port_(other.port_),
 	serverName_(other.serverName_),
 	errorPages_(other.errorPages_),
+	redirection_(other.redirection_),
 	clientMaxBodySize_(other.clientMaxBodySize_),
 	routes_(other.routes_)
 {}
@@ -41,6 +44,7 @@ Config&	Config::operator=(const Config& rhs)
 	port_ = rhs.port_;
 	serverName_ = rhs.serverName_;
 	errorPages_ = rhs.errorPages_;
+	redirection_ = rhs.redirection_;
 	clientMaxBodySize_ = rhs.clientMaxBodySize_;
 	routes_ = rhs.routes_;
 
@@ -134,7 +138,7 @@ void	Config::setClientMaxBodySize(int clientMaxBodySize)
 	clientMaxBodySize_ = clientMaxBodySize;
 }
 
-void	Config::setRedirection(const HttpRedirection& redirection)
+void	Config::setHttpRedirection(HttpRedirection redirection)
 {
 	redirection_ = redirection;
 }

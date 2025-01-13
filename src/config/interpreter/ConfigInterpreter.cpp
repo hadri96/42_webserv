@@ -147,6 +147,8 @@ void	ConfigInterpreter::interpret(
 	ConfigParserBlock* block = dynamic_cast<ConfigParserBlock*>(node);
 	std::ostringstream oss;
 
+	std::string	parent = context.back();
+
 	// --- Block ---
 	if (block)
 	{
@@ -179,7 +181,7 @@ void	ConfigInterpreter::interpret(
 			throw std::runtime_error("The directive `" + node->getName() + "` is invalid in context `" + join(context, "->") + "`");
 
 		// --- Handle directive ---
-		handleDirective(node);
+		handleDirective(node, parent);
 	}
 }
 
@@ -235,7 +237,7 @@ void	ConfigInterpreter::handleBlock(ConfigParserNode* node)
 	}
 }
 
-void	ConfigInterpreter::handleDirective(ConfigParserNode* node)
+void	ConfigInterpreter::handleDirective(ConfigParserNode* node, const std::string& parent)
 {
 	if (node->getName() == "server_name")
 		handleServerName(node);
@@ -248,7 +250,7 @@ void	ConfigInterpreter::handleDirective(ConfigParserNode* node)
 	else if (node->getName() == "client_max_body_size")
 		handleClientMaxBodySize(node);
 	else if (node->getName() == "return")
-		handleReturn(node);
+		handleReturn(node, parent);
 	else if (node->getName() == "root")
 		handleRoot(node);
 	else if (node->getName() == "autoindex")
@@ -352,11 +354,8 @@ void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node)
 
     configs_.back().setClientMaxBodySize(factor * toInt(numberPart));
 }
-void	ConfigInterpreter::handleReturn(ConfigParserNode* node)
+void	ConfigInterpreter::handleReturn(ConfigParserNode* node, const std::string& parent)
 {
-	(void) node;
-	//std::cout << "handleReturn.." << std::endl;
-
 	if (node->getParameters().size() != 2) // also could be 1 parameter ; see that case later
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have 2 parameters");
 
@@ -366,13 +365,17 @@ void	ConfigInterpreter::handleReturn(ConfigParserNode* node)
 		throw std::runtime_error("Directive `" + node->getName() + "` : status code must be a number");
 	
 	int statusCode = toInt(statusCodePart);
-	//std::cout << statusCode << std::endl;
 
 	if (statusCode != 301 && statusCode != 302)
 		throw std::runtime_error("Directive `" + node->getName() + "` : invalid status code");
 
 	std::string uri = node->getParameters()[1];
-	configs_.back().setRedirection(HttpRedirection(statusCode, Uri(uri)));
+
+	if (parent == "server")
+		configs_.back().setHttpRedirection(HttpRedirection(statusCode, Uri(uri)));
+	else if (parent == "location")
+		configs_.back().getRoutes().back().setHttpRedirection(HttpRedirection(statusCode, Uri(uri)));
+		
 }
 
 // --- Handle location ---
