@@ -48,14 +48,14 @@ class	ConfigInterpreter
 
 		// --- Handlers ---
 		void				handleBlock(ConfigParserNode* node);
-		void				handleDirective(ConfigParserNode* node);
+		void				handleDirective(ConfigParserNode* node, const std::string& parent);
 
 		void				handleServerName(ConfigParserNode* node);
 		void				handleListen(ConfigParserNode* node);
 		void				handleIndex(ConfigParserNode* node);
 		void				handleErrorPage(ConfigParserNode* node);
 		void				handleClientMaxBodySize(ConfigParserNode* node);
-		void				handleReturn(ConfigParserNode* node);
+		void				handleReturn(ConfigParserNode* node, const std::string& parent);
 
 		void				handleRoot(ConfigParserNode* node);
 		void				handleAutoIndex(ConfigParserNode* node);

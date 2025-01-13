@@ -51,7 +51,7 @@ Webserv::Webserv(const std::string& configFile)
 	std::ostringstream oss;
 	for (size_t i = 0; i != servers.size(); ++i)
 	{
-		oss << "Starting server no. " << (i + 1) << " : " << servers[i]->getInfoHostPort();
+		oss << "Starting server no. " << (i + 1) << " : " << servers[i]->getInfoUrl();
 		Logger::logger()->logTitle(LOG_INFO, oss, 2);
 		servers[i]->start();
 		o->addServerToMonitor(servers[i]);

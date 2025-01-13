@@ -23,24 +23,28 @@ class	Config
 
 		// --- Setters and Getters ---
 		void							setHost(const std::string& host);
+		const std::string&				getHost(void) const;
+
 		void							setPort(int port);
+		int								getPort(void) const;
+
 		void							setServerName(const std::string& serverName);
+		const std::string&				getServerName(void) const;
+
 		void							setClientMaxBodySize(int clientMaxBodySize);
-		void							setRedirection(const HttpRedirection& redirection);
+		int								getClientMaxBodySize(void) const;
+
+		void							setHttpRedirection(HttpRedirection redirection);
+		HttpRedirection&				getHttpRedirection(void);
 
 		void							addErrorPage(const ErrorPage& errorPage);
 		void							addRoute(const Route& route);
 
-		const std::string&				getHost(void) const;
-		int								getPort(void) const;
-		const std::string&				getServerName(void) const;
-		int								getClientMaxBodySize(void) const;
-  
 		std::vector<ErrorPage>&			getErrorPages(void);
-	  std::vector<Route>&				getRoutes(void);
+		std::vector<Route>&				getRoutes(void);
 		const ErrorPage					getErrorPage(int statusCode);							
 		const Path&						getPathFromUri(Uri& uri) const;
-		HttpRedirection&				getHttpRedirection(void);
+		
 		const Route&					getRoute(Uri uri);
 
 		void							log(void);

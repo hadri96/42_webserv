@@ -95,6 +95,18 @@ void	Route::log(void)
     oss << "  autoindex : " << getAutoIndex();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
+	if (getHttpRedirection().getStatusCode() != 0)
+	{
+		oss << "  redirection : ";
+		Logger::logger()->log(LOG_DEBUG, oss);
+
+		oss << "    status code : " << getHttpRedirection().getStatusCode();
+		Logger::logger()->log(LOG_DEBUG, oss);
+
+		oss << "    uri : " << getHttpRedirection().getUri().getUri();
+		Logger::logger()->log(LOG_DEBUG, oss);
+	}
+
 }
 
 // =============================================================================
@@ -118,7 +130,7 @@ void	Route::setAutoIndex(bool autoIndex)
 	autoIndex_ = autoIndex;
 }
 
-void	Route::setRedirection(const HttpRedirection& redirection)
+void	Route::setHttpRedirection(HttpRedirection redirection)
 {
 	redirection_ = redirection;
 }
@@ -165,7 +177,7 @@ const std::string 	Route::getRootPathString(void) const
 	return (rootPath_.getPath());
 }
 
-const HttpRedirection&	Route::getRedirection(void) const
+const HttpRedirection&	Route::getHttpRedirection(void) const
 {
 	return (redirection_);
 }
