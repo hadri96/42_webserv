@@ -15,7 +15,7 @@
 
 HttpResponse::HttpResponse() {}
 
-HttpResponse::HttpResponse(File& file) 
+HttpResponse::HttpResponse(File file) 
 {
     body_ = file.read();
     Logger::logger()->log(LOG_DEBUG, body_);
@@ -24,7 +24,7 @@ HttpResponse::HttpResponse(File& file)
     composeFullResponse();
 }
 
-HttpResponse::HttpResponse(ErrorPage& errorPage) 
+HttpResponse::HttpResponse(ErrorPage errorPage) 
 {
     body_ = errorPage.read();
     Logger::logger()->log(LOG_DEBUG, body_);

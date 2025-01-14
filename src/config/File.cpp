@@ -1,4 +1,5 @@
 #include "File.hpp"
+#include "ToString.hpp"
 #include <iostream>
 
 
@@ -9,9 +10,20 @@
 File::File(void)
 {}
 
-File::File(const File& other)
+File::File(const File& other) :
+	path_(other.path_),
+	content_(other.content_)
 {
-	(void) other;
+	if (!other.path_.getPath().empty())
+        file_.open(other.path_.getPath().c_str());
+}
+
+// Hardcoded for testing purposes: 
+File::File(const int errorCode)
+{
+	std::string	filename = "/" + toString(errorCode) + ".html";
+	// Hardcoded for testing purposes
+	path_ = Path("www/errors" + filename);
 }
 
 File::File(const std::string& filename)
@@ -59,6 +71,8 @@ const std::string&	File::getContent(void) const
 
 std::string	File::read(void) const
 {
+	Logger::logger()->log(LOG_DEBUG, "Path in file reader : " + path_.getPath());
+
 	std::string         line;
     std::string         content;
     std::ifstream       fileStream(path_.getAbsPath().c_str());
@@ -71,7 +85,7 @@ std::string	File::read(void) const
 	return (content);
 }
 
-const Path&	File::getPath(void) const
+const Path	File::getPath(void) const
 {
 	return (path_);
 }

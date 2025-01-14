@@ -9,6 +9,13 @@ ErrorPage::ErrorPage(void) :
 	errorFile_(File(Path("www/errors/500.html")))
 {}
 
+ErrorPage::ErrorPage(int errorCode) :
+	errorCode_(errorCode),
+	errorFile_(File(errorCode))
+{
+	Logger::logger()->log(LOG_DEBUG, "Path in ErrorFile constructor: " + errorFile_.getPath().getPath());
+}
+
 ErrorPage::ErrorPage(const ErrorPage& other) :
 	errorCode_(other.errorCode_),
 	errorFile_(other.errorFile_)
@@ -60,7 +67,7 @@ const File&	ErrorPage::getErrorFile(void) const
 	return (errorFile_);
 }
 
-const Path&	ErrorPage::getErrorPath(void) const
+const Path	ErrorPage::getErrorPath(void) const
 {
 	return (errorFile_.getPath());
 }

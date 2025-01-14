@@ -86,12 +86,15 @@ HttpResponse    RequestInterpreter::handleGetRequest(Config& config, HttpRequest
 {
     Path            fullPath = buildFullPath(config, request);
 
-    // check if resource exists within server -->
+    // check if resource exists within server -->F
     if (!fullPath.isInFileSystem())
     {
-        ErrorPage       errorPage = config.getErrorPage(500);
-        
-        return (errorPage);
+
+        ErrorPage       errorPage = config.getErrorPage(404);
+        Logger::logger()->log(LOG_DEBUG, "Errorpage Path in handleGetRequest File: " + errorPage.getErrorFile().getPath().getPath());
+
+
+        return (HttpResponse(errorPage));
     }
 
     File            requestedResource(fullPath);

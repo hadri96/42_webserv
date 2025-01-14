@@ -6,7 +6,7 @@
 
 RequestLine::RequestLine(void) : 
 	method_(GET),
-	relativeUri_("/example_response.html"),
+	relativeUri_("/example_respklonse.html"),
 	httpVersion_("HTTP/1.1")
 {}
 

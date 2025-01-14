@@ -185,26 +185,34 @@ std::vector<ErrorPage>&	Config::getErrorPages(void)
 	return (errorPages_);
 }
 
+// Config.getErrorPage(404);
 const ErrorPage	Config::getErrorPage(int statusCode)
 {
+	// si defini dans config
 	for( std::vector<ErrorPage>::const_iterator it = errorPages_.begin(); it != errorPages_.end(); it++)
 	{
 		if (it->getErrorCode() == statusCode)
 			return (*it);
 	}
-	return (ErrorPage());
+	// Hardcoded for testing purposes: 
+	ErrorPage	errorPage(statusCode);
+	return (errorPage);
+// sinon erreurs par defaut -> ErrorPage(404);
 }
 
 // Function should get the correct route according to the uri: 
 // Gets the substring between first and last slash of uriString and compares with config routes
 // This needs to be adapted depending on what the routes look like in the config file
 // It cannot be tested yet as we don't yet have multiple routes in our example Config
-const Path&	Config::getPathFromUri(Uri& uri) const
+const Path	Config::getPathFromUri(Uri& uri) const
 {
 	std::string		uriString = uri.getUri(); 
 	std::string		routeSegment;
 	size_t			firstSlash = uriString.find('/');
 	size_t			lastSlash = uriString.rfind('/');
+
+	// Hardcoded until we have the routes/locations in the Config object:
+	return (Path("www/html"));
 
 	if (lastSlash != std::string::npos)
 		routeSegment = uriString.substr(firstSlash + 1, lastSlash - firstSlash - 1);
@@ -213,10 +221,10 @@ const Path&	Config::getPathFromUri(Uri& uri) const
 	else
 		routeSegment = "";
 
-	for (std::vector<Route>::const_iterator it = routes_.begin(); it != routes_.end(); it++)
+	for (size_t i = 0; i < routes_.size(); ++i)
 	{
-		if (it->getRootPathString() == routeSegment)
-			return ((*it).getRootPath());
+	    if (routes_[i].getRootPathString() == routeSegment)
+	        return routes_[i].getRootPath();
 	}
 	return (routes_[0].getRootPath());
 }

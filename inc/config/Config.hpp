@@ -43,7 +43,7 @@ class	Config
 		std::vector<ErrorPage>&			getErrorPages(void);
 		std::vector<Route>&				getRoutes(void);
 		const ErrorPage					getErrorPage(int statusCode);							
-		const Path&						getPathFromUri(Uri& uri) const;
+		const Path						getPathFromUri(Uri& uri) const;
 		
 		const Route&					getRoute(Uri uri);
 
