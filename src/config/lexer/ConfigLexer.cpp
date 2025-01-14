@@ -143,6 +143,13 @@ ConfigToken	ConfigLexer::nextToken(void)
 			++position_;
 			return(ConfigToken(CT_SEMICOLON, ";"));
 		}
+		else if (current == '#')
+		{
+			while (position_ != input_.size() && input_[position_] != '\n')
+			{
+				++position_;
+			}
+		}
 		else
 		{
 			// Unexpected character
@@ -159,5 +166,5 @@ ConfigToken	ConfigLexer::nextToken(void)
 
 bool	ConfigLexer::isKeyword(char c) const
 {
-	return (isprint(c) && !(isspace(c)) && c != ';' && c != '{' && c != '}');
+	return (isprint(c) && !(isspace(c)) && c != ';' && c != '{' && c != '}' && c != '#');
 }
