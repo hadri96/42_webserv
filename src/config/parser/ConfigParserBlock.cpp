@@ -10,26 +10,17 @@
 // =============================================================================
 
 ConfigParserBlock::ConfigParserBlock(void) :
-	block_("root")
+	ConfigParserNode("root")
 {}
 
 ConfigParserBlock::ConfigParserBlock(const ConfigParserBlock& other) :
-	block_(other.block_),
-	parameters_(other.parameters_),
+	ConfigParserNode(other.name_, other.parameters_),
 	nodes_(other.nodes_)
 {}
 
-ConfigParserBlock::ConfigParserBlock(const std::string& block, const std::vector<std::string> parameters) :
-	block_(block),
-	parameters_(parameters)
-{
-	/*std::cout << "Block created : " << block_ << std::endl;
-	for (size_t i = 0; i != parameters_.size(); ++i)
-	{
-		std::cout << "Parameter : " << parameters_[i] << " ";
-	}
-	std::cout << std::endl;*/
-}
+ConfigParserBlock::ConfigParserBlock(const std::string& name, const std::vector<std::string> parameters) :
+	ConfigParserNode(name, parameters)
+{}
 
 ConfigParserBlock::~ConfigParserBlock(void)
 {}
@@ -43,7 +34,7 @@ ConfigParserBlock& ConfigParserBlock::operator=(const ConfigParserBlock& rhs)
 	if (this == &rhs)
 		return (*this);
 	
-	block_ = rhs.block_;
+	name_ = rhs.name_;
 	parameters_ = rhs.parameters_;
 	nodes_ = rhs.nodes_;
 
@@ -57,16 +48,6 @@ ConfigParserBlock& ConfigParserBlock::operator=(const ConfigParserBlock& rhs)
 const std::vector<ConfigParserNode*>& ConfigParserBlock::getNodes(void) const
 {
 	return (nodes_);
-}
-
-std::string	ConfigParserBlock::getName(void) const
-{
-	return (block_);
-}
-
-std::vector<std::string>	ConfigParserBlock::getParameters(void) const
-{
-	return (parameters_);
 }
 
 // =============================================================================
@@ -90,7 +71,7 @@ void	ConfigParserBlock::display(int nestingLevel) const
 
 	std::ostringstream oss;
 
-	oss << indent << "block : " << block_;
+	oss << indent << "block : " << name_;
 	Logger::logger()->log(LOG_DEBUG, oss);
 	for (size_t i = 0; i != parameters_.size(); ++i)
 	{

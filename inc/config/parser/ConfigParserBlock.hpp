@@ -13,7 +13,7 @@ class	ConfigParserBlock : public ConfigParserNode
 												ConfigParserBlock(void);
 												ConfigParserBlock(const ConfigParserBlock& other);
 
-												ConfigParserBlock(const std::string& block, const std::vector<std::string> parameters);
+												ConfigParserBlock(const std::string& name, const std::vector<std::string> parameters);
 
 												~ConfigParserBlock(void);
 
@@ -22,8 +22,6 @@ class	ConfigParserBlock : public ConfigParserNode
 
 		// --- Setters and Getters ---
 		const std::vector<ConfigParserNode*>&	getNodes(void) const;
-		std::string								getName(void) const;
-		std::vector<std::string>				getParameters(void) const;
 
 		// --- Public Methods ---
 		void									addNode(ConfigParserNode* node);
@@ -31,8 +29,6 @@ class	ConfigParserBlock : public ConfigParserNode
 
 	private:
 		// --- Private Attributes ---
-		std::string								block_;
-		std::vector<std::string>				parameters_;
 		std::vector<ConfigParserNode*>			nodes_;
 
 		// --- Private Methods ---
