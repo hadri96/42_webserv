@@ -23,7 +23,7 @@ File::File(const int errorCode)
 {
 	std::string	filename = "/" + toString(errorCode) + ".html";
 	// Hardcoded for testing purposes
-	path_ = Path("www/errors" + filename);
+	path_ = Path("/www/errors" + filename);
 }
 
 File::File(const std::string& filename)
@@ -71,7 +71,7 @@ const std::string&	File::getContent(void) const
 
 std::string	File::read(void) const
 {
-	Logger::logger()->log(LOG_DEBUG, "Path in file reader : " + path_.getPath());
+	Logger::logger()->log(LOG_DEBUG, "Abs Path in file reader : " + path_.getAbsPath());
 
 	std::string         line;
     std::string         content;

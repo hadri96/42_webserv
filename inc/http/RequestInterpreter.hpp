@@ -41,7 +41,6 @@ class RequestInterpreter
 
         bool            fileInServer(std::string uri, Config& config);
         bool            isAllowedMethod(Config& config);
-        Path            buildFullPath(Config& config, HttpRequest& request);
 };
 
 #endif

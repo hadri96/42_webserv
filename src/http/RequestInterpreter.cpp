@@ -71,36 +71,17 @@ bool    RequestInterpreter::isAllowedMethod(Config& config)
     return (true);
 }
 
-Path   RequestInterpreter::buildFullPath(Config& config, HttpRequest& request)
-{
-    Uri     uri = request.getRelativeUri(); // "/index.html"
-    Path    configPath = config.getPathFromUri(uri); // "www/html/"
-    Path    fullPath = configPath.addUri(uri); // "www/html/index.html"
-
-    Logger::logger()->log(LOG_INFO, "fullPath: " + fullPath.getAbsPath());
-
-    return (fullPath);
-}
-
 HttpResponse    RequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
 {
-    Path            fullPath = buildFullPath(config, request);
+    Uri     uri = request.getRelativeUri();
+    Path    fullPath;
 
-    // check if resource exists within server -->F
-    if (!fullPath.isInFileSystem())
-    {
-
-        ErrorPage       errorPage = config.getErrorPage(404);
-        Logger::logger()->log(LOG_DEBUG, "Errorpage Path in handleGetRequest File: " + errorPage.getErrorFile().getPath().getPath());
-
-
-        return (HttpResponse(errorPage));
-    }
-
-    File            requestedResource(fullPath);
+    // check if resource exists within server 
+    if (!config.checkPathInConfig(uri, fullPath))
+        return (HttpResponse(config.getErrorPage(404)));
+    else
+        return (HttpResponse(File(fullPath)));
     
-    return (HttpResponse(requestedResource));
-
     // check if redirection 
     // get filepath or redirection path
     // check if directory or file 

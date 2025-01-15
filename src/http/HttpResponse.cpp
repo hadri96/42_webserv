@@ -18,7 +18,7 @@ HttpResponse::HttpResponse() {}
 HttpResponse::HttpResponse(File file) 
 {
     body_ = file.read();
-    Logger::logger()->log(LOG_DEBUG, body_);
+    // Logger::logger()->log(LOG_DEBUG, body_);
     staticStatusLine();
     generateBasicHeaders();
     composeFullResponse();
@@ -27,7 +27,7 @@ HttpResponse::HttpResponse(File file)
 HttpResponse::HttpResponse(ErrorPage errorPage) 
 {
     body_ = errorPage.read();
-    Logger::logger()->log(LOG_DEBUG, body_);
+    // Logger::logger()->log(LOG_DEBUG, body_);
     errorStatusLine(errorPage);
     generateBasicHeaders();
     composeFullResponse();
@@ -44,8 +44,6 @@ HttpResponse& HttpResponse::generateError(Config& config, int errorCode)
     ErrorPage   errorPage = config.getErrorPage(errorCode);
     
     *this = HttpResponse(errorPage);
-    Logger::logger()->log(LOG_DEBUG, "Error generated : " + toString(errorCode));
-    
     return (*this);
 }
 
@@ -86,7 +84,7 @@ void    HttpResponse::composeFullResponse()
     fullResponse_.append(statusLine_);
     fullResponse_.append(headers_);
     fullResponse_.append(body_, 0, body_.length());
-    Logger::logger()->log(LOG_DEBUG, "Full Response\n" + fullResponse_);
+    // Logger::logger()->log(LOG_DEBUG, "Full Response\n" + fullResponse_);
 }
 
 // --- Error Response Methods ---
