@@ -200,48 +200,27 @@ const ErrorPage	Config::getErrorPage(int statusCode)
 // sinon erreurs par defaut -> ErrorPage(404);
 }
 
-<<<<<<< HEAD
 // Function should get the correct route according to the uri: 
 // Gets the substring between first and last slash of uriString and compares with config routes
 // This needs to be adapted depending on what the routes look like in the config file
 // It cannot be tested yet as we don't yet have multiple routes in our example Config
-const Path	Config::getPathFromUri(Uri& uri) const
-=======
-// Function should get the correct Location according to the uri: 
-// Gets the substring between first and last slash of uriString and compares with config Locations
-// This needs to be adapted depending on what the Locations look like in the config file
-// It cannot be tested yet as we don't yet have multiple Locations in our example Config
-const Path&	Config::getPathFromUri(Uri& uri) const
->>>>>>> origin/master
+bool	Config::checkPathInConfig(Uri& uri, Path& outputPath) const
 {
 	std::string		uriString = uri.getUri(); 
-	std::string		LocationSegment;
-	size_t			firstSlash = uriString.find('/');
-	size_t			lastSlash = uriString.rfind('/');
+	// Logger::logger()->log(LOG_DEBUG, "URI = " + uriString);
 
-	// Hardcoded until we have the routes/locations in the Config object:
-	return (Path("www/html"));
-
-	if (lastSlash != std::string::npos)
-		LocationSegment = uriString.substr(firstSlash + 1, lastSlash - firstSlash - 1);
-	else if (firstSlash != std::string::npos)
-		LocationSegment = uriString.substr(firstSlash + 1);
-	else
-		LocationSegment = "";
-
-<<<<<<< HEAD
-	for (size_t i = 0; i < routes_.size(); ++i)
+	for (size_t i = 0; i < Locations_.size(); i++)
 	{
-	    if (routes_[i].getRootPathString() == routeSegment)
-	        return routes_[i].getRootPath();
-=======
-	for (std::vector<Location>::const_iterator it = Locations_.begin(); it != Locations_.end(); it++)
-	{
-		if (it->getRootPathString() == LocationSegment)
-			return ((*it).getRootPath());
->>>>>>> origin/master
+		Logger::logger()->log(LOG_DEBUG, "Location = " + Locations_[i].getRootPathString());
+		Path	fullPath(Locations_[i].getRootPathString() + uriString);
+		if (fullPath.isInFileSystem())
+		{	
+			outputPath = fullPath;
+			return (true);
+		}
+		Logger::logger()->log(LOG_DEBUG, "abs path in checkPathInConfig : " + fullPath.getAbsPath());
 	}
-	return (Locations_[0].getRootPath());
+	return (false);
 }
 
 
