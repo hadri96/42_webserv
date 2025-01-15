@@ -78,7 +78,7 @@ class	Config
 
 		int								clientMaxBodySize_;
 
-		std::vector<Location>				Locations_;
+		std::vector<Location>			locations_;
 };
 
 //std::ostream&	operator<<(std::ostream& os, Config& object);

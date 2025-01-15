@@ -6,6 +6,7 @@
 
 # include "Path.hpp"
 # include "File.hpp"
+# include "Uri.hpp"
 
 class	ErrorPage
 {
@@ -15,6 +16,7 @@ class	ErrorPage
 							ErrorPage(int errorCode);
 							ErrorPage(const ErrorPage& other);
 
+							ErrorPage(int errorCode, Uri uri);
 							ErrorPage(int errorCode, const Path& path);
 
 							~ErrorPage(void);
@@ -26,16 +28,20 @@ class	ErrorPage
 		int					getErrorCode(void) const;
 		const File&			getErrorFile(void) const;
 		const Path			getErrorPath(void) const;
+		Uri					getErrorUri(void) const;
 		// --- Public Attributes ---
 		const std::string	read(void) const;
+		void				display(void);
 
 	private:
 		// --- Private Attributes ---
 		int					errorCode_;
 		File				errorFile_;
 
+		Uri					uri_;
+
 };
 
-std::ostream&	operator<<(std::ostream& os, ErrorPage& object);
+//std::ostream&	operator<<(std::ostream& os, ErrorPage& object);
 
 #endif

@@ -1,4 +1,5 @@
 #include "Uri.hpp"
+#include <iostream>
 
 // =============================================================================
 // Constructors and Destructor
