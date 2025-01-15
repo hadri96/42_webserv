@@ -316,6 +316,9 @@ void	ConfigInterpreter::handleErrorPage(ConfigParserNode* node)
 	(void) node;
 	//std::cout << "handleErrorPage..." << std::endl;
 
+	std::vector<int>	errorCodes;
+	std::string			uri;
+
 	if (node->getParameters().size() < 2)
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have at least two parameters");
 
@@ -323,6 +326,15 @@ void	ConfigInterpreter::handleErrorPage(ConfigParserNode* node)
 	{
 		if (!allOf(node->getParameters()[i], std::isdigit))
 			throw std::runtime_error("Directive `" + node->getName() + "` : status code errors must be numbers");
+		errorCodes.push_back(toInt(node->getParameters()[i]));
+	}
+
+	uri = node->getParameters().back();
+	std::cout << uri << std::endl;
+
+	for (size_t i = 0; i != errorCodes.size(); ++i)
+	{
+		configs_.back().addErrorPage(ErrorPage(errorCodes[i], Uri(uri)));
 	}
 }
 void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node)

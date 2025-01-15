@@ -16,7 +16,13 @@ ErrorPage::ErrorPage(int errorCode) :
 
 ErrorPage::ErrorPage(const ErrorPage& other) :
 	errorCode_(other.errorCode_),
-	errorFile_(other.errorFile_)
+	errorFile_(other.errorFile_),
+	uri_(other.uri_)
+{}
+
+ErrorPage::ErrorPage(int error, Uri uri) :
+	errorCode_(error),
+	uri_(uri)
 {}
 
 ErrorPage::ErrorPage(int error, const Path& path) :
@@ -38,17 +44,25 @@ ErrorPage&	ErrorPage::operator=(const ErrorPage& rhs)
 
 	errorCode_ = rhs.errorCode_;
 	errorFile_ = rhs.errorFile_;
+	uri_ = rhs.uri_;
 
 	return (*this);
 }
 
-std::ostream&	operator<<(std::ostream& os, ErrorPage& object)
+void	ErrorPage::display(void)
 {
-	os << "--- Error page ---" << std::endl;
-	os << "  error code : " << object.getErrorCode() << std::endl;
-	os << "  error file path : " << object.getErrorPath().getPath() << std::endl;
+	std::ostringstream oss;
 
-	return (os);
+	Logger::logger()->logTitle(LOG_DEBUG, "Error page", 2);
+
+	oss << "  error code : " << getErrorCode();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	oss << "  error uri : " << getErrorUri().getUri();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	//os << "  error file path : " << object.getErrorPath().getPath() << std::endl;
+
 }
 
 // =============================================================================
@@ -68,6 +82,11 @@ const File&	ErrorPage::getErrorFile(void) const
 const Path	ErrorPage::getErrorPath(void) const
 {
 	return (errorFile_.getPath());
+}
+
+Uri	ErrorPage::getErrorUri(void) const
+{
+	return (uri_);
 }
 
 const std::string	ErrorPage::read(void) const

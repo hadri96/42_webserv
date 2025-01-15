@@ -15,7 +15,7 @@ Config::Config(void) :
 	serverName_("default"),
 	errorPages_(0),
 	clientMaxBodySize_(-1),
-	Locations_(0)
+	locations_(0)
 {}
 
 Config::Config(const Config& other) :
@@ -25,7 +25,7 @@ Config::Config(const Config& other) :
 	errorPages_(other.errorPages_),
 	redirection_(other.redirection_),
 	clientMaxBodySize_(other.clientMaxBodySize_),
-	Locations_(other.Locations_)
+	locations_(other.locations_)
 {}
 
 Config::~Config(void)
@@ -46,7 +46,7 @@ Config&	Config::operator=(const Config& rhs)
 	errorPages_ = rhs.errorPages_;
 	redirection_ = rhs.redirection_;
 	clientMaxBodySize_ = rhs.clientMaxBodySize_;
-	Locations_ = rhs.Locations_;
+	locations_ = rhs.locations_;
 
 	return (*this);
 }
@@ -95,8 +95,7 @@ void	Config::log(void)
 	// Error pages
 	for (size_t i = 0; i != getErrorPages().size(); ++i)
 	{
-		oss << getErrorPages()[i];
-		Logger::logger()->log(LOG_DEBUG, oss);
+		getErrorPages()[i].display();
 	}
 	oss << "  client_max_body_size : " << getClientMaxBodySize();
 	Logger::logger()->log(LOG_DEBUG, oss);
@@ -148,9 +147,9 @@ void	Config::addErrorPage(const ErrorPage& errorPage)
 	errorPages_.push_back(errorPage);
 }
 
-void	Config::addLocation(const Location& Location)
+void	Config::addLocation(const Location& location)
 {
-	Locations_.push_back(Location);
+	locations_.push_back(location);
 }
 
 // --- Getters ---
@@ -204,6 +203,7 @@ const ErrorPage	Config::getErrorPage(int statusCode)
 // Gets the substring between first and last slash of uriString and compares with config routes
 // This needs to be adapted depending on what the routes look like in the config file
 // It cannot be tested yet as we don't yet have multiple routes in our example Config
+
 bool	Config::checkPathInConfig(Uri& uri, Path& outputPath) const
 {
 	std::string		uriString = uri.getUri(); 
@@ -226,5 +226,5 @@ bool	Config::checkPathInConfig(Uri& uri, Path& outputPath) const
 
 std::vector<Location>&	Config::getLocations(void)
 {
-	return (Locations_);
+	return (locations_);
 }
