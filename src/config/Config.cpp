@@ -15,7 +15,7 @@ Config::Config(void) :
 	serverName_("default"),
 	errorPages_(0),
 	clientMaxBodySize_(-1),
-	routes_(0)
+	Locations_(0)
 {}
 
 Config::Config(const Config& other) :
@@ -25,7 +25,7 @@ Config::Config(const Config& other) :
 	errorPages_(other.errorPages_),
 	redirection_(other.redirection_),
 	clientMaxBodySize_(other.clientMaxBodySize_),
-	routes_(other.routes_)
+	Locations_(other.Locations_)
 {}
 
 Config::~Config(void)
@@ -46,7 +46,7 @@ Config&	Config::operator=(const Config& rhs)
 	errorPages_ = rhs.errorPages_;
 	redirection_ = rhs.redirection_;
 	clientMaxBodySize_ = rhs.clientMaxBodySize_;
-	routes_ = rhs.routes_;
+	Locations_ = rhs.Locations_;
 
 	return (*this);
 }
@@ -68,10 +68,10 @@ Config&	Config::operator=(const Config& rhs)
 	// Redirection
 	os << object.getHttpRedirection();
 
-	// Routes
-	for (size_t i = 0; i != object.getRoutes().size(); ++i)
+	// Locations
+	for (size_t i = 0; i != object.getLocations().size(); ++i)
 	{
-		os << object.getRoutes()[i];
+		os << object.getLocations()[i];
 	}
 
 	return (os);
@@ -104,10 +104,10 @@ void	Config::log(void)
 	// Redirection
 	getHttpRedirection().log();
 
-	// Routes
-	for (size_t i = 0; i != getRoutes().size(); ++i)
+	// Locations
+	for (size_t i = 0; i != getLocations().size(); ++i)
 	{
-		getRoutes()[i].log();
+		getLocations()[i].log();
 		//Logger::logger()->log(LOG_DEBUG, oss);
 	}
 }
@@ -148,9 +148,9 @@ void	Config::addErrorPage(const ErrorPage& errorPage)
 	errorPages_.push_back(errorPage);
 }
 
-void	Config::addRoute(const Route& route)
+void	Config::addLocation(const Location& Location)
 {
-	routes_.push_back(route);
+	Locations_.push_back(Location);
 }
 
 // --- Getters ---
@@ -200,14 +200,22 @@ const ErrorPage	Config::getErrorPage(int statusCode)
 // sinon erreurs par defaut -> ErrorPage(404);
 }
 
+<<<<<<< HEAD
 // Function should get the correct route according to the uri: 
 // Gets the substring between first and last slash of uriString and compares with config routes
 // This needs to be adapted depending on what the routes look like in the config file
 // It cannot be tested yet as we don't yet have multiple routes in our example Config
 const Path	Config::getPathFromUri(Uri& uri) const
+=======
+// Function should get the correct Location according to the uri: 
+// Gets the substring between first and last slash of uriString and compares with config Locations
+// This needs to be adapted depending on what the Locations look like in the config file
+// It cannot be tested yet as we don't yet have multiple Locations in our example Config
+const Path&	Config::getPathFromUri(Uri& uri) const
+>>>>>>> origin/master
 {
 	std::string		uriString = uri.getUri(); 
-	std::string		routeSegment;
+	std::string		LocationSegment;
 	size_t			firstSlash = uriString.find('/');
 	size_t			lastSlash = uriString.rfind('/');
 
@@ -215,22 +223,29 @@ const Path	Config::getPathFromUri(Uri& uri) const
 	return (Path("www/html"));
 
 	if (lastSlash != std::string::npos)
-		routeSegment = uriString.substr(firstSlash + 1, lastSlash - firstSlash - 1);
+		LocationSegment = uriString.substr(firstSlash + 1, lastSlash - firstSlash - 1);
 	else if (firstSlash != std::string::npos)
-		routeSegment = uriString.substr(firstSlash + 1);
+		LocationSegment = uriString.substr(firstSlash + 1);
 	else
-		routeSegment = "";
+		LocationSegment = "";
 
+<<<<<<< HEAD
 	for (size_t i = 0; i < routes_.size(); ++i)
 	{
 	    if (routes_[i].getRootPathString() == routeSegment)
 	        return routes_[i].getRootPath();
+=======
+	for (std::vector<Location>::const_iterator it = Locations_.begin(); it != Locations_.end(); it++)
+	{
+		if (it->getRootPathString() == LocationSegment)
+			return ((*it).getRootPath());
+>>>>>>> origin/master
 	}
-	return (routes_[0].getRootPath());
+	return (Locations_[0].getRootPath());
 }
 
 
-std::vector<Route>&	Config::getRoutes(void)
+std::vector<Location>&	Config::getLocations(void)
 {
-	return (routes_);
+	return (Locations_);
 }

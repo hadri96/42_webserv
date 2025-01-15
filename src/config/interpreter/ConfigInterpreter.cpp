@@ -1,7 +1,7 @@
 /*
  TO DO :
 
- handle redirections outside a route...
+ handle redirections outside a Location... OK
  handle error pages
  handle limit_except
  
@@ -229,11 +229,11 @@ void	ConfigInterpreter::handleBlock(ConfigParserNode* node)
 		if (node->getParameters().size() != 1)
 			throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
 
-		Route newRoute;
-		currentConfig.addRoute(newRoute);
+		Location newLocation;
+		currentConfig.addLocation(newLocation);
 		
-		Route& currentRoute = currentConfig.getRoutes().back();
-		currentRoute.setUri(Uri(node->getParameters()[0]));
+		Location& currentLocation = currentConfig.getLocations().back();
+		currentLocation.setUri(Uri(node->getParameters()[0]));
 	}
 }
 
@@ -318,6 +318,12 @@ void	ConfigInterpreter::handleErrorPage(ConfigParserNode* node)
 
 	if (node->getParameters().size() < 2)
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have at least two parameters");
+
+	for (size_t i = 0; i != node->getParameters().size() - 1; ++i)
+	{
+		if (!allOf(node->getParameters()[i], std::isdigit))
+			throw std::runtime_error("Directive `" + node->getName() + "` : status code errors must be numbers");
+	}
 }
 void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node)
 {
@@ -374,7 +380,7 @@ void	ConfigInterpreter::handleReturn(ConfigParserNode* node, const std::string& 
 	if (parent == "server")
 		configs_.back().setHttpRedirection(HttpRedirection(statusCode, Uri(uri)));
 	else if (parent == "location")
-		configs_.back().getRoutes().back().setHttpRedirection(HttpRedirection(statusCode, Uri(uri)));
+		configs_.back().getLocations().back().setHttpRedirection(HttpRedirection(statusCode, Uri(uri)));
 		
 }
 
@@ -386,9 +392,9 @@ void	ConfigInterpreter::handleRoot(ConfigParserNode* node)
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
 
 	Config& currentConfig = configs_.back();
-	Route& currentRoute = currentConfig.getRoutes().back();
+	Location& currentLocation = currentConfig.getLocations().back();
 
-	currentRoute.setRootPath(Path(node->getParameters()[0]));
+	currentLocation.setRootPath(Path(node->getParameters()[0]));
 }
 
 void	ConfigInterpreter::handleAutoIndex(ConfigParserNode* node)
@@ -400,12 +406,12 @@ void	ConfigInterpreter::handleAutoIndex(ConfigParserNode* node)
 		throw std::runtime_error("Directive `" + node->getName() + "` : parameter must be either `on` or `off");
 
 	Config& currentConfig = configs_.back();
-	Route& currentRoute = currentConfig.getRoutes().back();
+	Location& currentLocation = currentConfig.getLocations().back();
 
 	if (node->getParameters()[0] == "on")
-		currentRoute.setAutoIndex(true);
+		currentLocation.setAutoIndex(true);
 	else
-		currentRoute.setAutoIndex(false);
+		currentLocation.setAutoIndex(false);
 }
 
 void	ConfigInterpreter::handleDeny(ConfigParserNode* node)

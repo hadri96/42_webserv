@@ -6,7 +6,7 @@
 # include <vector>
 
 # include "ErrorPage.hpp"
-# include "Route.hpp"
+# include "Location.hpp"
 # include "Cgi.hpp"
 
 class	Config
@@ -38,14 +38,14 @@ class	Config
 		HttpRedirection&				getHttpRedirection(void);
 
 		void							addErrorPage(const ErrorPage& errorPage);
-		void							addRoute(const Route& route);
+		void							addLocation(const Location& Location);
 
 		std::vector<ErrorPage>&			getErrorPages(void);
-		std::vector<Route>&				getRoutes(void);
+		std::vector<Location>&				getLocations(void);
 		const ErrorPage					getErrorPage(int statusCode);							
 		const Path						getPathFromUri(Uri& uri) const;
 		
-		const Route&					getRoute(Uri uri);
+		const Location&					getLocation(Uri uri);
 
 		void							log(void);
 
@@ -78,7 +78,7 @@ class	Config
 
 		int								clientMaxBodySize_;
 
-		std::vector<Route>				routes_;
+		std::vector<Location>				Locations_;
 };
 
 //std::ostream&	operator<<(std::ostream& os, Config& object);
