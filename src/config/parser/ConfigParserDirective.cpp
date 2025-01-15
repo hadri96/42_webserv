@@ -10,17 +10,15 @@
 // =============================================================================
 
 ConfigParserDirective::ConfigParserDirective(void) :
-	directive_("")
+	ConfigParserNode()
 {}
 
 ConfigParserDirective::ConfigParserDirective(const ConfigParserDirective& other) :
-	directive_(other.directive_),
-	parameters_(other.parameters_)
+	ConfigParserNode(other.name_, other.parameters_)
 {}
 
 ConfigParserDirective::ConfigParserDirective(const std::string& directive, const std::vector<std::string> parameters) :
-	directive_(directive),
-	parameters_(parameters)
+	ConfigParserNode(directive, parameters)
 {
 	//std::cout << "directive : " << directive << std::endl;
 }
@@ -37,24 +35,10 @@ ConfigParserDirective& ConfigParserDirective::operator=(const ConfigParserDirect
 	if (this == &rhs)
 		return (*this);
 	
-	directive_ = rhs.directive_;
+	name_ = rhs.name_;
 	parameters_ = rhs.parameters_;
 
 	return (*this);
-}
-
-// =============================================================================
-// Setters and Getters
-// =============================================================================
-
-std::string	ConfigParserDirective::getName(void) const
-{
-	return (directive_);
-}
-
-std::vector<std::string>	ConfigParserDirective::getParameters(void) const
-{
-	return (parameters_);
 }
 
 // =============================================================================
@@ -72,7 +56,7 @@ void	ConfigParserDirective::display(int nestingLevel) const
 
 	std::ostringstream oss;
 
-	oss << indent << "directive : " << directive_;
+	oss << indent << "directive : " << name_;
 	Logger::logger()->log(LOG_DEBUG, oss);
 	for (size_t i = 0; i != parameters_.size(); ++i)
 	{

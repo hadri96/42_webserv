@@ -13,25 +13,16 @@ class	ConfigParserDirective : public ConfigParserNode
 										ConfigParserDirective(void);
 										ConfigParserDirective(const ConfigParserDirective& other);
 
-										ConfigParserDirective(const std::string& directive, const std::vector<std::string> parameters);
+										ConfigParserDirective(const std::string& name, const std::vector<std::string> parameters);
 
 										~ConfigParserDirective(void);
 
 		// --- Operators Overload ---
 		ConfigParserDirective&			operator=(const ConfigParserDirective& rhs);
 
-		// --- Setters and Getters ---
-		std::string						getName(void) const;
-		std::vector<std::string>		getParameters(void) const;
-
 		// --- Public Methods ---
 		void							display(void) const;
 		void							display(int nestingLevel) const;
-
-	private:
-		// --- Private Attributes ---
-		std::string						directive_;
-		std::vector<std::string>		parameters_;
 };
 
 #endif
