@@ -209,10 +209,10 @@ bool	Config::checkPathInConfig(Uri& uri, Path& outputPath) const
 	std::string		uriString = uri.getUri(); 
 	// Logger::logger()->log(LOG_DEBUG, "URI = " + uriString);
 
-	for (size_t i = 0; i < Locations_.size(); i++)
+	for (size_t i = 0; i < locations_.size(); i++)
 	{
-		Logger::logger()->log(LOG_DEBUG, "Location = " + Locations_[i].getRootPathString());
-		Path	fullPath(Locations_[i].getRootPathString() + uriString);
+		Logger::logger()->log(LOG_DEBUG, "Location = " + locations_[i].getRootPathString());
+		Path	fullPath(locations_[i].getRootPathString() + uriString);
 		if (fullPath.isInFileSystem())
 		{	
 			outputPath = fullPath;
