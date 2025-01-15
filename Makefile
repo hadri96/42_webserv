@@ -24,7 +24,7 @@ SERVER = Observer Client Server
 CONFIG = 	File \
 			Path \
 			Uri \
-			Route \
+			Location \
 			HttpRedirection \
 			ErrorPage \
 			Cgi \

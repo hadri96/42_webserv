@@ -1,10 +1,10 @@
-#include "Route.hpp"
+#include "Location.hpp"
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
-Route::Route(void) :
+Location::Location(void) :
 	uri_(),
 	rootPath_(),
 	allowedMethods_(),
@@ -16,7 +16,7 @@ Route::Route(void) :
 	cgi_()
 {}
 
-Route::Route(const Route& other) :
+Location::Location(const Location& other) :
 	uri_(other.uri_),
 	rootPath_(other.rootPath_),
 	allowedMethods_(other.allowedMethods_),
@@ -27,14 +27,14 @@ Route::Route(const Route& other) :
 	isCgi_(other.isCgi_),
 	cgi_(other.cgi_)
 {}
-Route::~Route(void)
+Location::~Location(void)
 {}
 
 // =============================================================================
 // Operators Overload
 // =============================================================================
 
-Route&	Route::operator=(const Route& rhs)
+Location&	Location::operator=(const Location& rhs)
 {
 	if (this == &rhs)
 		return (*this);
@@ -52,9 +52,9 @@ Route&	Route::operator=(const Route& rhs)
 	return (*this);
 }
 
-/*std::ostream&	operator<<(std::ostream& os, Route& object)
+/*std::ostream&	operator<<(std::ostream& os, Location& object)
 {
-	os << "--- Route ---" << std::endl;
+	os << "--- Location ---" << std::endl;
 	os << "  uri : " << object.getUri().getUri() << std::endl;
 	os << "  root path : " << object.getRootPath().getPath() << std::endl;
 	os << "  autoindex : " << object.getAutoIndex() << std::endl;
@@ -64,10 +64,10 @@ Route&	Route::operator=(const Route& rhs)
 }*/
 
 /*
-std::ostream& operator<<(std::ostream& os, Route& object) {
+std::ostream& operator<<(std::ostream& os, Location& object) {
     std::ostringstream oss;
 
-    oss << "--- Route ---" << std::endl;
+    oss << "--- Location ---" << std::endl;
     oss << "  uri : " << object.getUri().getUri() << std::endl;
     oss << "  root path : " << object.getRootPath().getPath() << std::endl;
     oss << "  autoindex : " << object.getAutoIndex() << std::endl;
@@ -80,11 +80,11 @@ std::ostream& operator<<(std::ostream& os, Route& object) {
 }
 */
 
-void	Route::log(void)
+void	Location::log(void)
 {
     std::ostringstream oss;
 
-	Logger::logger()->logTitle(LOG_DEBUG, "Route", 2);
+	Logger::logger()->logTitle(LOG_DEBUG, "Location", 2);
 
     oss << "  uri : " << getUri().getUri();
 	Logger::logger()->log(LOG_DEBUG, oss);
@@ -115,99 +115,99 @@ void	Route::log(void)
 
 // --- Setters ---
 
-void	Route::setUri(Uri uri)
+void	Location::setUri(Uri uri)
 {
 	uri_ = uri;
 }
 
-void	Route::setRootPath(Path rootPath)
+void	Location::setRootPath(Path rootPath)
 {
 	rootPath_ = rootPath;
 }
 
-void	Route::setAutoIndex(bool autoIndex)
+void	Location::setAutoIndex(bool autoIndex)
 {
 	autoIndex_ = autoIndex;
 }
 
-void	Route::setHttpRedirection(HttpRedirection redirection)
+void	Location::setHttpRedirection(HttpRedirection redirection)
 {
 	redirection_ = redirection;
 }
 
-void	Route::setDefaultFile(const Path& defaultFile)
+void	Location::setDefaultFile(const Path& defaultFile)
 {
 	defaultFile_ = defaultFile;
 }
 
-void	Route::setUploadDirectory(const Path& uploadDirectory)
+void	Location::setUploadDirectory(const Path& uploadDirectory)
 {
 	uploadDirectory_ = uploadDirectory;
 }
 
-void	Route::setIsCgi(bool isCgi)
+void	Location::setIsCgi(bool isCgi)
 {
 	isCgi_ = isCgi;
 }
 
-void	Route::setCgi(const Cgi& cgi)
+void	Location::setCgi(const Cgi& cgi)
 {
 	cgi_ = cgi;
 }
 
-void	Route::addAllowedMethod(HttpMethodType method)
+void	Location::addAllowedMethod(HttpMethodType method)
 {
 	allowedMethods_.push_back(method);
 }
 
 // --- Getters ---
 
-const Uri&	Route::getUri(void) const
+const Uri&	Location::getUri(void) const
 {
 	return (uri_);
 }
 
-const Path& 	Route::getRootPath(void) const
+const Path& 	Location::getRootPath(void) const
 {
 	return (rootPath_);
 }
 
-const std::string 	Route::getRootPathString(void) const
+const std::string 	Location::getRootPathString(void) const
 {
 	return (rootPath_.getPath());
 }
 
-const HttpRedirection&	Route::getHttpRedirection(void) const
+const HttpRedirection&	Location::getHttpRedirection(void) const
 {
 	return (redirection_);
 }
 
-bool	Route::getAutoIndex(void) const
+bool	Location::getAutoIndex(void) const
 {
 	return (autoIndex_);
 }
 
-const Path&	Route::getDefaultFile(void) const
+const Path&	Location::getDefaultFile(void) const
 {
 	return (defaultFile_);
 }
 
-const Path&	Route::getUploadDirectory(void) const
+const Path&	Location::getUploadDirectory(void) const
 {
 	return (uploadDirectory_);
 }
 
-bool	Route::getIsCgi(void) const
+bool	Location::getIsCgi(void) const
 {
 	return (isCgi_);
 }
 
-const Cgi&	Route::getCgi(void) const
+const Cgi&	Location::getCgi(void) const
 {
 	return (cgi_);
 }
 
-const std::vector<HttpMethodType>&	Route::getAllowedMethods(void) const
+const std::vector<HttpMethodType>&	Location::getAllowedMethods(void) const
 {
 	return (allowedMethods_);
 }

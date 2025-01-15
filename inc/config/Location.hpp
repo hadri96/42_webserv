@@ -1,5 +1,5 @@
-#ifndef ROUTE_HPP
-# define ROUTE_HPP
+#ifndef LOCATION_HPP
+# define LOCATION_HPP
 
 # include <ostream>
 # include <vector>
@@ -9,17 +9,17 @@
 # include "Uri.hpp"
 # include "Cgi.hpp"
 
-class	Route
+class	Location
 {
 	public:
 	// --- Constructors and Destructor ---
-										Route(void);
-										Route(const Route& other);
+										Location(void);
+										Location(const Location& other);
 
-										~Route(void);
+										~Location(void);
 
 	// --- Operators Overload ---
-	Route&								operator=(const Route& rhs);
+	Location&								operator=(const Location& rhs);
 
 	// --- Setters and Getters ---
 	void								setUri(Uri uri);
@@ -64,6 +64,6 @@ class	Route
 		Cgi								cgi_;
 };
 
-//std::ostream&							operator<<(std::ostream&, Route& object);
+//std::ostream&							operator<<(std::ostream&, Location& object);
 
 #endif
