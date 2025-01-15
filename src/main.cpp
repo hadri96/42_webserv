@@ -18,7 +18,7 @@ int	main(int argc, char** argv)
 
 	Observer o;
 	Config c1;
-	Route r1;
+	Location r1;
 	Cgi	cgi1;
 
 	// =============================================================================
@@ -55,7 +55,7 @@ int	main(int argc, char** argv)
 	c1.addErrorPage(ErrorPage(404, Path("/www/404.html")));
 	c1.addErrorPage(ErrorPage(403, Path("/www/403.html")));
 
-	// Routes
+	// Locations
 	r1.setUri(Uri("/html"));
 	r1.setRootPath(Path("/www/html"));
 	// r1.setRedirection(HttpRedirection(301, Path("/www/redirection.html")));
@@ -66,7 +66,7 @@ int	main(int argc, char** argv)
 	r1.addAllowedMethod(POST);
 	*/
 
-	// Routes : CGI
+	// Locations : CGI
 	//r1.setIsCgi(true);
 	//cgi1.setFileExtension(".php");
 	//cgi1.setRootPath(Path("/www/cgi"));
@@ -75,7 +75,7 @@ int	main(int argc, char** argv)
 	//cgi1.addAllowedMethod(GET);
 	//cgi1.addAllowedMethod(POST);
 	//r1.setCgi(cgi1);
-	//c1.addRoute(r1);
+	//c1.addLocation(r1);
 
 	// =============================================================================
 	// Option C : Server Constructors (only for tests, will be later removed)
