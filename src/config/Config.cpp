@@ -203,29 +203,24 @@ const ErrorPage	Config::getErrorPage(int statusCode)
 // Gets the substring between first and last slash of uriString and compares with config routes
 // This needs to be adapted depending on what the routes look like in the config file
 // It cannot be tested yet as we don't yet have multiple routes in our example Config
-const Path	Config::getPathFromUri(Uri& uri) const
+
+bool	Config::checkPathInConfig(Uri& uri, Path& outputPath) const
 {
 	std::string		uriString = uri.getUri(); 
-	std::string		locationSegment;
-	size_t			firstSlash = uriString.find('/');
-	size_t			lastSlash = uriString.rfind('/');
+	// Logger::logger()->log(LOG_DEBUG, "URI = " + uriString);
 
-	// Hardcoded until we have the routes/locations in the Config object:
-	return (Path("www/html"));
-
-	if (lastSlash != std::string::npos)
-		locationSegment = uriString.substr(firstSlash + 1, lastSlash - firstSlash - 1);
-	else if (firstSlash != std::string::npos)
-		locationSegment = uriString.substr(firstSlash + 1);
-	else
-		locationSegment = "";
-
-	for (size_t i = 0; i < locations_.size(); ++i)
+	for (size_t i = 0; i < Locations_.size(); i++)
 	{
-	    if (locations_[i].getRootPathString() == locationSegment)
-	        return locations_[i].getRootPath();
+		Logger::logger()->log(LOG_DEBUG, "Location = " + Locations_[i].getRootPathString());
+		Path	fullPath(Locations_[i].getRootPathString() + uriString);
+		if (fullPath.isInFileSystem())
+		{	
+			outputPath = fullPath;
+			return (true);
+		}
+		Logger::logger()->log(LOG_DEBUG, "abs path in checkPathInConfig : " + fullPath.getAbsPath());
 	}
-	return (locations_[0].getRootPath());
+	return (false);
 }
 
 

@@ -12,9 +12,7 @@ ErrorPage::ErrorPage(void) :
 ErrorPage::ErrorPage(int errorCode) :
 	errorCode_(errorCode),
 	errorFile_(File(errorCode))
-{
-	Logger::logger()->log(LOG_DEBUG, "Path in ErrorFile constructor: " + errorFile_.getPath().getPath());
-}
+{}
 
 ErrorPage::ErrorPage(const ErrorPage& other) :
 	errorCode_(other.errorCode_),
