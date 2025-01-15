@@ -12,12 +12,12 @@ Path::Path(void) :
 
 Path::Path(const Path& other) :
 	path_(other.path_),
-	absPath_(getWorkingDirectory() + "/" + path_)
+	absPath_(other.absPath_)
 {}
 
 Path::Path(const std::string path) :
 	path_(path),
-	absPath_(getWorkingDirectory() + "/" + path_)
+	absPath_(getWorkingDirectory() + "/" + path)
 {}
 
 Path::~Path(void)
@@ -52,7 +52,8 @@ std::string	Path::getPath() const
 
 std::string	Path::getAbsPath() const
 {
-	return (absPath_);
+	// return (absPath_);
+	return (getWorkingDirectory() + "/" + path_);
 }
 
 std::string	Path::getPath(Config& config) const

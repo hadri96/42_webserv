@@ -11,6 +11,7 @@ class	File
 	public:
 		// --- Constructors and Destructor ---
 							File(void);
+							File(const int errorCode);
 							File(const File& other);
 							File(const std::string& filename);
 							File(const Path& path);
@@ -23,7 +24,7 @@ class	File
 		void				setContent(void);
 		const std::string&	getContent(void) const;
 		const std::string	getContent(Path& path) const;
-		const Path&			getPath(void) const;
+		const Path			getPath(void) const;
 
 		std::string			read(void) const;
 

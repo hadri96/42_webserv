@@ -11,8 +11,8 @@ class HttpResponse
     public:
     // --- Constructors and Destructor ---
         HttpResponse();
-        HttpResponse(File& file);
-        HttpResponse(ErrorPage& errorPage);
+        HttpResponse(File file);
+        HttpResponse(ErrorPage errorPage);
         ~HttpResponse();
 
     // --- Public Methods ---

@@ -185,26 +185,42 @@ std::vector<ErrorPage>&	Config::getErrorPages(void)
 	return (errorPages_);
 }
 
+// Config.getErrorPage(404);
 const ErrorPage	Config::getErrorPage(int statusCode)
 {
+	// si defini dans config
 	for( std::vector<ErrorPage>::const_iterator it = errorPages_.begin(); it != errorPages_.end(); it++)
 	{
 		if (it->getErrorCode() == statusCode)
 			return (*it);
 	}
-	return (ErrorPage());
+	// Hardcoded for testing purposes: 
+	ErrorPage	errorPage(statusCode);
+	return (errorPage);
+// sinon erreurs par defaut -> ErrorPage(404);
 }
 
+<<<<<<< HEAD
+// Function should get the correct route according to the uri: 
+// Gets the substring between first and last slash of uriString and compares with config routes
+// This needs to be adapted depending on what the routes look like in the config file
+// It cannot be tested yet as we don't yet have multiple routes in our example Config
+const Path	Config::getPathFromUri(Uri& uri) const
+=======
 // Function should get the correct Location according to the uri: 
 // Gets the substring between first and last slash of uriString and compares with config Locations
 // This needs to be adapted depending on what the Locations look like in the config file
 // It cannot be tested yet as we don't yet have multiple Locations in our example Config
 const Path&	Config::getPathFromUri(Uri& uri) const
+>>>>>>> origin/master
 {
 	std::string		uriString = uri.getUri(); 
 	std::string		LocationSegment;
 	size_t			firstSlash = uriString.find('/');
 	size_t			lastSlash = uriString.rfind('/');
+
+	// Hardcoded until we have the routes/locations in the Config object:
+	return (Path("www/html"));
 
 	if (lastSlash != std::string::npos)
 		LocationSegment = uriString.substr(firstSlash + 1, lastSlash - firstSlash - 1);
@@ -213,10 +229,17 @@ const Path&	Config::getPathFromUri(Uri& uri) const
 	else
 		LocationSegment = "";
 
+<<<<<<< HEAD
+	for (size_t i = 0; i < routes_.size(); ++i)
+	{
+	    if (routes_[i].getRootPathString() == routeSegment)
+	        return routes_[i].getRootPath();
+=======
 	for (std::vector<Location>::const_iterator it = Locations_.begin(); it != Locations_.end(); it++)
 	{
 		if (it->getRootPathString() == LocationSegment)
 			return ((*it).getRootPath());
+>>>>>>> origin/master
 	}
 	return (Locations_[0].getRootPath());
 }
