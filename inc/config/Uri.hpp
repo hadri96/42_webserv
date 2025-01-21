@@ -8,12 +8,13 @@ class	Uri
 {
 	public:
 		// --- Constructors and Destructor ---
-		Uri(void);
-		Uri(const Uri& other);
-		Uri(const std::string& uri);
-		~Uri(void);
+							Uri(void);
+							Uri(const Uri& other);
+							Uri(const std::string& uri);
+							~Uri(void);
 		// --- Operators Overload ---
 		Uri&				operator=(const Uri& rhs);
+		bool				operator==(const Uri& rhs) const;
 
 		// --- Getters and Setters ---
 		const std::string&	getUri(void) const;
