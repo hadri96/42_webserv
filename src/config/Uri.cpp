@@ -33,6 +33,11 @@ Uri&	Uri::operator=(const Uri& rhs)
 	return (*this);
 }
 
+bool	Uri::operator==(const Uri& rhs) const
+{
+	return (uri_ == rhs.uri_);
+}
+
 // =============================================================================
 // Getters and Setters
 // =============================================================================

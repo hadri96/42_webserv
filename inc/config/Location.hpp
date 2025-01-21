@@ -19,7 +19,8 @@ class	Location
 										~Location(void);
 
 	// --- Operators Overload ---
-	Location&								operator=(const Location& rhs);
+	Location&							operator=(const Location& rhs);
+	bool								operator==(const Uri& uri) const;
 
 	// --- Setters and Getters ---
 	void								setUri(Uri uri);
@@ -46,6 +47,8 @@ class	Location
 	const std::vector<HttpMethodType>&	getAllowedMethods(void) const;
 
 	void								log(void);
+
+	bool								isMethodAllowed(HttpMethodType method) const;
 
 	private:
 		// --- Private Attributes ---

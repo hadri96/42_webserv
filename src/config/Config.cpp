@@ -223,8 +223,38 @@ bool	Config::checkPathInConfig(Uri& uri, Path& outputPath) const
 	return (false);
 }
 
-
 std::vector<Location>&	Config::getLocations(void)
 {
 	return (locations_);
+}
+
+// =============================================================================
+// Public Methods
+// =============================================================================
+
+bool	Config::isMethodAllowed(HttpMethodType method, Uri uri) const
+{
+	const Location* location = getLocation(uri);
+
+	if (location)
+		return (location->isMethodAllowed(method));
+
+	if (method == POST  || method == GET)
+		return (true);
+		
+	return (false);
+}
+
+// =============================================================================
+// Private Methods
+// =============================================================================
+
+const Location*	Config::getLocation(Uri uri) const
+{
+	for (size_t i = 0; i != locations_.size(); ++i)
+	{
+		if (locations_[i] == uri)
+			return (&locations_[i]);
+	}
+	return (0);
 }

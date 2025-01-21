@@ -52,6 +52,11 @@ Location&	Location::operator=(const Location& rhs)
 	return (*this);
 }
 
+bool	Location::operator==(const Uri& uri) const
+{
+	return (uri_ == uri);
+}
+
 /*std::ostream&	operator<<(std::ostream& os, Location& object)
 {
 	os << "--- Location ---" << std::endl;
@@ -210,4 +215,18 @@ const Cgi&	Location::getCgi(void) const
 const std::vector<HttpMethodType>&	Location::getAllowedMethods(void) const
 {
 	return (allowedMethods_);
+}
+
+// =============================================================================
+// Public Methods
+// =============================================================================
+
+bool	Location::isMethodAllowed(HttpMethodType method) const
+{
+	for (size_t i = 0; i != allowedMethods_.size(); ++i)
+	{
+		if (allowedMethods_[i] == method)
+			return (true);
+	}
+	return (false);
 }
