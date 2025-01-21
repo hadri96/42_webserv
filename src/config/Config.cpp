@@ -1,8 +1,10 @@
 #include "Config.hpp"
 
 #include "Logger.hpp"
-#include <sstream> // std::ostringstream
 
+#include "ResourceStatus.hpp"
+
+#include <sstream> // std::ostringstream
 #include <iostream>
 
 // =============================================================================
@@ -219,21 +221,27 @@ std::vector<Location>&	Config::getLocations(void)
 // Public Methods
 // =============================================================================
 
-Resource	Config::getResourceErrorPage(int code)
+// --- Resources ---
+Resource	Config::createResourceError(int code)
 {
-	const ErrorPage* errorPage = getErrorPage(code);
-
-	if (errorPage)
-	{
-
-	}
-	else
-	{
-
-	}
-	
+	//const ErrorPage* errorPage = getErrorPage(code)
+	// For now we return only the default status page
+	return (ResourceStatus(code));
 }
 
+Resource	Config::createResourceFile(Uri uri)
+{
+	(void) uri;
+	return (Resource(200, "File..."));
+}
+
+Resource	Config::createResourceDirectoryList(Path path)
+{
+	(void) path;
+	return (Resource(200, "Directory list..."));
+}
+
+// --- RequestInterpreter ---
 bool	Config::isMethodAllowed(HttpMethodType method, Uri uri) const
 {
 	const Location* location = getLocation(uri);

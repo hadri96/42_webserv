@@ -13,6 +13,10 @@ Resource::Resource(const Resource& other) :
 	body_(other.body_)
 {}
 
+Resource::Resource(int code) :
+	code_(code)
+{}
+
 Resource::Resource(int code, std::string body) :
 	code_(code),
 	body_(body)
@@ -21,6 +25,9 @@ Resource::Resource(int code, std::string body) :
 Resource::Resource(int code, File file) :
 	code_(code),
 	body_(file.read())
+{}
+
+Resource::~Resource(void)
 {}
 
 // =============================================================================
@@ -36,4 +43,18 @@ Resource&	Resource::operator=(const Resource& rhs)
 	body_ = rhs.body_;
 
 	return (*this);
+}
+
+// =============================================================================
+// Public Methods
+// =============================================================================
+
+int	Resource::getCode(void)
+{
+	return (code_);
+}
+
+const std::string&	Resource::getBody(void)
+{
+	return (body_);
 }

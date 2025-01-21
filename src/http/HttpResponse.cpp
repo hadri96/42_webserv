@@ -13,7 +13,17 @@
 // =============================================================================
 
 
-HttpResponse::HttpResponse() {}
+HttpResponse::HttpResponse()
+{}
+
+HttpResponse::HttpResponse(Resource resource)
+{
+    body_ = resource.getBody();
+    //errorStatusLine(resource.getCode());
+    staticStatusLine();
+    generateBasicHeaders();
+    composeFullResponse();
+}
 
 HttpResponse::HttpResponse(File file) 
 {
@@ -39,6 +49,7 @@ HttpResponse::~HttpResponse() {}
 // Public Methods
 // =============================================================================
 
+/*
 HttpResponse& HttpResponse::generateError(Config& config, int errorCode) 
 {
     ErrorPage   errorPage = config.getErrorPage(errorCode);
@@ -46,6 +57,7 @@ HttpResponse& HttpResponse::generateError(Config& config, int errorCode)
     *this = HttpResponse(errorPage);
     return (*this);
 }
+*/
 
 // =============================================================================
 // Getters & Setters

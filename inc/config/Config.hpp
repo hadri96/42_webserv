@@ -47,14 +47,16 @@ class	Config
 						
 		bool							checkPathInConfig(Uri& uri, Path& outputPath) const;
 
-
-		Resource						getResourceErrorPage(int code);
-
 		void							log(void);
 
 		// --- RequestInterpreter ---
 		bool							isMethodAllowed(HttpMethodType method, Uri uri) const;
 		bool							isSizeAllowed(int byteSize, Uri uri) const;
+
+		// --- Resources ---
+		Resource						createResourceFile(Uri uri);
+		Resource						createResourceError(int code);
+		Resource						createResourceDirectoryList(Path path);
 
 
 		/*
