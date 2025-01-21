@@ -22,7 +22,8 @@ class	ErrorPage
 							~ErrorPage(void);
 
 		// --- Operators Overload ---
-		ErrorPage&	operator=(const ErrorPage& rhs);
+		ErrorPage&			operator=(const ErrorPage& rhs);
+		bool				operator==(int code) const;
 
 		// --- Setters and Getters ---
 		int					getErrorCode(void) const;

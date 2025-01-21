@@ -184,20 +184,7 @@ std::vector<ErrorPage>&	Config::getErrorPages(void)
 	return (errorPages_);
 }
 
-// Config.getErrorPage(404);
-const ErrorPage	Config::getErrorPage(int statusCode)
-{
-	// si defini dans config
-	for( std::vector<ErrorPage>::const_iterator it = errorPages_.begin(); it != errorPages_.end(); it++)
-	{
-		if (it->getErrorCode() == statusCode)
-			return (*it);
-	}
-	// Hardcoded for testing purposes: 
-	ErrorPage	errorPage(statusCode);
-	return (errorPage);
-// sinon erreurs par defaut -> ErrorPage(404);
-}
+
 
 // Function should get the correct route according to the uri: 
 // Gets the substring between first and last slash of uriString and compares with config routes
@@ -232,6 +219,21 @@ std::vector<Location>&	Config::getLocations(void)
 // Public Methods
 // =============================================================================
 
+Resource	Config::getResourceErrorPage(int code)
+{
+	const ErrorPage* errorPage = getErrorPage(code);
+
+	if (errorPage)
+	{
+
+	}
+	else
+	{
+
+	}
+	
+}
+
 bool	Config::isMethodAllowed(HttpMethodType method, Uri uri) const
 {
 	const Location* location = getLocation(uri);
@@ -241,7 +243,7 @@ bool	Config::isMethodAllowed(HttpMethodType method, Uri uri) const
 
 	if (method == POST  || method == GET)
 		return (true);
-		
+
 	return (false);
 }
 
@@ -255,6 +257,16 @@ const Location*	Config::getLocation(Uri uri) const
 	{
 		if (locations_[i] == uri)
 			return (&locations_[i]);
+	}
+	return (0);
+}
+
+const ErrorPage*	Config::getErrorPage(int code) const
+{
+	for(size_t i = 0; i != errorPages_.size(); ++i)
+	{
+		if (errorPages_[i] == code)
+			return (&errorPages_[i]);
 	}
 	return (0);
 }

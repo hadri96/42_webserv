@@ -49,20 +49,9 @@ ErrorPage&	ErrorPage::operator=(const ErrorPage& rhs)
 	return (*this);
 }
 
-void	ErrorPage::display(void)
+bool	ErrorPage::operator==(int code) const
 {
-	std::ostringstream oss;
-
-	Logger::logger()->logTitle(LOG_DEBUG, "Error page", 2);
-
-	oss << "  error code : " << getErrorCode();
-	Logger::logger()->log(LOG_DEBUG, oss);
-
-	oss << "  error uri : " << getErrorUri().getUri();
-	Logger::logger()->log(LOG_DEBUG, oss);
-
-	//os << "  error file path : " << object.getErrorPath().getPath() << std::endl;
-
+	return (errorCode_ == code);
 }
 
 // =============================================================================
@@ -92,4 +81,24 @@ Uri	ErrorPage::getErrorUri(void) const
 const std::string	ErrorPage::read(void) const
 {
 	return (errorFile_.read());
+}
+
+// =============================================================================
+// Public Methods
+// =============================================================================
+
+void	ErrorPage::display(void)
+{
+	std::ostringstream oss;
+
+	Logger::logger()->logTitle(LOG_DEBUG, "Error page", 2);
+
+	oss << "  error code : " << getErrorCode();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	oss << "  error uri : " << getErrorUri().getUri();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	//os << "  error file path : " << object.getErrorPath().getPath() << std::endl;
+
 }

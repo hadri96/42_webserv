@@ -41,6 +41,19 @@ Webserv::Webserv(const std::string& configFile)
 	Observer* o = new Observer;
 	std::vector<Server*> servers;
 
+	/*
+	const Location* foundLocation = configs[0].getLocation(Uri("/images"));
+	if (!foundLocation)
+	{
+		std::cout << "LOCATION NOT FOUND\n\n";
+	}
+	else
+	{
+		std::cout << "LOCATION FOUND\n\n";
+		std::cout << foundLocation->getRootPath().getPath();
+	}
+	*/
+
 	Logger::logger()->logTitle(LOG_INFO, "Starting servers from configuration file");
 
 	for (size_t i = 0; i != configs.size(); ++i)

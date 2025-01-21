@@ -38,6 +38,7 @@ class	Location
 
 	const Uri&							getUri(void) const;
 	const Path&							getRootPath(void) const;
+	
 	const std::string					getRootPathString(void) const;
 	bool								getAutoIndex(void) const;
 	const Path&							getDefaultFile(void) const;
