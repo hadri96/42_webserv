@@ -41,12 +41,18 @@ class	Config
 		void							addLocation(const Location& Location);
 
 		std::vector<ErrorPage>&			getErrorPages(void);
-		std::vector<Location>&				getLocations(void);
+		std::vector<Location>&			getLocations(void);
 		const ErrorPage					getErrorPage(int statusCode);							
 		bool							checkPathInConfig(Uri& uri, Path& outputPath) const;
-		const Location&					getLocation(Uri uri);
 
 		void							log(void);
+
+		// --- RequestInterpreter ---
+		bool							isMethodAllowed(HttpMethodType method, Uri uri) const;
+
+
+		bool							isSizeAllowed(int byteSize, Uri uri) const;
+
 
 		/*
 		Methodes necessaires pour Interpreter:
@@ -78,6 +84,9 @@ class	Config
 		int								clientMaxBodySize_;
 
 		std::vector<Location>			locations_;
+
+		// --- Private Methods ---
+		const Location*					getLocation(Uri uri) const;
 };
 
 //std::ostream&	operator<<(std::ostream& os, Config& object);
