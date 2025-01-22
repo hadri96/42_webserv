@@ -53,12 +53,6 @@ class	Config
 		bool							isMethodAllowed(HttpMethodType method, Uri uri) const;
 		bool							isSizeAllowed(int byteSize, Uri uri) const;
 
-		// --- Resources ---
-		Resource						createResourceFile(Uri uri);
-		Resource						createResourceError(int code);
-		Resource						createResourceDirectoryList(Path path);
-
-
 		/*
 		Methodes necessaires pour Interpreter:
 

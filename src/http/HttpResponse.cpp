@@ -18,11 +18,14 @@ HttpResponse::HttpResponse()
 
 HttpResponse::HttpResponse(Resource resource)
 {
+    Logger::logger()->log(LOG_DEBUG, "HttpResponse...");
     body_ = resource.getBody();
+    Logger::logger()->log(LOG_DEBUG, body_);
     //errorStatusLine(resource.getCode());
     staticStatusLine();
     generateBasicHeaders();
     composeFullResponse();
+    Logger::logger()->log(LOG_DEBUG, fullResponse_);
 }
 
 HttpResponse::HttpResponse(File file) 
@@ -49,15 +52,8 @@ HttpResponse::~HttpResponse() {}
 // Public Methods
 // =============================================================================
 
-/*
-HttpResponse& HttpResponse::generateError(Config& config, int errorCode) 
-{
-    ErrorPage   errorPage = config.getErrorPage(errorCode);
-    
-    *this = HttpResponse(errorPage);
-    return (*this);
-}
-*/
+
+
 
 // =============================================================================
 // Getters & Setters
@@ -96,7 +92,6 @@ void    HttpResponse::composeFullResponse()
     fullResponse_.append(statusLine_);
     fullResponse_.append(headers_);
     fullResponse_.append(body_, 0, body_.length());
-    // Logger::logger()->log(LOG_DEBUG, "Full Response\n" + fullResponse_);
 }
 
 // --- Error Response Methods ---

@@ -38,7 +38,7 @@ CONFIG = 	File \
 			interpreter/ConfigInterpreter \
 			interpreter/ConfigInterpreterRule
 RESOURCE =	Resource \
-			ResourceStatus
+			ResourceDefault
 
 # Source directory
 SRCS_DIR = src
