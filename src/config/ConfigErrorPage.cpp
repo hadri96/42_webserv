@@ -1,33 +1,33 @@
-#include "ErrorPage.hpp"
+#include "ConfigErrorPage.hpp"
 #include "Logger.hpp"
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
-ErrorPage::ErrorPage(void) :
+ConfigErrorPage::ConfigErrorPage(void) :
 	code_(0)
 {}
 
 
-ErrorPage::ErrorPage(const ErrorPage& other) :
+ConfigErrorPage::ConfigErrorPage(const ConfigErrorPage& other) :
 	code_(other.code_),
 	uri_(other.uri_)
 {}
 
-ErrorPage::ErrorPage(int error, Uri uri) :
+ConfigErrorPage::ConfigErrorPage(int error, Uri uri) :
 	code_(error),
 	uri_(uri)
 {}
 
-ErrorPage::~ErrorPage(void)
+ConfigErrorPage::~ConfigErrorPage(void)
 {}
 
 // =============================================================================
 // Operators Overload
 // =============================================================================
 
-ErrorPage&	ErrorPage::operator=(const ErrorPage& rhs)
+ConfigErrorPage&	ConfigErrorPage::operator=(const ConfigErrorPage& rhs)
 {
 	if (this == &rhs)
 		return (*this);
@@ -38,7 +38,7 @@ ErrorPage&	ErrorPage::operator=(const ErrorPage& rhs)
 	return (*this);
 }
 
-bool	ErrorPage::operator==(int code) const
+bool	ConfigErrorPage::operator==(int code) const
 {
 	return (code_ == code);
 }
@@ -47,12 +47,12 @@ bool	ErrorPage::operator==(int code) const
 // Setters and Getters
 // =============================================================================
 
-int	ErrorPage::getCode(void) const
+int	ConfigErrorPage::getCode(void) const
 {
 	return (code_);
 }
 
-Uri	ErrorPage::getUri(void) const
+Uri	ConfigErrorPage::getUri(void) const
 {
 	return (uri_);
 }
@@ -61,7 +61,7 @@ Uri	ErrorPage::getUri(void) const
 // Public Methods
 // =============================================================================
 
-void	ErrorPage::display(void)
+void	ConfigErrorPage::display(void)
 {
 	std::ostringstream oss;
 

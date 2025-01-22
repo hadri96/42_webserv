@@ -18,8 +18,8 @@ int	main(int argc, char** argv)
 
 	Observer o;
 	Config c1;
-	Location r1;
-	Cgi	cgi1;
+	ConfigLocation r1;
+	ConfigCgi	cgi1;
 
 	// =============================================================================
 	// Option A : Parsed Config File (how it should work in the end)

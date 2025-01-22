@@ -6,19 +6,19 @@
 
 # include "Uri.hpp"
 
-class	ErrorPage
+class	ConfigErrorPage
 {
 	public:
 		// --- Constructors and Destructor ---
-							ErrorPage(void);
-							ErrorPage(const ErrorPage& other);
+							ConfigErrorPage(void);
+							ConfigErrorPage(const ConfigErrorPage& other);
 
-							ErrorPage(int errorCode, Uri uri);
+							ConfigErrorPage(int errorCode, Uri uri);
 
-							~ErrorPage(void);
+							~ConfigErrorPage(void);
 
 		// --- Operators Overload ---
-		ErrorPage&			operator=(const ErrorPage& rhs);
+		ConfigErrorPage&	operator=(const ConfigErrorPage& rhs);
 		bool				operator==(int code) const;
 
 		// --- Setters and Getters ---

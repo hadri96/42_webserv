@@ -89,11 +89,11 @@ std::string     HttpResponse::extractStatusText() const
     return ("Unknown Error");
 }
 
-void    HttpResponse::errorStatusLine(ErrorPage& errorPage)
+void    HttpResponse::errorStatusLine(ConfigErrorPage& configErrorPage)
 {
     std::string             statusText = extractStatusText();
     std::ostringstream      statusLine;
-    int                     statusCode = errorPage.getCode();
+    int                     statusCode = configErrorPage.getCode();
 
     if (statusCode == 0) 
         statusLine_ = "HTTP/1.1 500 Internal Server Error";

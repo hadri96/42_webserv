@@ -229,10 +229,10 @@ void	ConfigInterpreter::handleBlock(ConfigParserNode* node)
 		if (node->getParameters().size() != 1)
 			throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
 
-		Location newLocation;
-		currentConfig.addLocation(newLocation);
+		ConfigLocation newLocation;
+		currentConfig.addConfigLocation(newLocation);
 		
-		Location& currentLocation = currentConfig.getLocations().back();
+		ConfigLocation& currentLocation = currentConfig.getConfigLocations().back();
 		currentLocation.setUri(Uri(node->getParameters()[0]));
 	}
 }
@@ -334,7 +334,7 @@ void	ConfigInterpreter::handleErrorPage(ConfigParserNode* node)
 
 	for (size_t i = 0; i != errorCodes.size(); ++i)
 	{
-		configs_.back().addErrorPage(ErrorPage(errorCodes[i], Uri(uri)));
+		configs_.back().addConfigErrorPage(ConfigErrorPage(errorCodes[i], Uri(uri)));
 	}
 }
 void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node)
@@ -390,9 +390,9 @@ void	ConfigInterpreter::handleReturn(ConfigParserNode* node, const std::string& 
 	std::string uri = node->getParameters()[1];
 
 	if (parent == "server")
-		configs_.back().setHttpRedirection(HttpRedirection(statusCode, Uri(uri)));
+		configs_.back().setConfigRedirection(ConfigRedirection(statusCode, Uri(uri)));
 	else if (parent == "location")
-		configs_.back().getLocations().back().setHttpRedirection(HttpRedirection(statusCode, Uri(uri)));
+		configs_.back().getConfigLocations().back().setConfigRedirection(ConfigRedirection(statusCode, Uri(uri)));
 		
 }
 
@@ -404,7 +404,7 @@ void	ConfigInterpreter::handleRoot(ConfigParserNode* node)
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
 
 	Config& currentConfig = configs_.back();
-	Location& currentLocation = currentConfig.getLocations().back();
+	ConfigLocation& currentLocation = currentConfig.getConfigLocations().back();
 
 	currentLocation.setRootPath(Path(node->getParameters()[0]));
 }
@@ -418,7 +418,7 @@ void	ConfigInterpreter::handleAutoIndex(ConfigParserNode* node)
 		throw std::runtime_error("Directive `" + node->getName() + "` : parameter must be either `on` or `off");
 
 	Config& currentConfig = configs_.back();
-	Location& currentLocation = currentConfig.getLocations().back();
+	ConfigLocation& currentLocation = currentConfig.getConfigLocations().back();
 
 	if (node->getParameters()[0] == "on")
 		currentLocation.setAutoIndex(true);

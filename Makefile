@@ -24,11 +24,11 @@ SERVER =	Observer Client Server
 CONFIG = 	File \
 			Path \
 			Uri \
-			Location \
-			HttpRedirection \
-			ErrorPage \
-			Cgi \
 			Config \
+			ConfigLocation \
+			ConfigRedirection \
+			ConfigErrorPage \
+			ConfigCgi \
 			lexer/ConfigLexer \
 			lexer/ConfigToken \
 			parser/ConfigParser \

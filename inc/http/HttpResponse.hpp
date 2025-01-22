@@ -6,7 +6,7 @@
 # include "Header.hpp"
 # include "Config.hpp"
 # include "Resource.hpp"
-# include "ErrorPage.hpp"
+# include "ConfigErrorPage.hpp"
 
 class HttpResponse
 {
@@ -32,7 +32,7 @@ class HttpResponse
 
         // --- Error Response Methods ---
         std::string                 extractStatusText() const;
-        void                        errorStatusLine(ErrorPage& errorPage); 
+        void                        errorStatusLine(ConfigErrorPage& ConfigErrorPage); 
         
         // --- Static Response Methods ---
         void                        staticStatusLine();

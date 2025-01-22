@@ -1,4 +1,4 @@
-#include "HttpRedirection.hpp"
+#include "ConfigRedirection.hpp"
 
 #include "Logger.hpp"
 
@@ -8,29 +8,29 @@
 // Constructors and Destructor
 // =============================================================================
 
-HttpRedirection::HttpRedirection(void) :
+ConfigRedirection::ConfigRedirection(void) :
 	statusCode_(0),
 	uri_()
 {}
 
-HttpRedirection::HttpRedirection(const HttpRedirection& other) :
+ConfigRedirection::ConfigRedirection(const ConfigRedirection& other) :
 	statusCode_(other.statusCode_),
 	uri_(other.uri_)
 {}
 
-HttpRedirection::HttpRedirection(int statusCode, Uri uri) :
+ConfigRedirection::ConfigRedirection(int statusCode, Uri uri) :
 	statusCode_(statusCode),
 	uri_(uri)
 {}
 
-HttpRedirection::~HttpRedirection(void)
+ConfigRedirection::~ConfigRedirection(void)
 {}
 
 // =============================================================================
 // Operators Overload
 // =============================================================================
 
-HttpRedirection&	HttpRedirection::operator=(const HttpRedirection& rhs)
+ConfigRedirection&	ConfigRedirection::operator=(const ConfigRedirection& rhs)
 {
 	if (this == &rhs)
 		return (*this);
@@ -41,7 +41,7 @@ HttpRedirection&	HttpRedirection::operator=(const HttpRedirection& rhs)
 	return (*this);
 }
 
-/*std::ostream&	operator<<(std::ostream& os, HttpRedirection& object)
+/*std::ostream&	operator<<(std::ostream& os, ConfigRedirection& object)
 {
 	os << "--- Redirection ---" << std::endl;
 
@@ -49,7 +49,7 @@ HttpRedirection&	HttpRedirection::operator=(const HttpRedirection& rhs)
 	return (os);
 }*/
 
-void	HttpRedirection::log(void)
+void	ConfigRedirection::log(void)
 {
     std::ostringstream oss;
 
@@ -67,12 +67,12 @@ void	HttpRedirection::log(void)
 // Setters and Getters
 // =============================================================================
 
-int	HttpRedirection::getStatusCode(void) const
+int	ConfigRedirection::getStatusCode(void) const
 {
 	return (statusCode_);
 }
 
-const Uri&	HttpRedirection::getUri(void) const
+const Uri&	ConfigRedirection::getUri(void) const
 {
 	return (uri_);
 }
