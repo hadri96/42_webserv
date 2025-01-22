@@ -12,7 +12,7 @@ int	main(int argc, char** argv)
 	std::string configPath;
 
 	if (argc == 1)
-		configPath = "src/config/minimal.conf";
+		configPath = "conf/minimal.conf";
 	else if (argc == 2)
 		configPath = argv[1];
 
