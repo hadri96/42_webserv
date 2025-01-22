@@ -223,6 +223,7 @@ const std::vector<HttpMethodType>&	Location::getAllowedMethods(void) const
 
 bool	Location::isMethodAllowed(HttpMethodType method) const
 {
+
 	for (size_t i = 0; i != allowedMethods_.size(); ++i)
 	{
 		if (allowedMethods_[i] == method)

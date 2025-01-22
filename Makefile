@@ -2,7 +2,7 @@ NAME = webserv
 
 MAKEFLAGS = --no-print-directory
 
-INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/config/interpreter -I inc/http -I inc/util
+INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/config/interpreter -I inc/http -I inc/util -I inc/resource
 
 CC = c++
 
@@ -17,10 +17,10 @@ UNAME_S := $(shell uname -s)
 #endif
 
 # Source File names:
-MAIN = main Webserv
-UTIL = Logger ToString ToInt Join ToVector AllOf IsIp
-HTTP = HttpResponse HttpRequest Header RequestLine RequestInterpreter
-SERVER = Observer Client Server
+MAIN =		main Webserv
+UTIL =		Logger ToString ToInt Join ToVector AllOf IsIp
+HTTP =		HttpResponse HttpRequest HttpStatusCode Header RequestLine RequestInterpreter
+SERVER =	Observer Client Server
 CONFIG = 	File \
 			Path \
 			Uri \
@@ -37,6 +37,8 @@ CONFIG = 	File \
 			parser/ConfigParserDirective \
 			interpreter/ConfigInterpreter \
 			interpreter/ConfigInterpreterRule
+RESOURCE =	Resource \
+			ResourceStatus
 
 # Source directory
 SRCS_DIR = src
@@ -46,13 +48,15 @@ UTIL_DIR = util
 HTTP_DIR = http
 SERVER_DIR = server
 CONFIG_DIR = config
+RESOURCE_DIR = resource
 
 # Source Files
 SRCS = $(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(MAIN)))\
 	$(addprefix $(SRCS_DIR)/$(UTIL_DIR)/, $(addsuffix .cpp, $(UTIL)))\
 	$(addprefix $(SRCS_DIR)/$(HTTP_DIR)/, $(addsuffix .cpp, $(HTTP)))\
 	$(addprefix $(SRCS_DIR)/$(SERVER_DIR)/, $(addsuffix .cpp, $(SERVER))) \
-	$(addprefix $(SRCS_DIR)/$(CONFIG_DIR)/, $(addsuffix .cpp, $(CONFIG)))
+	$(addprefix $(SRCS_DIR)/$(CONFIG_DIR)/, $(addsuffix .cpp, $(CONFIG))) \
+	$(addprefix $(SRCS_DIR)/$(RESOURCE_DIR)/, $(addsuffix .cpp, $(RESOURCE)))
 
 
 # Convert source file names to object file names in the OBJ_DIRS directory
@@ -60,7 +64,9 @@ OBJ_DIR = obj
 OBJ_DIRS = $(OBJ_DIR) $(addprefix $(OBJ_DIR)/$(UTIL_DIR)/, $(UTIL)) \
 	$(addprefix $(OBJ_DIR)/$(HTTP_DIR)/, $(HTTP)) \
 	$(addprefix $(OBJ_DIR)/$(SERVER_DIR)/, $(SERVER)) \
-	$(addprefix $(OBJ_DIR)/$(CONFIG_DIR)/, $(CONFIG))
+	$(addprefix $(OBJ_DIR)/$(CONFIG_DIR)/, $(CONFIG)) \
+	$(addprefix $(OBJ_DIR)/$(RESOURCE_DIR)/, $(RESOURCE))
+
 
 OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJ_DIR)/%.o) 
 

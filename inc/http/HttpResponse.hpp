@@ -2,8 +2,10 @@
 # define HTTP_RESPONSE_HPP
 
 # include <string>
+
 # include "Header.hpp"
 # include "Config.hpp"
+# include "Resource.hpp"
 # include "ErrorPage.hpp"
 
 class HttpResponse
@@ -11,8 +13,11 @@ class HttpResponse
     public:
     // --- Constructors and Destructor ---
         HttpResponse();
+
+        HttpResponse(Resource resource);
         HttpResponse(File file);
         HttpResponse(ErrorPage errorPage);
+
         ~HttpResponse();
 
     // --- Public Methods ---

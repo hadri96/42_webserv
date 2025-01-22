@@ -9,6 +9,8 @@
 # include "Location.hpp"
 # include "Cgi.hpp"
 
+# include "Resource.hpp"
+
 class	Config
 {
 	public:
@@ -42,16 +44,19 @@ class	Config
 
 		std::vector<ErrorPage>&			getErrorPages(void);
 		std::vector<Location>&			getLocations(void);
-		const ErrorPage					getErrorPage(int statusCode);							
+						
 		bool							checkPathInConfig(Uri& uri, Path& outputPath) const;
 
 		void							log(void);
 
 		// --- RequestInterpreter ---
 		bool							isMethodAllowed(HttpMethodType method, Uri uri) const;
-
-
 		bool							isSizeAllowed(int byteSize, Uri uri) const;
+
+		// --- Resources ---
+		Resource						createResourceFile(Uri uri);
+		Resource						createResourceError(int code);
+		Resource						createResourceDirectoryList(Path path);
 
 
 		/*
@@ -86,7 +91,9 @@ class	Config
 		std::vector<Location>			locations_;
 
 		// --- Private Methods ---
+		const Path*						getPath(Uri uri) const;
 		const Location*					getLocation(Uri uri) const;
+		const ErrorPage*				getErrorPage(int statusCode) const;
 };
 
 //std::ostream&	operator<<(std::ostream& os, Config& object);

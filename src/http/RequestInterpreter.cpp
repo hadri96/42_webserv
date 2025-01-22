@@ -13,15 +13,16 @@
 // Constructors and Destructor
 // =============================================================================
 
-RequestInterpreter::RequestInterpreter(Server* server) : server_(server){}
+RequestInterpreter::RequestInterpreter(Server* server)
+    : server_(server)
+{}
 
-RequestInterpreter::~RequestInterpreter() {}
+RequestInterpreter::~RequestInterpreter()
+{}
 
 // =============================================================================
 // Getters
 // =============================================================================
-
-
 
 
 // =============================================================================
@@ -71,17 +72,24 @@ bool    RequestInterpreter::isAllowedMethod(Config& config)
     return (true);
 }
 
+
 HttpResponse    RequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
 {
     Uri     uri = request.getRelativeUri();
     Path    fullPath;
 
+    (void) config;
+
     // check if resource exists within server 
-    if (!config.checkPathInConfig(uri, fullPath))
-        return (HttpResponse(config.getErrorPage(404)));
-    else
-        return (HttpResponse(File(fullPath)));
     
+    /*if (!config.checkPathInConfig(uri, fullPath))
+        return (HttpResponse(config.getErrorPage(404)));
+    else*/
+        //return (HttpResponse(File(fullPath)));
+
+    return (HttpResponse(config.createResourceError(404)));
+    
+
     // check if redirection 
     // get filepath or redirection path
     // check if directory or file 
@@ -91,6 +99,7 @@ HttpResponse    RequestInterpreter::handleGetRequest(Config& config, HttpRequest
     // check permissions
     // build HttpResponse with 200 OK
 }
+
 
 HttpResponse    RequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
 {
