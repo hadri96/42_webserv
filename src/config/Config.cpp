@@ -195,7 +195,7 @@ std::vector<ConfigErrorPage>&	Config::getConfigErrorPages(void)
 
 bool	Config::checkPathInConfig(Uri& uri, Path& outputPath) const
 {
-	std::string		uriString = uri.getUri(); 
+	std::string		uriString = uri;
 	// Logger::logger()->log(LOG_DEBUG, "URI = " + uriString);
 
 	for (size_t i = 0; i < locations_.size(); i++)
@@ -271,7 +271,7 @@ const ConfigLocation*	Config::getConfigLocation(Uri uri) const
 {
 	for (size_t i = 0; i != locations_.size(); ++i)
 	{
-		if (locations_[i] == uri || locations_[i] == ("=" + uri.getUri()))
+		if (locations_[i] == uri || locations_[i] == ("=" + uri))
 			return (&locations_[i]);
 	}
 	return (0);

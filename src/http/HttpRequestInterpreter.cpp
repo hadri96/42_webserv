@@ -125,7 +125,7 @@ Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 		return (ResourceDefault(code));
 	}
 
-	Logger::logger()->log(LOG_DEBUG, "Custom error page URI : " + customErrorPage->getUri().getUri());
+	Logger::logger()->log(LOG_DEBUG, "Custom error page URI : " + customErrorPage->getUri());
 
 	const Path* customErrorPagePath = config.getPath(customErrorPage->getUri());
 
@@ -135,11 +135,9 @@ Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 		return (ResourceDefault(code));
 	}
 
-	Logger::logger()->log(LOG_DEBUG, "Custom error page root path : " + customErrorPagePath->getPath());
-		
-
+	Logger::logger()->log(LOG_DEBUG, std::string("Custom error page root path : ") + customErrorPagePath);
 	
-	return (ResourceDefault(code + 1));
+	return (ResourceDefault(code));
 }
 
 Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest& request)

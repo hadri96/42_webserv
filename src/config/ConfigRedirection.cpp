@@ -58,7 +58,7 @@ void	ConfigRedirection::log(void)
     oss << "  status code : " << getStatusCode();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
-    oss << "  uri : " << getUri().getUri();
+    oss << "  uri : " << getUri();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
 }

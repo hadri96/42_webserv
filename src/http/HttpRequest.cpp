@@ -1,5 +1,6 @@
 #include "HttpRequest.hpp"
 #include "ToString.hpp"
+#include "Logger.hpp"
 
 // =============================================================================
 // Constructors and Destructor
@@ -67,7 +68,7 @@ const Uri& HttpRequest::getUri() const
 const std::string   HttpRequest::getRelativeUri() const
 {
     Logger::logger()->log(LOG_DEBUG, "getting URI");
-    return (requestLine_.getRelativeUri().getUri());
+    return (requestLine_.getRelativeUri());
 }
 
 HttpMethodType    HttpRequest::getMethod() const
@@ -89,7 +90,7 @@ std::string   HttpRequest::generatePrintString()
 	
     ss << "Dummy RequestLine: \n\n" 
 	          << requestLine_.getMethodString() << " ; "
-	          << requestLine_.getRelativeUri().getUri() << " ; "
+	          << requestLine_.getRelativeUri() << " ; "
 	          << requestLine_.getHttpVersion() << std::endl;
 
     ss << "\nDummy Header:\n\n"

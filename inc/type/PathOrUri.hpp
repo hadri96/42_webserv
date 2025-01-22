@@ -19,7 +19,9 @@ class	PathOrUri
 		PathOrUri&					operator=(const PathOrUri& rhs);
 		PathOrUri					operator/(const std::string& rhs);
 		PathOrUri					operator/(const PathOrUri& rhs);
-		bool						operator==(const PathOrUri& rhs);
+		bool						operator==(const PathOrUri& rhs) const;
+		// ··· PathOrUri + string ···
+		std::string					operator+(const std::string& rhs);
 
 		// ··· Implicit conversion to string ···
 									operator std::string() const;
@@ -36,5 +38,9 @@ class	PathOrUri
 };
 
 std::ostream&	operator<<(std::ostream& os, const PathOrUri& object);
+
+// --- string + PathOrUri ---
+std::string		operator+(const std::string& lhs, const PathOrUri& object); 
+std::string 	operator+(const std::string& lhs, const PathOrUri* object);
 
 #endif

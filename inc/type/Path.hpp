@@ -16,6 +16,16 @@ class	Path : public PathOrUri
 
 		// --- Operators Overload ---
 		Path&	operator=(const Path& rhs);
+
+		// --- Public Methods ---
+		Path	getParent(void) const;
+		Path	getAbsPath(void) const;
+		bool	isInFileSystem(void) const;
+		bool	isDir(void) const;
+
+	private:
+		// --- Private Methods ---
+		Path	getWorkingDirectory(void) const;
 };
 
 #endif

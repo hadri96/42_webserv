@@ -1,4 +1,5 @@
 #include "ConfigLocation.hpp"
+#include "Logger.hpp"
 
 // =============================================================================
 // Constructors and Destructor
@@ -91,10 +92,10 @@ void	ConfigLocation::log(void)
 
 	Logger::logger()->logTitle(LOG_DEBUG, "Location", 2);
 
-    oss << "  uri : " << getUri().getUri();
+    oss << "  uri : " << getUri();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
-    oss << "  root path : " << getRootPath().getPath();
+    oss << "  root path : " << getRootPath();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
     oss << "  autoindex : " << getAutoIndex();
@@ -108,7 +109,7 @@ void	ConfigLocation::log(void)
 		oss << "    status code : " << getConfigRedirection().getStatusCode();
 		Logger::logger()->log(LOG_DEBUG, oss);
 
-		oss << "    uri : " << getConfigRedirection().getUri().getUri();
+		oss << "    uri : " << getConfigRedirection().getUri();
 		Logger::logger()->log(LOG_DEBUG, oss);
 	}
 
@@ -179,7 +180,7 @@ const Path& 	ConfigLocation::getRootPath(void) const
 
 const std::string 	ConfigLocation::getRootPathString(void) const
 {
-	return (rootPath_.getPath());
+	return (rootPath_);
 }
 
 const ConfigRedirection&	ConfigLocation::getConfigRedirection(void) const

@@ -2,6 +2,7 @@
 #include "ToString.hpp"
 #include <iostream>
 
+#include "Logger.hpp"
 
 // =============================================================================
 // Constructors and Destructor
@@ -14,8 +15,9 @@ File::File(const File& other) :
 	path_(other.path_),
 	content_(other.content_)
 {
-	if (!other.path_.getPath().empty())
-        file_.open(other.path_.getPath().c_str());
+	//if (!other.path_.getPath().empty())
+	std::string pathStr = other.path_;
+    file_.open(pathStr.c_str());
 }
 
 // Hardcoded for testing purposes: 
@@ -75,7 +77,9 @@ std::string	File::read(void) const
 
 	std::string         line;
     std::string         content;
-    std::ifstream       fileStream(path_.getAbsPath().c_str());
+
+	std::string			absPath = path_.getAbsPath();
+    std::ifstream       fileStream(absPath.c_str());
 
     if (fileStream.is_open())
         Logger::logger()->log(LOG_INFO, "File opened: " + path_.getAbsPath());

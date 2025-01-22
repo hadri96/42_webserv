@@ -74,9 +74,30 @@ PathOrUri	PathOrUri::operator/(const PathOrUri& rhs)
 }
 
 // --- Boolean ---
-bool	PathOrUri::operator==(const PathOrUri& rhs)
+bool	PathOrUri::operator==(const PathOrUri& rhs) const
 {
 	return (components_ == rhs.components_);
+}
+
+// --- PathOrUri + string ---
+std::string	PathOrUri::operator+(const std::string& rhs)
+{
+	std::string lhs = *this;
+	return (lhs + rhs);
+}
+
+// --- string + PathOrUri ---
+std::string		operator+(const std::string& lhs, const PathOrUri& object)
+{
+	std::string rhs = object;
+	return (lhs + rhs);
+}
+
+// --- string + PathOrUri* ---
+std::string operator+(const std::string& lhs, const PathOrUri* object)
+{
+	std::string rhs = *object;
+	return (lhs + rhs);
 }
 
 // =============================================================================

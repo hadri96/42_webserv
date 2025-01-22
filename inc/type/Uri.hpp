@@ -10,10 +10,15 @@ class	Uri : public PathOrUri
 				Uri(void);
 				Uri(const Uri& other);
 
+				Uri(const std::string& str);
+
 				~Uri(void);
 
 		// --- Operators Overload ---
 		Uri&	operator=(const Uri& rhs);
+
+		// --- Public Methods ---
+		Uri	getParent(void) const;
 };
 
 #endif

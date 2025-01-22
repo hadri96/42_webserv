@@ -12,6 +12,10 @@ Uri::Uri(const Uri& other) :
 	PathOrUri(other)
 {}
 
+Uri::Uri(const std::string& str) :
+	PathOrUri(str)
+{}
+
 Uri::~Uri()
 {}
 
@@ -26,4 +30,14 @@ Uri&	Uri::operator=(const Uri& rhs)
 
 	PathOrUri::operator=(rhs);
 	return (*this);
+}
+
+// =============================================================================
+// Public Methods
+// =============================================================================
+
+Uri	Uri::getParent(void) const
+{
+	PathOrUri parent = PathOrUri::getParent();
+	return Uri(parent);
 }
