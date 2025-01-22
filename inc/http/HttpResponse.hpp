@@ -15,8 +15,6 @@ class HttpResponse
         HttpResponse();
 
         HttpResponse(Resource resource);
-        HttpResponse(File file);
-        HttpResponse(ErrorPage errorPage);
 
         ~HttpResponse();
 

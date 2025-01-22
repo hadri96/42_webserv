@@ -28,24 +28,6 @@ HttpResponse::HttpResponse(Resource resource)
     Logger::logger()->log(LOG_DEBUG, fullResponse_);
 }
 
-HttpResponse::HttpResponse(File file) 
-{
-    body_ = file.read();
-    // Logger::logger()->log(LOG_DEBUG, body_);
-    staticStatusLine();
-    generateBasicHeaders();
-    composeFullResponse();
-}
-
-HttpResponse::HttpResponse(ErrorPage errorPage) 
-{
-    body_ = errorPage.read();
-    // Logger::logger()->log(LOG_DEBUG, body_);
-    errorStatusLine(errorPage);
-    generateBasicHeaders();
-    composeFullResponse();
-}
-
 HttpResponse::~HttpResponse() {}
 
 // =============================================================================
@@ -111,7 +93,7 @@ void    HttpResponse::errorStatusLine(ErrorPage& errorPage)
 {
     std::string             statusText = extractStatusText();
     std::ostringstream      statusLine;
-    int                     statusCode = errorPage.getErrorCode();
+    int                     statusCode = errorPage.getCode();
 
     if (statusCode == 0) 
         statusLine_ = "HTTP/1.1 500 Internal Server Error";
