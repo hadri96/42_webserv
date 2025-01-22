@@ -3,6 +3,7 @@
 
 # include "HttpMethodType.hpp"
 # include "Path.hpp"
+# include "Uri.hpp"
 
 # include <string>
 

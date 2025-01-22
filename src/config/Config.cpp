@@ -195,7 +195,7 @@ std::vector<ConfigErrorPage>&	Config::getConfigErrorPages(void)
 
 bool	Config::checkPathInConfig(Uri& uri, Path& outputPath) const
 {
-	std::string		uriString = uri.getUri(); 
+	std::string		uriString = uri;
 	// Logger::logger()->log(LOG_DEBUG, "URI = " + uriString);
 
 	for (size_t i = 0; i < locations_.size(); i++)
@@ -221,10 +221,20 @@ std::vector<ConfigLocation>&	Config::getConfigLocations(void)
 // Public Methods
 // =============================================================================
 
+const Path*	Config::getPath(Uri uri) const
+{
+	const ConfigLocation* foundLocation = getConfigLocation(uri);
+
+	if (!foundLocation)
+		return (0);
+
+	return (&foundLocation->getRootPath());
+}
+
 // --- RequestInterpreter ---
 bool	Config::isMethodAllowed(HttpMethodType method, Uri uri) const
 {
-	const ConfigLocation* location = getLocation(uri);
+	const ConfigLocation* location = getConfigLocation(uri);
 
 	if (location)
 		return (location->isMethodAllowed(method));
@@ -243,26 +253,26 @@ bool	Config::isSizeAllowed(int byteSize, Uri uri) const
 	return (true);
 }
 
-// =============================================================================
-// Private Methods
-// =============================================================================
-
-const ConfigLocation*	Config::getLocation(Uri uri) const
-{
-	for (size_t i = 0; i != locations_.size(); ++i)
-	{
-		if (locations_[i] == uri)
-			return (&locations_[i]);
-	}
-	return (0);
-}
-
-const ConfigErrorPage*	Config::getErrorPage(int code) const
+const ConfigErrorPage*	Config::getConfigErrorPage(int code) const
 {
 	for(size_t i = 0; i != errorPages_.size(); ++i)
 	{
 		if (errorPages_[i] == code)
 			return (&errorPages_[i]);
+	}
+	return (0);
+}
+
+// =============================================================================
+// Private Methods
+// =============================================================================
+
+const ConfigLocation*	Config::getConfigLocation(Uri uri) const
+{
+	for (size_t i = 0; i != locations_.size(); ++i)
+	{
+		if (locations_[i] == uri || locations_[i] == ("=" + uri))
+			return (&locations_[i]);
 	}
 	return (0);
 }

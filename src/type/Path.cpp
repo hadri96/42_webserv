@@ -1,28 +1,26 @@
 #include "Path.hpp"
+
 #include <unistd.h>
+#include <stdexcept>
+#include <sys/stat.h>
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
 Path::Path(void) :
-	path_("")
-{
-	absPath_ = getWorkingDirectory() + path_;
-}
-
-Path::Path(const Path& other) :
-	path_(other.path_),
-	absPath_(other.absPath_)
+	PathOrUri()
 {}
 
-Path::Path(const std::string path) :
-	path_(path)
-{
-	absPath_ = getWorkingDirectory() + path_;
-}
+Path::Path(const Path& other) :
+	PathOrUri(other)
+{}
 
-Path::~Path(void)
+Path::Path(const std::string& str) :
+	PathOrUri(str)
+{}
+
+Path::~Path()
 {}
 
 // =============================================================================
@@ -33,72 +31,53 @@ Path&	Path::operator=(const Path& rhs)
 {
 	if (this == &rhs)
 		return (*this);
-	path_ = rhs.path_;
 
+	PathOrUri::operator=(rhs);
 	return (*this);
-}
-
-Path	operator+(const Path& path, const Uri& uri)
-{
-    return (path.addUri(uri));
-}
-
-// =============================================================================
-// Getters
-// =============================================================================
-
-std::string	Path::getPath() const
-{
-	return (path_);
-}
-
-std::string	Path::getAbsPath() const
-{
-	// return (absPath_);
-	return (getWorkingDirectory() + path_);
-}
-
-std::string	Path::getPath(Config& config) const
-{
-	(void)config;
-
-	if (isInFileSystem())
-	{
-		Logger::logger()->log(LOG_INFO, "Path is valid.");
-		return (path_);
-	}
-	else
-	{
-		Logger::logger()->log(LOG_ERROR, "Not a valid Path");
-		return ("");
-	}
 }
 
 // =============================================================================
 // Public Methods
 // =============================================================================
 
-const Path	Path::addUri(const Uri& uri) const
+Path	Path::getParent(void) const
 {
-    return (Path(path_ + uri.getUri()));
+	PathOrUri parent = PathOrUri::getParent();
+	return Path(parent);
 }
 
-bool	Path::isInFileSystem() const
+Path	Path::getAbsPath(void) const
 {
-	if (access((absPath_).c_str(), F_OK) == 0)
-	{
-		Logger::logger()->log(LOG_DEBUG, absPath_ + " can be accessed");
+	return static_cast<Path>(getWorkingDirectory() / *this);
+}
+
+bool	Path::isInFileSystem(void) const
+{
+	std::string path = *this;
+	if (access(path.c_str(), F_OK) == 0)
 		return (true);
-	}
-	Logger::logger()->log(LOG_DEBUG, absPath_ + " cannot be accessed");
 	return (false);
 }
 
-std::string Path::getWorkingDirectory()
+bool	Path::isDir(void) const
+{
+    struct stat path_stat;
+	std::string path = *this;
+    if (stat(path.c_str(), &path_stat) != 0)
+        return (false);
+    return S_ISDIR(path_stat.st_mode);
+}
+
+// =============================================================================
+// Private Methods
+// =============================================================================
+
+Path	Path::getWorkingDirectory(void) const
 {
     char 	cwd[1024];
 
     if (getcwd(cwd, sizeof(cwd)) == NULL)
         throw (std::runtime_error("Failed to get current working directory"));
-    return (std::string(cwd));
+
+    return (Path(std::string(cwd)));
 }

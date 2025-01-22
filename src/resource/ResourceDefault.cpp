@@ -2,6 +2,7 @@
 #include "HttpStatusCode.hpp"
 
 #include "ToString.hpp"
+#include "Logger.hpp"
 
 // =============================================================================
 // Constructors and Destructor

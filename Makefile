@@ -28,9 +28,10 @@ UTIL =		Logger \
 			AllOf \
 			IsIp
 
-TYPE =		File \
+TYPE =		PathOrUri \
 			Path \
-			Uri
+			Uri \
+			File
 
 HTTP =		HttpResponse \
 			HttpRequest \

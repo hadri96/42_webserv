@@ -70,7 +70,7 @@ void	ConfigErrorPage::display(void)
 	oss << "  error code : " << getCode();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
-	oss << "  error uri : " << getUri().getUri();
+	oss << "  error uri : " << getUri();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
 	//os << "  error file path : " << object.getErrorPath().getPath() << std::endl;
