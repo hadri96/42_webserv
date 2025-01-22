@@ -1,33 +1,23 @@
 #include "ErrorPage.hpp"
+#include "Logger.hpp"
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
 ErrorPage::ErrorPage(void) :
-	errorCode_(500),
-	errorFile_(File(Path("www/errors/500.html")))
+	code_(0)
 {}
 
-ErrorPage::ErrorPage(int errorCode) :
-	errorCode_(errorCode),
-	errorFile_(File(errorCode))
-{}
 
 ErrorPage::ErrorPage(const ErrorPage& other) :
-	errorCode_(other.errorCode_),
-	errorFile_(other.errorFile_),
+	code_(other.code_),
 	uri_(other.uri_)
 {}
 
 ErrorPage::ErrorPage(int error, Uri uri) :
-	errorCode_(error),
+	code_(error),
 	uri_(uri)
-{}
-
-ErrorPage::ErrorPage(int error, const Path& path) :
-	errorCode_(error),
-	errorFile_(File(path))
 {}
 
 ErrorPage::~ErrorPage(void)
@@ -42,8 +32,7 @@ ErrorPage&	ErrorPage::operator=(const ErrorPage& rhs)
 	if (this == &rhs)
 		return (*this);
 
-	errorCode_ = rhs.errorCode_;
-	errorFile_ = rhs.errorFile_;
+	code_ = rhs.code_;
 	uri_ = rhs.uri_;
 
 	return (*this);
@@ -51,36 +40,21 @@ ErrorPage&	ErrorPage::operator=(const ErrorPage& rhs)
 
 bool	ErrorPage::operator==(int code) const
 {
-	return (errorCode_ == code);
+	return (code_ == code);
 }
 
 // =============================================================================
 // Setters and Getters
 // =============================================================================
 
-int	ErrorPage::getErrorCode(void) const
+int	ErrorPage::getCode(void) const
 {
-	return (errorCode_);
+	return (code_);
 }
 
-const File&	ErrorPage::getErrorFile(void) const
-{
-	return (errorFile_);
-}
-
-const Path	ErrorPage::getErrorPath(void) const
-{
-	return (errorFile_.getPath());
-}
-
-Uri	ErrorPage::getErrorUri(void) const
+Uri	ErrorPage::getUri(void) const
 {
 	return (uri_);
-}
-
-const std::string	ErrorPage::read(void) const
-{
-	return (errorFile_.read());
 }
 
 // =============================================================================
@@ -93,10 +67,10 @@ void	ErrorPage::display(void)
 
 	Logger::logger()->logTitle(LOG_DEBUG, "Error page", 2);
 
-	oss << "  error code : " << getErrorCode();
+	oss << "  error code : " << getCode();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
-	oss << "  error uri : " << getErrorUri().getUri();
+	oss << "  error uri : " << getUri().getUri();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
 	//os << "  error file path : " << object.getErrorPath().getPath() << std::endl;

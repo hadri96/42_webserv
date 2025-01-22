@@ -4,8 +4,6 @@
 # include <ostream>
 # include <string>
 
-# include "Path.hpp"
-# include "File.hpp"
 # include "Uri.hpp"
 
 class	ErrorPage
@@ -13,11 +11,9 @@ class	ErrorPage
 	public:
 		// --- Constructors and Destructor ---
 							ErrorPage(void);
-							ErrorPage(int errorCode);
 							ErrorPage(const ErrorPage& other);
 
 							ErrorPage(int errorCode, Uri uri);
-							ErrorPage(int errorCode, const Path& path);
 
 							~ErrorPage(void);
 
@@ -26,23 +22,17 @@ class	ErrorPage
 		bool				operator==(int code) const;
 
 		// --- Setters and Getters ---
-		int					getErrorCode(void) const;
-		const File&			getErrorFile(void) const;
-		const Path			getErrorPath(void) const;
-		Uri					getErrorUri(void) const;
+		int					getCode(void) const;
+		Uri					getUri(void) const;
+
 		// --- Public Attributes ---
-		const std::string	read(void) const;
 		void				display(void);
 
 	private:
 		// --- Private Attributes ---
-		int					errorCode_;
-		File				errorFile_;
-
+		int					code_;
 		Uri					uri_;
 
 };
-
-//std::ostream&	operator<<(std::ostream& os, ErrorPage& object);
 
 #endif
