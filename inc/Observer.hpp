@@ -4,7 +4,7 @@
 # include <sys/poll.h> // poll
 # include <vector>
 
-# include "EventType.hpp"
+# include "HttpEventType.hpp"
 # include "Server.hpp"
 
 /*

@@ -5,7 +5,7 @@
 # include <vector>
 # include <arpa/inet.h> 
 
-# include "EventType.hpp"
+# include "HttpEventType.hpp"
 # include "Observer.hpp"
 # include "Client.hpp"
 # include "Config.hpp"

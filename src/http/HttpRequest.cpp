@@ -7,8 +7,8 @@
 
 HttpRequest::HttpRequest() : 
     rawRequest_(""),
-    requestLine_(RequestLine()),
-    header_(Header()),
+    requestLine_(HttpRequestLine()),
+    header_(HttpHeader()),
     body_("")
     {}
 
@@ -34,13 +34,13 @@ const std::string& HttpRequest::getRawRequest() const
 }
 
 // Getter for requestLine_
-const RequestLine& HttpRequest::getRequestLine() const 
+const HttpRequestLine& HttpRequest::getRequestLine() const 
 {
     return (requestLine_);
 }
 
 // Getter for header_
-const Header& HttpRequest::getHeader() const 
+const HttpHeader& HttpRequest::getHttpHeader() const 
 {
     return (header_);
 }

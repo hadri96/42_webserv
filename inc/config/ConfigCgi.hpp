@@ -1,5 +1,5 @@
-#ifndef CGI_HPP
-# define CGI_HPP
+#ifndef CONFIG_ConfigCgi_HPP
+# define CONFIG_ConfigCgi_HPP
 
 # include <string>
 # include <vector>
@@ -7,17 +7,17 @@
 # include "Path.hpp"
 # include "HttpMethodType.hpp"
 
-class	Cgi
+class	ConfigCgi
 {
 	public:
 		// --- Constructors and Destructor ---
-											Cgi(void);
-											Cgi(const Cgi& other);
+											ConfigCgi(void);
+											ConfigCgi(const ConfigCgi& other);
 
-											~Cgi(void);
+											~ConfigCgi(void);
 
 		// --- Operators Overload ---
-		Cgi&								operator=(const Cgi& rhs);
+		ConfigCgi&							operator=(const ConfigCgi& rhs);
 
 		// --- Setters and Getters ---
 		void								setFileExtension(const std::string& fileExtension);

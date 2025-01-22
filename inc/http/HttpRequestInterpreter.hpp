@@ -1,17 +1,17 @@
-#ifndef REQUESTINTERPRETER_HPP
-# define REQUESTINTERPRETER_HPP
+#ifndef HTTP_REQUEST_INTERPRETER_HPP
+# define HTTP_REQUEST_INTERPRETER_HPP
 
 # include "HttpRequest.hpp"
 # include "HttpResponse.hpp"
 # include "Server.hpp"
 # include "Config.hpp"
 
-class RequestInterpreter 
+class HttpRequestInterpreter 
 {
     public:
     // --- Constructors and Destructor ---
-        RequestInterpreter(Server* server);
-        ~RequestInterpreter();
+        HttpRequestInterpreter(Server* server);
+        ~HttpRequestInterpreter();
 
     // --- Public Methods ---
         HttpResponse    interpret(HttpRequest& request, Config& config);

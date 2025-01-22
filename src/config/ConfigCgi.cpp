@@ -1,31 +1,31 @@
-#include "Cgi.hpp"
+#include "ConfigCgi.hpp"
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
-Cgi::Cgi(void) :
+ConfigCgi::ConfigCgi(void) :
 	fileExtension_(".php"),
 	rootPath_(),
 	scriptPath_(),
 	workingDirectory_()
 {}
 
-Cgi::Cgi(const Cgi& other) :
+ConfigCgi::ConfigCgi(const ConfigCgi& other) :
 	fileExtension_(other.fileExtension_),
 	rootPath_(other.rootPath_),
 	scriptPath_(other.scriptPath_),
 	workingDirectory_(other.workingDirectory_)
 {}
 
-Cgi::~Cgi()
+ConfigCgi::~ConfigCgi()
 {}
 
 // =============================================================================
 // Operators Overload
 // =============================================================================
 
-Cgi&	Cgi::operator=(const Cgi& rhs)
+ConfigCgi&	ConfigCgi::operator=(const ConfigCgi& rhs)
 {
 	if (this == &rhs)
 		return (*this);
@@ -44,54 +44,54 @@ Cgi&	Cgi::operator=(const Cgi& rhs)
 
 // --- Setters ---
 
-void	Cgi::setFileExtension(const std::string& fileExtension)
+void	ConfigCgi::setFileExtension(const std::string& fileExtension)
 {
 	fileExtension_ = fileExtension;
 }
 
-void	Cgi::setRootPath(const Path& rootPath)
+void	ConfigCgi::setRootPath(const Path& rootPath)
 {
 	rootPath_ = rootPath;
 }
 
-void	Cgi::setScriptPath(const Path& scriptPath)
+void	ConfigCgi::setScriptPath(const Path& scriptPath)
 {
 	scriptPath_ = scriptPath;
 }
 
-void	Cgi::setWorkingDirectory(const Path& workingDirectory)
+void	ConfigCgi::setWorkingDirectory(const Path& workingDirectory)
 {
 	workingDirectory_ = workingDirectory;
 }
 
-void	Cgi::addAllowedMethod(HttpMethodType allowedMethod)
+void	ConfigCgi::addAllowedMethod(HttpMethodType allowedMethod)
 {
 	allowedMethods_.push_back(allowedMethod);
 }
 
 // --- Getters ---
 
-const std::string&	Cgi::getFileExtension(void) const
+const std::string&	ConfigCgi::getFileExtension(void) const
 {
 	return (fileExtension_);
 }
 
-const Path&	Cgi::getRootPath(void) const
+const Path&	ConfigCgi::getRootPath(void) const
 {
 	return (rootPath_);
 }
 
-const Path&	Cgi::getScriptPath(void) const
+const Path&	ConfigCgi::getScriptPath(void) const
 {
 	return (scriptPath_);
 }
 
-const Path&	Cgi::getWorkingDirectory(void) const
+const Path&	ConfigCgi::getWorkingDirectory(void) const
 {
 	return (workingDirectory_);
 }
 
-const std::vector<HttpMethodType>&	Cgi::getAllowedMethods(void) const
+const std::vector<HttpMethodType>&	ConfigCgi::getAllowedMethods(void) const
 {
 	return (allowedMethods_);
 }
