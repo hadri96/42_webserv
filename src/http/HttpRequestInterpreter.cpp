@@ -68,6 +68,10 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
 // Private Methods 
 // =============================================================================
 
+// ·············································································
+// Method Handlers
+// ·············································································
+
 HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
 {
     (void) request;
@@ -104,14 +108,38 @@ HttpResponse    HttpRequestInterpreter::handleDeleteRequest(Config& config, Http
     return (response);
 }
 
-// --- Resources ---
+// ·············································································
+// Resource Makers
+// ·············································································
+
+# include <iostream>
+
 Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 {
     Logger::logger()->log(LOG_DEBUG, "handleResourceError...");
-    (void) config;
-	//const ErrorPage* errorPage = getErrorPage(code)
-	// For now we return only the default status page
-	return (ResourceDefault(code));
+	const ConfigErrorPage* customErrorPage = config.getConfigErrorPage(code);
+
+	if (!customErrorPage)
+	{
+		 Logger::logger()->log(LOG_DEBUG, "No custom error page found, creating a default one...");
+		return (ResourceDefault(code));
+	}
+
+	Logger::logger()->log(LOG_DEBUG, "Custom error page URI : " + customErrorPage->getUri().getUri());
+
+	const Path* customErrorPagePath = config.getPath(customErrorPage->getUri());
+
+	if (!customErrorPagePath)
+	{
+		Logger::logger()->log(LOG_DEBUG, "No custom error root path found");
+		return (ResourceDefault(code));
+	}
+
+	Logger::logger()->log(LOG_DEBUG, "Custom error page root path : " + customErrorPagePath->getPath());
+		
+
+	
+	return (ResourceDefault(code + 1));
 }
 
 Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest& request)

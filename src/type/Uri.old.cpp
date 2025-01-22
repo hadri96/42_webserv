@@ -1,18 +1,23 @@
 #include "Uri.hpp"
+#include <iostream>
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
 Uri::Uri(void) :
-	PathOrUri()
+	uri_()
 {}
 
 Uri::Uri(const Uri& other) :
-	PathOrUri(other)
+	uri_(other.uri_)
 {}
 
-Uri::~Uri()
+Uri::Uri(const std::string& uri) :
+	uri_(uri)
+{}
+
+Uri::~Uri(void)
 {}
 
 // =============================================================================
@@ -23,7 +28,21 @@ Uri&	Uri::operator=(const Uri& rhs)
 {
 	if (this == &rhs)
 		return (*this);
-
-	PathOrUri::operator=(rhs);
+	
+	uri_ = rhs.uri_;
 	return (*this);
+}
+
+bool	Uri::operator==(const Uri& rhs) const
+{
+	return (uri_ == rhs.uri_);
+}
+
+// =============================================================================
+// Getters and Setters
+// =============================================================================
+
+const std::string&	Uri::getUri(void) const
+{
+	return (uri_);
 }

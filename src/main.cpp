@@ -6,13 +6,17 @@
 
 #include <iostream>
 
+#include "PathOrUri.hpp"
+#include "Path.hpp"
+
 
 int	main(int argc, char** argv)
 {
+
 	std::string configPath;
 
 	if (argc == 1)
-		configPath = "conf/minimal.conf";
+		configPath = "conf/complex.conf";
 	else if (argc == 2)
 		configPath = argv[1];
 
@@ -20,6 +24,8 @@ int	main(int argc, char** argv)
 	Config c1;
 	ConfigLocation r1;
 	ConfigCgi	cgi1;
+
+	return (0);
 
 	// =============================================================================
 	// Option A : Parsed Config File (how it should work in the end)

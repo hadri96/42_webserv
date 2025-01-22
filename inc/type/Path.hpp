@@ -1,43 +1,21 @@
 #ifndef PATH_HPP
 # define PATH_HPP
 
-# include <Logger.hpp>
-# include <Uri.hpp>
-# include <string>
+# include "PathOrUri.hpp"
 
-class Config;
-
-class	Path
+class	Path : public PathOrUri
 {
 	public:
 		// --- Constructors and Destructor ---
-					Path(void);
-					Path(const Path& other);
-					Path(const std::string path);
-					~Path(void);
+				Path(void);
+				Path(const Path& other);
+
+				Path(const std::string& str);
+
+				~Path(void);
 
 		// --- Operators Overload ---
-		Path&		operator=(const Path& rhs);
-
-		// --- Getters & Setters ---
-		std::string			getPath() const;
-		std::string			getAbsPath() const;
-
-		std::string			getPath(Config& config) const;
-		std::string			addUriAndGet(Uri& uri);
-
-		// --- Public Methods ---
-		const Path			addUri(const Uri& uri) const;
-		bool				isInFileSystem() const;
-
-		static std::string	getWorkingDirectory();
-
-	private:
-		// --- Private Attributes ---
-		std::string			path_;
-		std::string			absPath_;
+		Path&	operator=(const Path& rhs);
 };
-
-Path operator+(const Path& path, const Uri& uri);
 
 #endif

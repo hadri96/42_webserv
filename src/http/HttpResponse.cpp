@@ -18,14 +18,14 @@ HttpResponse::HttpResponse()
 
 HttpResponse::HttpResponse(Resource resource)
 {
-    Logger::logger()->log(LOG_DEBUG, "HttpResponse...");
+    //Logger::logger()->log(LOG_DEBUG, "HttpResponse...");
     body_ = resource.getBody();
-    Logger::logger()->log(LOG_DEBUG, body_);
+    //Logger::logger()->log(LOG_DEBUG, body_);
     //errorStatusLine(resource.getCode());
     staticStatusLine();
     generateBasicHeaders();
     composeFullResponse();
-    Logger::logger()->log(LOG_DEBUG, fullResponse_);
+    //Logger::logger()->log(LOG_DEBUG, fullResponse_);
 }
 
 HttpResponse::~HttpResponse() {}

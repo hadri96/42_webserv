@@ -41,6 +41,7 @@ class	Config
 
 		void							addConfigErrorPage(const ConfigErrorPage& errorPage);
 		std::vector<ConfigErrorPage>&	getConfigErrorPages(void);
+		const ConfigErrorPage*			getConfigErrorPage(int statusCode) const;
 
 		void							addConfigLocation(const ConfigLocation& location);
 		std::vector<ConfigLocation>&	getConfigLocations(void);
@@ -52,6 +53,8 @@ class	Config
 		// --- RequestInterpreter ---
 		bool							isMethodAllowed(HttpMethodType method, Uri uri) const;
 		bool							isSizeAllowed(int byteSize, Uri uri) const;
+
+		const Path*						getPath(Uri uri) const;
 
 		/*
 		Methodes necessaires pour Interpreter:
@@ -78,16 +81,15 @@ class	Config
 		std::string						serverName_;
 
 		std::vector<ConfigErrorPage>	errorPages_;
-		ConfigRedirection					redirection_;
+		ConfigRedirection				redirection_;
 
 		int								clientMaxBodySize_;
 
-		std::vector<ConfigLocation>			locations_;
+		std::vector<ConfigLocation>		locations_;
 
 		// --- Private Methods ---
-		const Path*						getPath(Uri uri) const;
-		const ConfigLocation*					getLocation(Uri uri) const;
-		const ConfigErrorPage*			getErrorPage(int statusCode) const;
+		
+		const ConfigLocation*			getConfigLocation(Uri uri) const;
 };
 
 //std::ostream&	operator<<(std::ostream& os, Config& object);
