@@ -141,5 +141,29 @@ Resource        RequestInterpreter::createResourceCgi(Config& config, HttpReques
 {
     (void) request;
 
+    // Check Request Mime type (authorised by config? )
+        // return 415 Unsupported Media Type 
+        
+    // Check Request Body not empty()
+        // 400 bad request 
+
+    // Check "inputs" field (map) -> correct types
+        // 422 Unprocessable Entity
+    
+    // Check permissions 
+        // 401 Unauthorised or 403 Forbidden
+    
+    // Check duplicate ? Does the resource already exist? 
+        // 409 Conflict
+
+    // check amount of requests? 
+        // 429 too many requests
+    
+    // protect from sql injection
+    
+    // Run CGI script in new process (fork())
+
+    // create response with CGI script output
+
     return (createResourceError(config, 404));
 }
