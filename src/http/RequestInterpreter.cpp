@@ -2,6 +2,7 @@
 #include "ToString.hpp"
 #include "HttpMethodType.hpp"
 #include "Logger.hpp"
+#include "ResourceDefault.hpp"
 
 #include <string>
 #include <stdexcept>
@@ -34,10 +35,13 @@ HttpResponse   RequestInterpreter::interpret(HttpRequest& request, Config& confi
     HttpMethodType      method = request.getMethod();
     HttpResponse        response;
 
-    if (!isAllowedMethod(config))
-        Logger::logger()->log(LOG_ERROR, "Method not allowed by server");
-    if (config.getClientMaxBodySize() < request.getBodySize())
-        Logger::logger()->log(LOG_ERROR, "Request Body Size Exceeded");
+    /*
+    if (!config.isMethodAllowed(method, request.getUri()))
+        return (HttpResponse(createResourceError(config, 405)));
+
+    if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
+        return (HttpResponse(createResourceError(config, 413)));
+    */
 
     switch (method)
     {
@@ -64,40 +68,11 @@ HttpResponse   RequestInterpreter::interpret(HttpRequest& request, Config& confi
 // Private Methods 
 // =============================================================================
 
-// Check if method is allowed by the config file
-bool    RequestInterpreter::isAllowedMethod(Config& config)
-{
-    (void)config;
-    // implementation here
-    return (true);
-}
-
-
 HttpResponse    RequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
 {
-    Uri     uri = request.getRelativeUri();
-    Path    fullPath;
-
-    (void) config;
-
-    // check if resource exists within server 
-    
-    /*if (!config.checkPathInConfig(uri, fullPath))
-        return (HttpResponse(config.getErrorPage(404)));
-    else*/
-        //return (HttpResponse(File(fullPath)));
-
-    return (HttpResponse(config.createResourceError(404)));
-    
-
-    // check if redirection 
-    // get filepath or redirection path
-    // check if directory or file 
-        // if directory get index file
-        // check if directory listing is on
-    // build File object
-    // check permissions
-    // build HttpResponse with 200 OK
+    (void) request;
+    Logger::logger()->log(LOG_DEBUG, "handleGetRequest...");
+    return (HttpResponse(createResourceError(config, 404)));
 }
 
 
@@ -105,6 +80,9 @@ HttpResponse    RequestInterpreter::handlePostRequest(Config& config, HttpReques
 {
     HttpResponse	response;
     Uri     uri = request.getRelativeUri();
+
+    // formulaire POST prenom, nom  --> page php --> salut Mickey Mouse
+    // upload de fichier
 
     Logger::logger()->log(LOG_INFO, config.getServerName());
     // check if resource exists
@@ -118,6 +96,50 @@ HttpResponse    RequestInterpreter::handleDeleteRequest(Config& config, HttpRequ
     HttpResponse	response;
     Uri             uri = request.getRelativeUri();
 
+    // allowed to deleter or not --> ResourceError(403)
+    // is dir ? 
+    // deleteResource(Uri)
+
     Logger::logger()->log(LOG_INFO, config.getServerName());
     return (response);
+}
+
+// --- Resources ---
+Resource	RequestInterpreter::createResourceError(Config& config, int code)
+{
+    Logger::logger()->log(LOG_DEBUG, "handleResourceError...");
+    (void) config;
+	//const ErrorPage* errorPage = getErrorPage(code)
+	// For now we return only the default status page
+	return (ResourceDefault(code));
+}
+
+Resource	RequestInterpreter::createResourceFile(Config& config, HttpRequest& request)
+{
+	Uri     uri = request.getRelativeUri();
+	 (void) config;
+	// check if uri exists 
+	// check if directory or file 
+        // if directory get index file
+    // check if directory listing is on
+    // build File object
+    // check permissions
+	// check if redirection
+	// if redirection  return  resourceRedirection
+
+	return (Resource(200, "File..."));
+}
+
+Resource	RequestInterpreter::createResourceDirectoryList(Config& config, Path path)
+{
+	(void) path;
+    (void) config;
+	return (Resource(200, "Directory list..."));
+}
+
+Resource        RequestInterpreter::createResourceCgi(Config& config, HttpRequest& request)
+{
+    (void) request;
+
+    return (createResourceError(config, 404));
 }

@@ -290,6 +290,7 @@ void	Server::runInterpreter(HttpRequest& request, int clientFd)
 	{
 		HttpResponse response = interpreter.interpret(request, config_);
 		client->assignResponse(response);
+		Logger::logger()->log(LOG_DEBUG, "response assigned to client");
 	}
 	catch (std::exception& e)
 	{

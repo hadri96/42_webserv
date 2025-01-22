@@ -23,8 +23,7 @@ class	Uri
 
 	private:
 		// --- Private Attributes ---
-		std::string			uri_;
-		// std::vector<std::string>	chunks_;
+		std::string							uri_;
 };
 
 #endif

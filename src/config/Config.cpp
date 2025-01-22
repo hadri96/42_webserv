@@ -2,7 +2,7 @@
 
 #include "Logger.hpp"
 
-#include "ResourceStatus.hpp"
+#include "ResourceDefault.hpp"
 
 #include <sstream> // std::ostringstream
 #include <iostream>
@@ -221,26 +221,6 @@ std::vector<Location>&	Config::getLocations(void)
 // Public Methods
 // =============================================================================
 
-// --- Resources ---
-Resource	Config::createResourceError(int code)
-{
-	//const ErrorPage* errorPage = getErrorPage(code)
-	// For now we return only the default status page
-	return (ResourceStatus(code));
-}
-
-Resource	Config::createResourceFile(Uri uri)
-{
-	(void) uri;
-	return (Resource(200, "File..."));
-}
-
-Resource	Config::createResourceDirectoryList(Path path)
-{
-	(void) path;
-	return (Resource(200, "Directory list..."));
-}
-
 // --- RequestInterpreter ---
 bool	Config::isMethodAllowed(HttpMethodType method, Uri uri) const
 {
@@ -253,6 +233,14 @@ bool	Config::isMethodAllowed(HttpMethodType method, Uri uri) const
 		return (true);
 
 	return (false);
+}
+
+bool	Config::isSizeAllowed(int byteSize, Uri uri) const
+{
+	(void) uri;
+	(void) byteSize;
+
+	return (true);
 }
 
 // =============================================================================

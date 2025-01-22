@@ -1,4 +1,4 @@
-#include "ResourceStatus.hpp"
+#include "ResourceDefault.hpp"
 #include "HttpStatusCode.hpp"
 
 #include "ToString.hpp"
@@ -7,16 +7,17 @@
 // Constructors and Destructor
 // =============================================================================
 
-ResourceStatus::ResourceStatus(void)
+ResourceDefault::ResourceDefault(void)
 {}
 
-ResourceStatus::ResourceStatus(const ResourceStatus& other) :
+ResourceDefault::ResourceDefault(const ResourceDefault& other) :
     Resource(other.code_)
 {}
 
-ResourceStatus::ResourceStatus(int code) :
+ResourceDefault::ResourceDefault(int code) :
     Resource(code)
 {
+    Logger::logger()->log(LOG_DEBUG, "ResourceDefault...");
     HttpStatusCode statusCode;
 
 
@@ -35,14 +36,14 @@ ResourceStatus::ResourceStatus(int code) :
     "</html>\n";
 }
 
-ResourceStatus::~ResourceStatus(void)
+ResourceDefault::~ResourceDefault(void)
 {}
 
 // =============================================================================
 // Operators Overload
 // =============================================================================
 
-ResourceStatus&	ResourceStatus::operator=(const ResourceStatus& rhs)
+ResourceDefault&	ResourceDefault::operator=(const ResourceDefault& rhs)
 {
     (void) rhs;
     return (*this);

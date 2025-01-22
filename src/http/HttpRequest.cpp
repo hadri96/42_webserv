@@ -9,7 +9,8 @@ HttpRequest::HttpRequest() :
     rawRequest_(""),
     requestLine_(RequestLine()),
     header_(Header()),
-    body_(""){}
+    body_("")
+    {}
 
 HttpRequest::~HttpRequest() {}
 
@@ -52,7 +53,12 @@ const std::string& HttpRequest::getBody() const
 
 int HttpRequest::getBodySize() const 
 {
-    return (body_.length());
+    return (body_.length() * sizeof(char));
+}
+
+const Uri& HttpRequest::getUri() const
+{
+    return (requestLine_.getRelativeUri());
 }
 
 
@@ -60,6 +66,7 @@ int HttpRequest::getBodySize() const
 
 const std::string   HttpRequest::getRelativeUri() const
 {
+    Logger::logger()->log(LOG_DEBUG, "getting URI");
     return (requestLine_.getRelativeUri().getUri());
 }
 

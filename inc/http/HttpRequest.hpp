@@ -6,6 +6,7 @@
 
 # include <string>
 # include <sstream>
+# include <map>
 
 class HttpRequest 
 {
@@ -28,17 +29,17 @@ class HttpRequest
         const Header&           getHeader() const;
         const std::string&      getBody() const;
         int                     getBodySize() const;
+        const Uri&              getUri() const;
 
 
     private:
     // --- Private Attributes ---
-        std::string     rawRequest_;
-        
-        RequestLine     requestLine_;
-        Header          header_;
-        // Could use an std::map for all the headers ??
-        std::string     body_;
+        std::string                         rawRequest_;
 
+        RequestLine                         requestLine_;
+        Header                              header_;
+        std::string                         body_;
+        // std::map<std::string, std::string>  inputs_; // need to get values from parsing 
 };
 
 #endif
