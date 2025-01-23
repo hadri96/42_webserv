@@ -76,7 +76,8 @@ HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpReq
 {
     (void) request;
     Logger::logger()->log(LOG_DEBUG, "handleGetRequest...");
-    return (HttpResponse(createResourceError(config, 404)));
+    return (HttpResponse(createResourceFile(config, request)));
+    //return (HttpResponse(createResourceError(config, 404)));
 }
 
 
@@ -121,6 +122,7 @@ Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 	// Do we have a custom error page defined in config and if yes retrieve its path
 	if (!customErrorPage)
 		return (ResourceDefault(code));
+    
 	Uri customErrorPageUri = customErrorPage->getUri();
 	const Path* customErrorPagePath = config.getPath(customErrorPageUri);
 
@@ -150,7 +152,21 @@ Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest& request)
 {
 	Uri     uri = request.getRelativeUri();
-	 (void) config;
+
+    const Path* foundPath = config.getPath(uri);
+
+    if (!foundPath)
+        return (createResourceError(config, 404));
+
+    Path path = *foundPath;
+    path = path/uri;
+
+    if (!(path.getAbsPath().isInFileSystem()))
+        return (createResourceError(config, 404));
+
+    return (Resource(200, path.getAbsPath().read()));
+
+
 	// check if uri exists 
 	// check if directory or file 
         // if directory get index file
@@ -160,7 +176,6 @@ Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest&
 	// check if redirection
 	// if redirection  return  resourceRedirection
 
-	return (Resource(200, "File..."));
 }
 
 Resource	HttpRequestInterpreter::createResourceDirectoryList(Config& config, Path path)
