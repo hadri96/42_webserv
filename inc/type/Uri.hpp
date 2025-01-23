@@ -18,7 +18,8 @@ class	Uri : public PathOrUri
 		Uri&	operator=(const Uri& rhs);
 
 		// --- Public Methods ---
-		Uri	getParent(void) const;
+		Uri		getParent(void) const;
+		bool	matchAnyParent(const Uri& rhs);
 };
 
 #endif

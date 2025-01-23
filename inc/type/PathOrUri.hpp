@@ -20,6 +20,7 @@ class	PathOrUri
 		PathOrUri					operator/(const std::string& rhs);
 		PathOrUri					operator/(const PathOrUri& rhs);
 		bool						operator==(const PathOrUri& rhs) const;
+		bool						operator!=(const PathOrUri& rhs) const;
 		// ··· PathOrUri + string ···
 		std::string					operator+(const std::string& rhs);
 
