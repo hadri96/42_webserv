@@ -3,6 +3,9 @@
 #include <unistd.h>
 #include <stdexcept>
 #include <sys/stat.h>
+#include <fstream>
+
+#include "Logger.hpp"
 
 // =============================================================================
 // Constructors and Destructor
@@ -66,6 +69,22 @@ bool	Path::isDir(void) const
     if (stat(path.c_str(), &path_stat) != 0)
         return (false);
     return S_ISDIR(path_stat.st_mode);
+}
+
+std::string	Path::read(void) const
+{
+	std::string         line;
+    std::string         content;
+
+	std::string			path = *this;
+    std::ifstream       fileStream(path.c_str());
+
+    if (fileStream.is_open())
+        Logger::logger()->log(LOG_INFO, "File opened: " + path);
+    while (std::getline(fileStream, line))
+        content.append(line, 0, line.length());
+    fileStream.close();
+	return (content);
 }
 
 // =============================================================================

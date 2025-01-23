@@ -267,12 +267,28 @@ const ConfigErrorPage*	Config::getConfigErrorPage(int code) const
 // Private Methods
 // =============================================================================
 
+#include <iostream>
+
+// Returns the ConfigLocation that matches the given URI (or any of its parents)
 const ConfigLocation*	Config::getConfigLocation(Uri uri) const
 {
+	Uri uriToMatch = uri;
+
+	// Compares an URI and its parents against each ConfigLocation URI
 	for (size_t i = 0; i != locations_.size(); ++i)
 	{
-		if (locations_[i] == uri || locations_[i] == ("=" + uri))
+		if (uriToMatch.matchAnyParent(locations_[i].getUri()))
 			return (&locations_[i]);
 	}
+
+	// At this stage, no matching candidate was found and uriToMatch is equal to "/"
+	// We need to return the ConfigLocation for "/" if it exists
+	for (size_t i = 0; i != locations_.size(); ++i)
+	{
+		if (uriToMatch == locations_[i].getUri())
+			return (&locations_[i]);
+	}
+
+	// No ConfigLocation matching at all
 	return (0);
 }

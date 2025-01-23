@@ -79,6 +79,12 @@ bool	PathOrUri::operator==(const PathOrUri& rhs) const
 	return (components_ == rhs.components_);
 }
 
+bool	PathOrUri::operator!=(const PathOrUri& rhs) const
+{
+	return (components_ != rhs.components_);
+}
+
+
 // --- PathOrUri + string ---
 std::string	PathOrUri::operator+(const std::string& rhs)
 {
