@@ -4,8 +4,8 @@
 # include <vector>
 # include <string>
 
-# include "Path.hpp"
-# include "Uri.hpp"
+class 	Path;
+class	Uri;
 
 class	PathOrUri
 {

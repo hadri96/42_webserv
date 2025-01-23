@@ -12,6 +12,10 @@ Uri::Uri(const Uri& other) :
 	PathOrUri(other)
 {}
 
+Uri::Uri(const PathOrUri& other) :
+	PathOrUri(other) 
+{}
+
 Uri::Uri(const std::string& str) :
 	PathOrUri(str)
 {}

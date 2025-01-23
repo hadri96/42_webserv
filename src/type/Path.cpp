@@ -19,6 +19,10 @@ Path::Path(const Path& other) :
 	PathOrUri(other)
 {}
 
+Path::Path(const PathOrUri& other) :
+	PathOrUri(other) 
+{}
+
 Path::Path(const std::string& str) :
 	PathOrUri(str)
 {}
