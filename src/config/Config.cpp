@@ -283,6 +283,7 @@ const ConfigLocation*	Config::getConfigLocation(Uri uri) const
 
 	// At this stage, no matching candidate was found and uriToMatch is equal to "/"
 	// We need to return the ConfigLocation for "/" if it exists
+	uriToMatch = Uri("/");
 	for (size_t i = 0; i != locations_.size(); ++i)
 	{
 		if (uriToMatch == locations_[i].getUri())
