@@ -125,9 +125,11 @@ Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 		return (ResourceDefault(code));
 	}
 
-	Logger::logger()->log(LOG_DEBUG, "Custom error page URI : " + customErrorPage->getUri());
+	Uri uri = customErrorPage->getUri();
 
-	const Path* customErrorPagePath = config.getPath(customErrorPage->getUri());
+	Logger::logger()->log(LOG_DEBUG, "Custom error page URI : " + uri);
+
+	const Path* customErrorPagePath = config.getPath(uri);
 
 	if (!customErrorPagePath)
 	{
@@ -136,8 +138,25 @@ Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 	}
 
 	Logger::logger()->log(LOG_DEBUG, std::string("Custom error page root path : ") + customErrorPagePath);
-	
-	return (ResourceDefault(code));
+
+    Path path = *(customErrorPagePath);
+
+    std::string uriStr = uri;
+    std::string toReplace = "x.html";
+    std::string replacement = toString(code % 10) + ".html";
+    size_t pos = uriStr.find(toReplace);
+    if (pos != std::string::npos) {
+        uriStr.replace(pos, toReplace.length(), replacement);
+    }
+
+	PathOrUri path2 = path/uriStr;
+	std::cout << static_cast<Path>(path2) << std::endl;
+
+	Logger::logger()->log(LOG_DEBUG, std::string("Final path : ") + path2);
+
+
+
+	return (Resource(code, static_cast<Path>(path2).getAbsPath().read()));
 }
 
 Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest& request)

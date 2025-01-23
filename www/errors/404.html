@@ -3,10 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!--<link rel="stylesheet" href="errors.css">-->
+	<style>
+		/* General Reset */
+		body {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: 'Arial', sans-serif;
+			background: linear-gradient(135deg, #031470, #282827);
+			height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			overflow: hidden;
+			color: #fff;
+		}
+
+		/* Centering Content */
+		.container {
+			text-align: center;
+			animation: fadeIn 2s ease;
+		}
+
+		/* Header Styling */
+		h1 {
+			font-size: 4rem;
+			margin-bottom: 1rem;
+			text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+		}
+
+		/* Paragraph Styling */
+		p {
+			font-size: 1.25rem;
+			margin-top: 0; /* Ensure no additional space above */
+			margin-bottom: 2rem;
+			line-height: 1.6;
+		}
+
+		/* Animation Keyframes */
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(-20px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		/* Button or Action Link */
+		.retry-button {
+			background: rgba(255, 255, 255, 0.2);
+			border: 2px solid #fff;
+			padding: 0.75rem 1.5rem;
+			font-size: 1rem;
+			color: #fff;
+			text-decoration: none;
+			border-radius: 25px;
+			transition: all 0.3s ease;
+			cursor: pointer;
+		}
+
+		.retry-button:hover {
+			background: #fff;
+			color: #ff7e5f;
+			transform: scale(1.05);
+		}
+
+		/* Floating Animation */
+		@keyframes float {
+			0%, 100% {
+				transform: translateY(0);
+			}
+			50% {
+				transform: translateY(-10px);
+			}
+		}
+
+		/* Floating Effect on Heading */
+		h1 {
+			animation: float 3s ease-in-out infinite;
+		}
+
+	</style>
     <title>404 Not Found</title>
 </head>
 <body>
-    <h1>404 Not Found</h1>
-    <p>Computer says no, or in other words we can't find the file you requested.</p>
+    <div class="container">
+        <h1>404 Not Found</h1>
+        <p>Computer says no, or in other words we can't find the file you requested.</p>
+    </div>
 </body>
 </html>
