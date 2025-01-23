@@ -4,6 +4,9 @@
 # include <vector>
 # include <string>
 
+# include "Path.hpp"
+# include "Uri.hpp"
+
 class	PathOrUri
 {
 	public:
@@ -26,6 +29,8 @@ class	PathOrUri
 
 		// ··· Implicit conversion to string ···
 									operator std::string() const;
+									operator Path() const;
+									operator Uri() const;
 
 		// --- Public Methods ---
 		PathOrUri					getParent(void) const;
