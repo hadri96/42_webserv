@@ -38,7 +38,7 @@ HTTP =		HttpResponse \
 			HttpStatusCode \
 			HttpHeader \
 			HttpRequestLine \
-			HttpRequestInterpreter
+			HttpRequestInterpreter \
 
 SERVER =	Observer \
 			Client \

@@ -35,13 +35,15 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
     HttpMethodType      method = request.getMethod();
     HttpResponse        response;
 
-    /*
+
     if (!config.isMethodAllowed(method, request.getUri()))
         return (HttpResponse(createResourceError(config, 405)));
 
     if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
         return (HttpResponse(createResourceError(config, 413)));
-    */
+
+    if (isCgiRequest(config, request))
+        return (HttpResponse(createResourceCgi(config, request)));
 
     switch (method)
     {
@@ -117,7 +119,7 @@ HttpResponse    HttpRequestInterpreter::handleDeleteRequest(Config& config, Http
 Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 {
     Logger::logger()->log(LOG_DEBUG, "handleResourceError...");
-	const ConfigErrorPage* customErrorPage = config.getConfigErrorPage(code);
+	const ConfigErrorPage*  customErrorPage = config.getConfigErrorPage(code);
 
 	if (!customErrorPage)
 	{
@@ -167,11 +169,11 @@ Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRe
 {
     (void) request;
 
-    // Check Request Mime type (authorised by config? )
-        // return 415 Unsupported Media Type 
-        
-    // Check Request Body not empty()
-        // 400 bad request 
+    if (config.isTypeAllowed(request.getMimeType(), request.getUri()))
+        return (createResourceError(config, 415));
+
+    if (request.getMethod() == POST && request.getBody().empty())
+        return (createResourceError(config, 400));
 
     // Check "inputs" field (map) -> correct types
         // 422 Unprocessable Entity
@@ -187,9 +189,49 @@ Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRe
     
     // protect from sql injection
     
+    // Prepare CGI environment
+    // char**   envp = prepareCgiEnvironment(config, request);
+
     // Run CGI script in new process (fork())
 
     // create response with CGI script output
 
     return (createResourceError(config, 404));
 }
+
+// ·············································································
+// Utils
+// ·············································································
+
+bool    HttpRequestInterpreter::isCgiRequest(Config& config, HttpRequest& request)
+{
+    Path                        realPath = *(config.getPath(request.getUri()));
+    std::vector<std::string>    pathComponents = realPath.getComponents();
+
+    for (size_t i = 0; i < pathComponents.size(); i++)
+    {
+        if (pathComponents[i].find("/cgi-bin/") != std::string::npos || 
+                pathComponents[i].find(config.getCgiDir()) != std::string::npos ||
+                pathComponents[i].find(".php") != std::string::npos || 
+                pathComponents[i].find(".py") != std::string::npos || 
+                pathComponents[i].find(".cgi") != std::string::npos)
+        {
+            return (true);
+        }
+    }
+    return (false); 
+}
+/*
+char**   HttpRequestInterpreter::prepareCgiEnvironment(Config& config, HttpRequest& request)
+{
+    std::map<std::string, std::string> env;
+
+    env["GATEWAY_INTERFACE"] = "CGI/1.1";
+    env["SERVER_PROTOCOL"] = "HTTP/1.1";
+    env["REQUEST_METHOD"] = HttpMethodTypeToString(request.getMethod());
+    env["SCRIPT_FILENAME"] = config.getPath(request.getUri());
+    env["PATH_INFO"] = config.getPath(request.getUri());
+    
+    return ((char **)env);
+}    
+*/

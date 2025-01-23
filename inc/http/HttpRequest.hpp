@@ -12,34 +12,35 @@ class HttpRequest
 {
 	public:
 	// --- Constructors and Destructor ---
-		HttpRequest();
-		~HttpRequest();
+											HttpRequest();
+											~HttpRequest();
 
 	// --- Public Methods ---
-		void                    appendRequest(std::string input);
-		std::string             generatePrintString();
+		void                    			appendRequest(std::string input);
+		std::string             			generatePrintString();
 		
 	// ··· "Deep" Getters and utils ···  
-		const std::string       getRelativeUri() const;
-		HttpMethodType          getMethod() const;
+		const std::string       			getRelativeUri() const;
+		HttpMethodType          			getMethod() const;
 
 	// ··· Direct getters ···  
-		const std::string&      getRawRequest() const;
-		const HttpRequestLine&  getRequestLine() const;
-		const HttpHeader&       getHttpHeader() const;
-		const std::string&      getBody() const;
-		int                     getBodySize() const;
-		const Uri&              getUri() const;
+		const std::string&      			getRawRequest() const;
+		const HttpRequestLine&  			getRequestLine() const;
+		const HttpHeader&       			getHttpHeader() const;
+		const std::string&      			getBody() const;
+		int                     			getBodySize() const;
+		const Uri&              			getUri() const;
+		HttpMimeType						getMimeType() const;
 
 
 	private:
 	// --- Private Attributes ---
-		std::string             rawRequest_;
+		std::string             			rawRequest_;
 
-		HttpRequestLine         requestLine_;
-		HttpHeader             	header_;
-		std::string             body_;
-		// std::map<std::string, std::string>  inputs_; // need to get values from parsing 
+		HttpRequestLine         			requestLine_;
+		HttpHeader             				header_;
+		std::string             			body_;
+		std::map<std::string, std::string>  inputs_; // need to get values from parsing 
 };
 
 #endif

@@ -28,6 +28,7 @@ class	PathOrUri
 
 		// --- Public Methods ---
 		PathOrUri					getParent(void) const;
+		std::vector<std::string>	getComponents(void) const;
 
 	private:
 		// --- Private Attributes ---

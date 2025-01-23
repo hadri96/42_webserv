@@ -76,6 +76,11 @@ HttpMethodType    HttpRequest::getMethod() const
     return (requestLine_.getMethod());
 }
 
+HttpMimeType    HttpRequest::getMimeType() const
+{
+    return (header_.getMimeType());
+}
+
 
 // =============================================================================
 // Public Methods 
@@ -97,7 +102,7 @@ std::string   HttpRequest::generatePrintString()
 	          << "host_: " << header_.getHost() << "\n"
 	          << "userAgent_: " << header_.getUserAgent() << "\n"
 	          << "contentLength_: " << toString(header_.getContentLength()) << "\n"
-	          << "contentType_: " << header_.getContentType() << "\n"
+	          << "contentType_: " << header_.getMimeType() << "\n"
 	          << "connectionType_: " << header_.getConnectionTypeString() << "\n"
 	          << "accept_: " << header_.getAccept() << "\n"
 	          << "acceptEncoding_: " << header_.getAcceptEncoding() << "\n"

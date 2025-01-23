@@ -8,6 +8,7 @@
 # include "ConfigErrorPage.hpp"
 # include "ConfigLocation.hpp"
 # include "ConfigCgi.hpp"
+# include "HttpMimeType.hpp"
 
 # include "Resource.hpp"
 
@@ -53,6 +54,8 @@ class	Config
 		// --- RequestInterpreter ---
 		bool							isMethodAllowed(HttpMethodType method, Uri uri) const;
 		bool							isSizeAllowed(int byteSize, Uri uri) const;
+		bool							isTypeAllowed(HttpMimeType mimeType, Uri uri) const; // Not implemented yet
+		std::string						getCgiDir(); // Not implemented yet
 
 		const Path*						getPath(Uri uri) const;
 

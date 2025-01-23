@@ -2,7 +2,7 @@
 # define HTTP_HttpHeader_HPP
 
 # include "HttpConnectionType.hpp"
-
+# include "HttpMimeType.hpp"
 
 # include <string>
 
@@ -24,7 +24,7 @@ class	HttpHeader
         const std::string&      getHost() const;
         const std::string&      getUserAgent() const;
         std::size_t             getContentLength() const;
-        const std::string&      getContentType() const;
+        HttpMimeType            getMimeType() const;
         HttpConnectionType      getConnectionType() const;
         std::string             getConnectionTypeString() const;
         const std::string&      getAccept() const;
@@ -35,7 +35,7 @@ class	HttpHeader
         void                    setHost(const std::string& host);
         void                    setUserAgent(const std::string& userAgent);
         void                    setContentLength(std::size_t contentLength);
-        void                    setContentType(const std::string& contentType);
+        void                    setMimeType(HttpMimeType contentType);
         void                    setConnectionType(HttpConnectionType connectionType);
         void                    setAccept(const std::string& accept);
         void                    setAcceptEncoding(const std::string& acceptEncoding);
@@ -49,7 +49,7 @@ class	HttpHeader
         std::string     		userAgent_;
 
         std::size_t     		contentLength_; // body.size()
-        std::string     		contentType_; // "text/html" | "text/css" | "image/png" etc.
+        HttpMimeType     		mimeType_; // "text/html" | "text/css" | "image/png" etc.
         HttpConnectionType  	connectionType_; // either CLOSED or KEEP_ALIVE
 
         std::string     		accept_; // "text/html" | "text/css" | "image/png" etc. 

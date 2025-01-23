@@ -47,6 +47,8 @@ class HttpRequestInterpreter
         Resource        createResourceCgi(Config& config, HttpRequest& request);
 
         bool            fileInServer(std::string uri, Config& config);
+        bool            isCgiRequest(Config& config, HttpRequest& request);
+        char**          prepareCgiEnvironment(Config& config, HttpRequest& request);
 };
 
 #endif
