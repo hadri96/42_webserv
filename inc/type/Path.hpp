@@ -10,6 +10,7 @@ class	Path : public PathOrUri
 					Path(void);
 					Path(const Path& other);
 
+					Path(const PathOrUri& other);
 					Path(const std::string& str);
 
 					~Path(void);

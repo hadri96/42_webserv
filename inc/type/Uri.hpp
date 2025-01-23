@@ -10,6 +10,7 @@ class	Uri : public PathOrUri
 				Uri(void);
 				Uri(const Uri& other);
 
+				Uri(const PathOrUri& other);
 				Uri(const std::string& str);
 
 				~Uri(void);

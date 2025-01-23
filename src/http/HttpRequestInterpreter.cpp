@@ -116,47 +116,35 @@ HttpResponse    HttpRequestInterpreter::handleDeleteRequest(Config& config, Http
 
 Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 {
-    Logger::logger()->log(LOG_DEBUG, "handleResourceError...");
 	const ConfigErrorPage* customErrorPage = config.getConfigErrorPage(code);
 
+	// Do we have a custom error page defined in config and if yes retrieve its path
 	if (!customErrorPage)
-	{
-		 Logger::logger()->log(LOG_DEBUG, "No custom error page found, creating a default one...");
 		return (ResourceDefault(code));
-	}
+	Uri customErrorPageUri = customErrorPage->getUri();
+	const Path* customErrorPagePath = config.getPath(customErrorPageUri);
 
-	Uri uri = customErrorPage->getUri();
-
-	Logger::logger()->log(LOG_DEBUG, "Custom error page URI : " + uri);
-
-	const Path* customErrorPagePath = config.getPath(uri);
-
+	// If no custom error page path has been found return the default one
 	if (!customErrorPagePath)
-	{
-		Logger::logger()->log(LOG_DEBUG, "No custom error root path found");
 		return (ResourceDefault(code));
-	}
 
-	Logger::logger()->log(LOG_DEBUG, std::string("Custom error page root path : ") + customErrorPagePath);
-
-    Path path = *(customErrorPagePath);
-
-    std::string uriStr = uri;
+	// Replace x.html by the last digit of the code .
+    std::string customErrorPageUriStr = customErrorPageUri;
     std::string toReplace = "x.html";
     std::string replacement = toString(code % 10) + ".html";
-    size_t pos = uriStr.find(toReplace);
+    size_t pos = customErrorPageUriStr.find(toReplace);
     if (pos != std::string::npos) {
-        uriStr.replace(pos, toReplace.length(), replacement);
+        customErrorPageUriStr.replace(pos, toReplace.length(), replacement);
     }
 
-	PathOrUri path2 = path/uriStr;
-	std::cout << static_cast<Path>(path2) << std::endl;
+    Path customErrorPagePathObj = *customErrorPagePath;
+    customErrorPagePathObj = customErrorPagePathObj/customErrorPageUriStr;
 
-	Logger::logger()->log(LOG_DEBUG, std::string("Final path : ") + path2);
+	// If the custom error page is not in the file system, return the default one
+	if (!(customErrorPagePathObj.getAbsPath().isInFileSystem()))
+		return (ResourceDefault(code));
 
-
-
-	return (Resource(code, static_cast<Path>(path2).getAbsPath().read()));
+	return (Resource(code, customErrorPagePathObj.getAbsPath().read()));
 }
 
 Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest& request)
