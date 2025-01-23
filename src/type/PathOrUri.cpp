@@ -33,6 +33,19 @@ PathOrUri&	PathOrUri::operator=(const PathOrUri& rhs)
 	return (*this);
 }
 
+// --- Implicit conversion to Path ---
+PathOrUri::operator Path() const
+{
+	return (*this);
+}
+
+// --- Implicit conversion to Uri ---
+PathOrUri::operator Uri() const
+{
+	return (*this);
+}
+
+
 // --- Implicit conversion to string ---
 PathOrUri::operator std::string() const
 {
