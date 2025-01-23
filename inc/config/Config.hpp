@@ -5,9 +5,9 @@
 # include <string>
 # include <vector>
 
-# include "ErrorPage.hpp"
-# include "Location.hpp"
-# include "Cgi.hpp"
+# include "ConfigErrorPage.hpp"
+# include "ConfigLocation.hpp"
+# include "ConfigCgi.hpp"
 
 # include "Resource.hpp"
 
@@ -36,14 +36,15 @@ class	Config
 		void							setClientMaxBodySize(int clientMaxBodySize);
 		int								getClientMaxBodySize(void) const;
 
-		void							setHttpRedirection(HttpRedirection redirection);
-		HttpRedirection&				getHttpRedirection(void);
+		void							setConfigRedirection(ConfigRedirection redirection);
+		ConfigRedirection&				getConfigRedirection(void);
 
-		void							addErrorPage(const ErrorPage& errorPage);
-		void							addLocation(const Location& Location);
+		void							addConfigErrorPage(const ConfigErrorPage& errorPage);
+		std::vector<ConfigErrorPage>&	getConfigErrorPages(void);
+		const ConfigErrorPage*			getConfigErrorPage(int statusCode) const;
 
-		std::vector<ErrorPage>&			getErrorPages(void);
-		std::vector<Location>&			getLocations(void);
+		void							addConfigLocation(const ConfigLocation& location);
+		std::vector<ConfigLocation>&	getConfigLocations(void);
 						
 		bool							checkPathInConfig(Uri& uri, Path& outputPath) const;
 
@@ -52,6 +53,8 @@ class	Config
 		// --- RequestInterpreter ---
 		bool							isMethodAllowed(HttpMethodType method, Uri uri) const;
 		bool							isSizeAllowed(int byteSize, Uri uri) const;
+
+		const Path*						getPath(Uri uri) const;
 
 		/*
 		Methodes necessaires pour Interpreter:
@@ -67,7 +70,7 @@ class	Config
 		bool		isDirectory(Uri& uri);
 		bool		directoryListing();
 		File		getIndexFile();
-		ErrorPage	getErrorPage(int errorCode);
+		ConfigErrorPage	getConfigErrorPage(int errorCode);
 		*/
 
 
@@ -77,17 +80,16 @@ class	Config
 		int								port_;
 		std::string						serverName_;
 
-		std::vector<ErrorPage>			errorPages_;
-		HttpRedirection					redirection_;
+		std::vector<ConfigErrorPage>	errorPages_;
+		ConfigRedirection				redirection_;
 
 		int								clientMaxBodySize_;
 
-		std::vector<Location>			locations_;
+		std::vector<ConfigLocation>		locations_;
 
 		// --- Private Methods ---
-		const Path*						getPath(Uri uri) const;
-		const Location*					getLocation(Uri uri) const;
-		const ErrorPage*				getErrorPage(int statusCode) const;
+		
+		const ConfigLocation*			getConfigLocation(Uri uri) const;
 };
 
 //std::ostream&	operator<<(std::ostream& os, Config& object);

@@ -2,7 +2,7 @@ NAME = webserv
 
 MAKEFLAGS = --no-print-directory
 
-INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/config/interpreter -I inc/http -I inc/util -I inc/resource
+INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/config/interpreter -I inc/http -I inc/util -I inc/resource -I inc/type
 
 CC = c++
 
@@ -17,18 +17,38 @@ UNAME_S := $(shell uname -s)
 #endif
 
 # Source File names:
-MAIN =		main Webserv
-UTIL =		Logger ToString ToInt Join ToVector AllOf IsIp
-HTTP =		HttpResponse HttpRequest HttpStatusCode Header RequestLine RequestInterpreter
-SERVER =	Observer Client Server
-CONFIG = 	File \
+MAIN =		main \
+			Webserv
+
+UTIL =		Logger \
+			ToString \
+			ToInt \
+			Join \
+			ToVector \
+			AllOf \
+			IsIp
+
+TYPE =		PathOrUri \
 			Path \
 			Uri \
-			Location \
-			HttpRedirection \
-			ErrorPage \
-			Cgi \
-			Config \
+			File
+
+HTTP =		HttpResponse \
+			HttpRequest \
+			HttpStatusCode \
+			HttpHeader \
+			HttpRequestLine \
+			HttpRequestInterpreter
+
+SERVER =	Observer \
+			Client \
+			Server
+
+CONFIG = 	Config \
+			ConfigLocation \
+			ConfigRedirection \
+			ConfigErrorPage \
+			ConfigCgi \
 			lexer/ConfigLexer \
 			lexer/ConfigToken \
 			parser/ConfigParser \
@@ -37,6 +57,7 @@ CONFIG = 	File \
 			parser/ConfigParserDirective \
 			interpreter/ConfigInterpreter \
 			interpreter/ConfigInterpreterRule
+
 RESOURCE =	Resource \
 			ResourceDefault
 
@@ -45,6 +66,7 @@ SRCS_DIR = src
 
 # Source Subdirectories:
 UTIL_DIR = util
+TYPE_DIR = type
 HTTP_DIR = http
 SERVER_DIR = server
 CONFIG_DIR = config
@@ -53,6 +75,7 @@ RESOURCE_DIR = resource
 # Source Files
 SRCS = $(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(MAIN)))\
 	$(addprefix $(SRCS_DIR)/$(UTIL_DIR)/, $(addsuffix .cpp, $(UTIL)))\
+	$(addprefix $(SRCS_DIR)/$(TYPE_DIR)/, $(addsuffix .cpp, $(TYPE)))\
 	$(addprefix $(SRCS_DIR)/$(HTTP_DIR)/, $(addsuffix .cpp, $(HTTP)))\
 	$(addprefix $(SRCS_DIR)/$(SERVER_DIR)/, $(addsuffix .cpp, $(SERVER))) \
 	$(addprefix $(SRCS_DIR)/$(CONFIG_DIR)/, $(addsuffix .cpp, $(CONFIG))) \
@@ -62,6 +85,7 @@ SRCS = $(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(MAIN)))\
 # Convert source file names to object file names in the OBJ_DIRS directory
 OBJ_DIR = obj
 OBJ_DIRS = $(OBJ_DIR) $(addprefix $(OBJ_DIR)/$(UTIL_DIR)/, $(UTIL)) \
+	$(addprefix $(OBJ_DIR)/$(TYPE_DIR)/, $(TYPE)) \
 	$(addprefix $(OBJ_DIR)/$(HTTP_DIR)/, $(HTTP)) \
 	$(addprefix $(OBJ_DIR)/$(SERVER_DIR)/, $(SERVER)) \
 	$(addprefix $(OBJ_DIR)/$(CONFIG_DIR)/, $(CONFIG)) \

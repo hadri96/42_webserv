@@ -1,5 +1,7 @@
 #include "Webserv.hpp"
 
+#include "Logger.hpp"
+
 #include "File.hpp"
 #include "ConfigLexer.hpp"
 #include "ConfigParser.hpp"

@@ -1,10 +1,11 @@
-#include "Location.hpp"
+#include "ConfigLocation.hpp"
+#include "Logger.hpp"
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
-Location::Location(void) :
+ConfigLocation::ConfigLocation(void) :
 	uri_(),
 	rootPath_(),
 	allowedMethods_(),
@@ -16,7 +17,7 @@ Location::Location(void) :
 	cgi_()
 {}
 
-Location::Location(const Location& other) :
+ConfigLocation::ConfigLocation(const ConfigLocation& other) :
 	uri_(other.uri_),
 	rootPath_(other.rootPath_),
 	allowedMethods_(other.allowedMethods_),
@@ -27,14 +28,14 @@ Location::Location(const Location& other) :
 	isCgi_(other.isCgi_),
 	cgi_(other.cgi_)
 {}
-Location::~Location(void)
+ConfigLocation::~ConfigLocation(void)
 {}
 
 // =============================================================================
 // Operators Overload
 // =============================================================================
 
-Location&	Location::operator=(const Location& rhs)
+ConfigLocation&	ConfigLocation::operator=(const ConfigLocation& rhs)
 {
 	if (this == &rhs)
 		return (*this);
@@ -52,7 +53,7 @@ Location&	Location::operator=(const Location& rhs)
 	return (*this);
 }
 
-bool	Location::operator==(const Uri& uri) const
+bool	ConfigLocation::operator==(const Uri& uri) const
 {
 	return (uri_ == uri);
 }
@@ -85,30 +86,30 @@ std::ostream& operator<<(std::ostream& os, Location& object) {
 }
 */
 
-void	Location::log(void)
+void	ConfigLocation::log(void)
 {
     std::ostringstream oss;
 
 	Logger::logger()->logTitle(LOG_DEBUG, "Location", 2);
 
-    oss << "  uri : " << getUri().getUri();
+    oss << "  uri : " << getUri();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
-    oss << "  root path : " << getRootPath().getPath();
+    oss << "  root path : " << getRootPath();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
     oss << "  autoindex : " << getAutoIndex();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
-	if (getHttpRedirection().getStatusCode() != 0)
+	if (getConfigRedirection().getStatusCode() != 0)
 	{
 		oss << "  redirection : ";
 		Logger::logger()->log(LOG_DEBUG, oss);
 
-		oss << "    status code : " << getHttpRedirection().getStatusCode();
+		oss << "    status code : " << getConfigRedirection().getStatusCode();
 		Logger::logger()->log(LOG_DEBUG, oss);
 
-		oss << "    uri : " << getHttpRedirection().getUri().getUri();
+		oss << "    uri : " << getConfigRedirection().getUri();
 		Logger::logger()->log(LOG_DEBUG, oss);
 	}
 
@@ -120,99 +121,99 @@ void	Location::log(void)
 
 // --- Setters ---
 
-void	Location::setUri(Uri uri)
+void	ConfigLocation::setUri(Uri uri)
 {
 	uri_ = uri;
 }
 
-void	Location::setRootPath(Path rootPath)
+void	ConfigLocation::setRootPath(Path rootPath)
 {
 	rootPath_ = rootPath;
 }
 
-void	Location::setAutoIndex(bool autoIndex)
+void	ConfigLocation::setAutoIndex(bool autoIndex)
 {
 	autoIndex_ = autoIndex;
 }
 
-void	Location::setHttpRedirection(HttpRedirection redirection)
+void	ConfigLocation::setConfigRedirection(ConfigRedirection redirection)
 {
 	redirection_ = redirection;
 }
 
-void	Location::setDefaultFile(const Path& defaultFile)
+void	ConfigLocation::setDefaultFile(const Path& defaultFile)
 {
 	defaultFile_ = defaultFile;
 }
 
-void	Location::setUploadDirectory(const Path& uploadDirectory)
+void	ConfigLocation::setUploadDirectory(const Path& uploadDirectory)
 {
 	uploadDirectory_ = uploadDirectory;
 }
 
-void	Location::setIsCgi(bool isCgi)
+void	ConfigLocation::setIsCgi(bool isCgi)
 {
 	isCgi_ = isCgi;
 }
 
-void	Location::setCgi(const Cgi& cgi)
+void	ConfigLocation::setCgi(const ConfigCgi& cgi)
 {
 	cgi_ = cgi;
 }
 
-void	Location::addAllowedMethod(HttpMethodType method)
+void	ConfigLocation::addAllowedMethod(HttpMethodType method)
 {
 	allowedMethods_.push_back(method);
 }
 
 // --- Getters ---
 
-const Uri&	Location::getUri(void) const
+const Uri&	ConfigLocation::getUri(void) const
 {
 	return (uri_);
 }
 
-const Path& 	Location::getRootPath(void) const
+const Path& 	ConfigLocation::getRootPath(void) const
 {
 	return (rootPath_);
 }
 
-const std::string 	Location::getRootPathString(void) const
+const std::string 	ConfigLocation::getRootPathString(void) const
 {
-	return (rootPath_.getPath());
+	return (rootPath_);
 }
 
-const HttpRedirection&	Location::getHttpRedirection(void) const
+const ConfigRedirection&	ConfigLocation::getConfigRedirection(void) const
 {
 	return (redirection_);
 }
 
-bool	Location::getAutoIndex(void) const
+bool	ConfigLocation::getAutoIndex(void) const
 {
 	return (autoIndex_);
 }
 
-const Path&	Location::getDefaultFile(void) const
+const Path&	ConfigLocation::getDefaultFile(void) const
 {
 	return (defaultFile_);
 }
 
-const Path&	Location::getUploadDirectory(void) const
+const Path&	ConfigLocation::getUploadDirectory(void) const
 {
 	return (uploadDirectory_);
 }
 
-bool	Location::getIsCgi(void) const
+bool	ConfigLocation::getIsCgi(void) const
 {
 	return (isCgi_);
 }
 
-const Cgi&	Location::getCgi(void) const
+const ConfigCgi&	ConfigLocation::getCgi(void) const
 {
 	return (cgi_);
 }
 
-const std::vector<HttpMethodType>&	Location::getAllowedMethods(void) const
+const std::vector<HttpMethodType>&	ConfigLocation::getAllowedMethods(void) const
 {
 	return (allowedMethods_);
 }
@@ -221,7 +222,7 @@ const std::vector<HttpMethodType>&	Location::getAllowedMethods(void) const
 // Public Methods
 // =============================================================================
 
-bool	Location::isMethodAllowed(HttpMethodType method) const
+bool	ConfigLocation::isMethodAllowed(HttpMethodType method) const
 {
 
 	for (size_t i = 0; i != allowedMethods_.size(); ++i)

@@ -68,7 +68,7 @@ Config&	Config::operator=(const Config& rhs)
 	os << "  client_max_body_size : " << object.getClientMaxBodySize() << std::endl;
 
 	// Redirection
-	os << object.getHttpRedirection();
+	os << object.getConfigRedirection();
 
 	// Locations
 	for (size_t i = 0; i != object.getLocations().size(); ++i)
@@ -95,20 +95,20 @@ void	Config::log(void)
 	Logger::logger()->log(LOG_DEBUG, oss);
 
 	// Error pages
-	for (size_t i = 0; i != getErrorPages().size(); ++i)
+	for (size_t i = 0; i != getConfigErrorPages().size(); ++i)
 	{
-		getErrorPages()[i].display();
+		getConfigErrorPages()[i].display();
 	}
 	oss << "  client_max_body_size : " << getClientMaxBodySize();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
 	// Redirection
-	getHttpRedirection().log();
+	getConfigRedirection().log();
 
 	// Locations
-	for (size_t i = 0; i != getLocations().size(); ++i)
+	for (size_t i = 0; i != getConfigLocations().size(); ++i)
 	{
-		getLocations()[i].log();
+		getConfigLocations()[i].log();
 		//Logger::logger()->log(LOG_DEBUG, oss);
 	}
 }
@@ -139,17 +139,17 @@ void	Config::setClientMaxBodySize(int clientMaxBodySize)
 	clientMaxBodySize_ = clientMaxBodySize;
 }
 
-void	Config::setHttpRedirection(HttpRedirection redirection)
+void	Config::setConfigRedirection(ConfigRedirection redirection)
 {
 	redirection_ = redirection;
 }
 
-void	Config::addErrorPage(const ErrorPage& errorPage)
+void	Config::addConfigErrorPage(const ConfigErrorPage& errorPage)
 {
 	errorPages_.push_back(errorPage);
 }
 
-void	Config::addLocation(const Location& location)
+void	Config::addConfigLocation(const ConfigLocation& location)
 {
 	locations_.push_back(location);
 }
@@ -171,7 +171,7 @@ const std::string&	Config::getServerName(void) const
 	return (serverName_);
 }
 
-HttpRedirection&	Config::getHttpRedirection(void)
+ConfigRedirection&	Config::getConfigRedirection(void)
 {
 	return (redirection_);
 }
@@ -181,7 +181,7 @@ int	Config::getClientMaxBodySize(void) const
 	return (clientMaxBodySize_);
 }
 
-std::vector<ErrorPage>&	Config::getErrorPages(void)
+std::vector<ConfigErrorPage>&	Config::getConfigErrorPages(void)
 {
 	return (errorPages_);
 }
@@ -195,7 +195,7 @@ std::vector<ErrorPage>&	Config::getErrorPages(void)
 
 bool	Config::checkPathInConfig(Uri& uri, Path& outputPath) const
 {
-	std::string		uriString = uri.getUri(); 
+	std::string		uriString = uri;
 	// Logger::logger()->log(LOG_DEBUG, "URI = " + uriString);
 
 	for (size_t i = 0; i < locations_.size(); i++)
@@ -212,7 +212,7 @@ bool	Config::checkPathInConfig(Uri& uri, Path& outputPath) const
 	return (false);
 }
 
-std::vector<Location>&	Config::getLocations(void)
+std::vector<ConfigLocation>&	Config::getConfigLocations(void)
 {
 	return (locations_);
 }
@@ -221,10 +221,20 @@ std::vector<Location>&	Config::getLocations(void)
 // Public Methods
 // =============================================================================
 
+const Path*	Config::getPath(Uri uri) const
+{
+	const ConfigLocation* foundLocation = getConfigLocation(uri);
+
+	if (!foundLocation)
+		return (0);
+
+	return (&foundLocation->getRootPath());
+}
+
 // --- RequestInterpreter ---
 bool	Config::isMethodAllowed(HttpMethodType method, Uri uri) const
 {
-	const Location* location = getLocation(uri);
+	const ConfigLocation* location = getConfigLocation(uri);
 
 	if (location)
 		return (location->isMethodAllowed(method));
@@ -243,26 +253,26 @@ bool	Config::isSizeAllowed(int byteSize, Uri uri) const
 	return (true);
 }
 
-// =============================================================================
-// Private Methods
-// =============================================================================
-
-const Location*	Config::getLocation(Uri uri) const
-{
-	for (size_t i = 0; i != locations_.size(); ++i)
-	{
-		if (locations_[i] == uri)
-			return (&locations_[i]);
-	}
-	return (0);
-}
-
-const ErrorPage*	Config::getErrorPage(int code) const
+const ConfigErrorPage*	Config::getConfigErrorPage(int code) const
 {
 	for(size_t i = 0; i != errorPages_.size(); ++i)
 	{
 		if (errorPages_[i] == code)
 			return (&errorPages_[i]);
+	}
+	return (0);
+}
+
+// =============================================================================
+// Private Methods
+// =============================================================================
+
+const ConfigLocation*	Config::getConfigLocation(Uri uri) const
+{
+	for (size_t i = 0; i != locations_.size(); ++i)
+	{
+		if (locations_[i] == uri || locations_[i] == ("=" + uri))
+			return (&locations_[i]);
 	}
 	return (0);
 }

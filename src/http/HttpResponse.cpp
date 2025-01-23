@@ -18,32 +18,14 @@ HttpResponse::HttpResponse()
 
 HttpResponse::HttpResponse(Resource resource)
 {
-    Logger::logger()->log(LOG_DEBUG, "HttpResponse...");
+    //Logger::logger()->log(LOG_DEBUG, "HttpResponse...");
     body_ = resource.getBody();
-    Logger::logger()->log(LOG_DEBUG, body_);
+    //Logger::logger()->log(LOG_DEBUG, body_);
     //errorStatusLine(resource.getCode());
     staticStatusLine();
     generateBasicHeaders();
     composeFullResponse();
-    Logger::logger()->log(LOG_DEBUG, fullResponse_);
-}
-
-HttpResponse::HttpResponse(File file) 
-{
-    body_ = file.read();
-    // Logger::logger()->log(LOG_DEBUG, body_);
-    staticStatusLine();
-    generateBasicHeaders();
-    composeFullResponse();
-}
-
-HttpResponse::HttpResponse(ErrorPage errorPage) 
-{
-    body_ = errorPage.read();
-    // Logger::logger()->log(LOG_DEBUG, body_);
-    errorStatusLine(errorPage);
-    generateBasicHeaders();
-    composeFullResponse();
+    //Logger::logger()->log(LOG_DEBUG, fullResponse_);
 }
 
 HttpResponse::~HttpResponse() {}
@@ -107,11 +89,11 @@ std::string     HttpResponse::extractStatusText() const
     return ("Unknown Error");
 }
 
-void    HttpResponse::errorStatusLine(ErrorPage& errorPage)
+void    HttpResponse::errorStatusLine(ConfigErrorPage& configErrorPage)
 {
     std::string             statusText = extractStatusText();
     std::ostringstream      statusLine;
-    int                     statusCode = errorPage.getErrorCode();
+    int                     statusCode = configErrorPage.getCode();
 
     if (statusCode == 0) 
         statusLine_ = "HTTP/1.1 500 Internal Server Error";

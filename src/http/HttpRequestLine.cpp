@@ -1,28 +1,28 @@
-#include "RequestLine.hpp"
+#include "HttpRequestLine.hpp"
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
-RequestLine::RequestLine(void) : 
+HttpRequestLine::HttpRequestLine(void) : 
 	method_(GET),
 	relativeUri_("/example_response.html"),
 	httpVersion_("HTTP/1.1")
 {}
 
-RequestLine::RequestLine(const RequestLine& other) :
+HttpRequestLine::HttpRequestLine(const HttpRequestLine& other) :
 	method_(other.method_),
     relativeUri_(other.relativeUri_),
     httpVersion_(other.httpVersion_)
 {}
 
-RequestLine::~RequestLine(void) {}
+HttpRequestLine::~HttpRequestLine(void) {}
 
 // =============================================================================
 // Operators Overload
 // =============================================================================
 
-RequestLine&	RequestLine::operator=(const RequestLine& other)
+HttpRequestLine&	HttpRequestLine::operator=(const HttpRequestLine& other)
 {
 	if (this == &other)
 		return (*this);
@@ -38,13 +38,13 @@ RequestLine&	RequestLine::operator=(const RequestLine& other)
 // =============================================================================
 
 // Getter for method_
-HttpMethodType RequestLine::getMethod() const 
+HttpMethodType HttpRequestLine::getMethod() const 
 {
     return (method_);
 }
 
 // String getter for method_
-std::string RequestLine::getMethodString() const 
+std::string HttpRequestLine::getMethodString() const 
 {
     if (method_ == 0)
         return ("GET");
@@ -57,19 +57,19 @@ std::string RequestLine::getMethodString() const
 }
 
 // Getter for relativeUri_
-const Uri& RequestLine::getRelativeUri() const 
+const Uri& HttpRequestLine::getRelativeUri() const 
 {
     return (relativeUri_);
 }
 
 // Getter for httpVersion_
-const std::string& RequestLine::getHttpVersion() const 
+const std::string& HttpRequestLine::getHttpVersion() const 
 {
     return (httpVersion_);
 }
 
 // Getter for queryString_
-const std::string& RequestLine::getQueryString() const 
+const std::string& HttpRequestLine::getQueryString() const 
 {
     return (queryString_);
 }

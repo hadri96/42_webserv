@@ -1,23 +1,22 @@
 #include "Uri.hpp"
-#include <iostream>
 
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
 
 Uri::Uri(void) :
-	uri_()
+	PathOrUri()
 {}
 
 Uri::Uri(const Uri& other) :
-	uri_(other.uri_)
+	PathOrUri(other)
 {}
 
-Uri::Uri(const std::string& uri) :
-	uri_(uri)
+Uri::Uri(const std::string& str) :
+	PathOrUri(str)
 {}
 
-Uri::~Uri(void)
+Uri::~Uri()
 {}
 
 // =============================================================================
@@ -28,21 +27,17 @@ Uri&	Uri::operator=(const Uri& rhs)
 {
 	if (this == &rhs)
 		return (*this);
-	
-	uri_ = rhs.uri_;
+
+	PathOrUri::operator=(rhs);
 	return (*this);
 }
 
-bool	Uri::operator==(const Uri& rhs) const
-{
-	return (uri_ == rhs.uri_);
-}
-
 // =============================================================================
-// Getters and Setters
+// Public Methods
 // =============================================================================
 
-const std::string&	Uri::getUri(void) const
+Uri	Uri::getParent(void) const
 {
-	return (uri_);
+	PathOrUri parent = PathOrUri::getParent();
+	return Uri(parent);
 }

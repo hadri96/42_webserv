@@ -1,5 +1,5 @@
-#include "Header.hpp"
-#include "ConnectionType.hpp"
+#include "HttpHeader.hpp"
+#include "HttpConnectionType.hpp"
 #include "ToString.hpp"
 
 #include <sstream>
@@ -9,7 +9,7 @@
 // =============================================================================
 
 // Using example values for testing purposes: 
-Header::Header(void) :
+HttpHeader::HttpHeader(void) :
     host_("www.example.com"),
     userAgent_("agent"),
     contentLength_(0),
@@ -20,7 +20,7 @@ Header::Header(void) :
     acceptLanguage_("en-US,en,q=0.9")
 {}
 
-Header::Header(const Header& other) :
+HttpHeader::HttpHeader(const HttpHeader& other) :
     host_(other.host_),
     userAgent_(other.userAgent_),
     contentLength_(other.contentLength_),
@@ -31,14 +31,14 @@ Header::Header(const Header& other) :
     acceptLanguage_(other.acceptLanguage_)
 {}
 
-Header::~Header(void)
+HttpHeader::~HttpHeader(void)
 {}
 
 // =============================================================================
 // Operators Overload
 // =============================================================================
 
-Header&	Header::operator=(const Header& other)
+HttpHeader&	HttpHeader::operator=(const HttpHeader& other)
 {
 	if (this == &other)
 		return (*this);
@@ -52,36 +52,36 @@ Header&	Header::operator=(const Header& other)
 
 
 // Getter for host_
-const std::string& Header::getHost() const 
+const std::string& HttpHeader::getHost() const 
 {
     return (host_);
 }
 
 // Getter for userAgent_
-const std::string& Header::getUserAgent() const 
+const std::string& HttpHeader::getUserAgent() const 
 {
     return (userAgent_);
 }
 
 // Getter for contentLength_
-std::size_t Header::getContentLength() const 
+std::size_t HttpHeader::getContentLength() const 
 {
     return (contentLength_);
 }
 
 // Getter for contentType_
-const std::string& Header::getContentType() const 
+const std::string& HttpHeader::getContentType() const 
 {
     return (contentType_);
 }
 
 // Getter for connectionType_
-ConnectionType Header::getConnectionType() const 
+HttpConnectionType HttpHeader::getConnectionType() const 
 {
     return (connectionType_);
 }
 
-std::string Header::getConnectionTypeString() const
+std::string HttpHeader::getConnectionTypeString() const
 {
     if (connectionType_ == 0)
         return ("CLOSED");
@@ -92,19 +92,19 @@ std::string Header::getConnectionTypeString() const
 }
 
 // Getter for accept_
-const std::string& Header::getAccept() const 
+const std::string& HttpHeader::getAccept() const 
 {
     return (accept_);
 }
 
 // Getter for acceptEncoding_
-const std::string& Header::getAcceptEncoding() const 
+const std::string& HttpHeader::getAcceptEncoding() const 
 {
     return (acceptEncoding_);
 }
 
 // Getter for acceptLanguage_
-const std::string& Header::getAcceptLanguage() const 
+const std::string& HttpHeader::getAcceptLanguage() const 
 {
     return (acceptLanguage_);
 }
@@ -114,49 +114,49 @@ const std::string& Header::getAcceptLanguage() const
 // =============================================================================
 
 // Setter for host_
-void Header::setHost(const std::string& host) 
+void HttpHeader::setHost(const std::string& host) 
 {
     host_ = host;
 }
 
 // Setter for userAgent_
-void Header::setUserAgent(const std::string& userAgent) 
+void HttpHeader::setUserAgent(const std::string& userAgent) 
 {
     userAgent_ = userAgent;
 }
 
 // Setter for contentLength_
-void Header::setContentLength(std::size_t contentLength) 
+void HttpHeader::setContentLength(std::size_t contentLength) 
 {
     contentLength_ = contentLength;
 }
 
 // Setter for contentType_
-void Header::setContentType(const std::string& contentType) 
+void HttpHeader::setContentType(const std::string& contentType) 
 {
     contentType_ = contentType;
 }
 
 // Setter for connectionType_
-void Header::setConnectionType(ConnectionType connectionType) 
+void HttpHeader::setConnectionType(HttpConnectionType connectionType) 
 {
     connectionType_ = connectionType;
 }
 
 // Setter for accept_
-void Header::setAccept(const std::string& accept) 
+void HttpHeader::setAccept(const std::string& accept) 
 {
     accept_ = accept;
 }
 
 // Setter for acceptEncoding_
-void Header::setAcceptEncoding(const std::string& acceptEncoding) 
+void HttpHeader::setAcceptEncoding(const std::string& acceptEncoding) 
 {
     acceptEncoding_ = acceptEncoding;
 }
 
 // Setter for acceptLanguage_
-void Header::setAcceptLanguage(const std::string& acceptLanguage) 
+void HttpHeader::setAcceptLanguage(const std::string& acceptLanguage) 
 {
     acceptLanguage_ = acceptLanguage;
 }
@@ -165,17 +165,17 @@ void Header::setAcceptLanguage(const std::string& acceptLanguage)
 // Private Methods
 // =============================================================================
 
-std::string     Header::generateHeaderString() const
+std::string     HttpHeader::generateHttpHeaderString() const
 {
-    std::ostringstream  headers;
+    std::ostringstream  HttpHeaders;
 
-    headers << "Host: " << getHost() << "\r\n";
-    headers << "User Agent: " << getUserAgent() << "\r\n";
-    headers << "Content Length: " << toString(getContentLength()) << "\r\n";
-    headers << "Connection Type: " << getConnectionTypeString() << "\r\n";
-    headers << "Accept: " << getAccept() << "\r\n";
-    headers << "Accept Encoding: " << getAcceptEncoding() << "\r\n";
-    headers << "Accept Language: " << getAcceptLanguage() << "\r\n";
+    HttpHeaders << "Host: " << getHost() << "\r\n";
+    HttpHeaders << "User Agent: " << getUserAgent() << "\r\n";
+    HttpHeaders << "Content Length: " << toString(getContentLength()) << "\r\n";
+    HttpHeaders << "Connection Type: " << getConnectionTypeString() << "\r\n";
+    HttpHeaders << "Accept: " << getAccept() << "\r\n";
+    HttpHeaders << "Accept Encoding: " << getAcceptEncoding() << "\r\n";
+    HttpHeaders << "Accept Language: " << getAcceptLanguage() << "\r\n";
     
-    return (headers.str());
+    return (HttpHeaders.str());
 }

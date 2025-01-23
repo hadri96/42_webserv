@@ -3,7 +3,7 @@
 #include "ToString.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-#include "RequestInterpreter.hpp"
+#include "HttpRequestInterpreter.hpp"
 
 #include <iostream>
 
@@ -282,7 +282,7 @@ void	Server::handleRequestFromClient(int clientFd)
 
 void	Server::runInterpreter(HttpRequest& request, int clientFd)
 {
-	RequestInterpreter 	interpreter = RequestInterpreter(this);
+	HttpRequestInterpreter 	interpreter = HttpRequestInterpreter(this);
 	Client* 			client = getClient(clientFd);
 
 	Logger::logger()->log(LOG_DEBUG, "Run Interpreter");

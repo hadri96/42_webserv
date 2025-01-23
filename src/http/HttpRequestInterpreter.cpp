@@ -1,4 +1,4 @@
-#include "RequestInterpreter.hpp"
+#include "HttpRequestInterpreter.hpp"
 #include "ToString.hpp"
 #include "HttpMethodType.hpp"
 #include "Logger.hpp"
@@ -14,11 +14,11 @@
 // Constructors and Destructor
 // =============================================================================
 
-RequestInterpreter::RequestInterpreter(Server* server)
+HttpRequestInterpreter::HttpRequestInterpreter(Server* server)
     : server_(server)
 {}
 
-RequestInterpreter::~RequestInterpreter()
+HttpRequestInterpreter::~HttpRequestInterpreter()
 {}
 
 // =============================================================================
@@ -30,7 +30,7 @@ RequestInterpreter::~RequestInterpreter()
 // Public Methods 
 // =============================================================================
 
-HttpResponse   RequestInterpreter::interpret(HttpRequest& request, Config& config)
+HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& config)
 {
     HttpMethodType      method = request.getMethod();
     HttpResponse        response;
@@ -59,7 +59,7 @@ HttpResponse   RequestInterpreter::interpret(HttpRequest& request, Config& confi
             response = handleDeleteRequest(config, request);
             break;
         case UNDEFINED:
-            throw (RequestInterpreter::BadRequest());
+            throw (HttpRequestInterpreter::BadRequest());
     }
     return (response);
 }
@@ -68,7 +68,11 @@ HttpResponse   RequestInterpreter::interpret(HttpRequest& request, Config& confi
 // Private Methods 
 // =============================================================================
 
-HttpResponse    RequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
+// ·············································································
+// Method Handlers
+// ·············································································
+
+HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
 {
     (void) request;
     Logger::logger()->log(LOG_DEBUG, "handleGetRequest...");
@@ -76,7 +80,7 @@ HttpResponse    RequestInterpreter::handleGetRequest(Config& config, HttpRequest
 }
 
 
-HttpResponse    RequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
+HttpResponse    HttpRequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
 {
     HttpResponse	response;
     Uri     uri = request.getRelativeUri();
@@ -91,7 +95,7 @@ HttpResponse    RequestInterpreter::handlePostRequest(Config& config, HttpReques
     return (response);
 }
 
-HttpResponse    RequestInterpreter::handleDeleteRequest(Config& config, HttpRequest& request)
+HttpResponse    HttpRequestInterpreter::handleDeleteRequest(Config& config, HttpRequest& request)
 {
     HttpResponse	response;
     Uri             uri = request.getRelativeUri();
@@ -104,17 +108,39 @@ HttpResponse    RequestInterpreter::handleDeleteRequest(Config& config, HttpRequ
     return (response);
 }
 
-// --- Resources ---
-Resource	RequestInterpreter::createResourceError(Config& config, int code)
+// ·············································································
+// Resource Makers
+// ·············································································
+
+# include <iostream>
+
+Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 {
     Logger::logger()->log(LOG_DEBUG, "handleResourceError...");
-    (void) config;
-	//const ErrorPage* errorPage = getErrorPage(code)
-	// For now we return only the default status page
+	const ConfigErrorPage* customErrorPage = config.getConfigErrorPage(code);
+
+	if (!customErrorPage)
+	{
+		 Logger::logger()->log(LOG_DEBUG, "No custom error page found, creating a default one...");
+		return (ResourceDefault(code));
+	}
+
+	Logger::logger()->log(LOG_DEBUG, "Custom error page URI : " + customErrorPage->getUri());
+
+	const Path* customErrorPagePath = config.getPath(customErrorPage->getUri());
+
+	if (!customErrorPagePath)
+	{
+		Logger::logger()->log(LOG_DEBUG, "No custom error root path found");
+		return (ResourceDefault(code));
+	}
+
+	Logger::logger()->log(LOG_DEBUG, std::string("Custom error page root path : ") + customErrorPagePath);
+	
 	return (ResourceDefault(code));
 }
 
-Resource	RequestInterpreter::createResourceFile(Config& config, HttpRequest& request)
+Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest& request)
 {
 	Uri     uri = request.getRelativeUri();
 	 (void) config;
@@ -130,14 +156,14 @@ Resource	RequestInterpreter::createResourceFile(Config& config, HttpRequest& req
 	return (Resource(200, "File..."));
 }
 
-Resource	RequestInterpreter::createResourceDirectoryList(Config& config, Path path)
+Resource	HttpRequestInterpreter::createResourceDirectoryList(Config& config, Path path)
 {
 	(void) path;
     (void) config;
 	return (Resource(200, "Directory list..."));
 }
 
-Resource        RequestInterpreter::createResourceCgi(Config& config, HttpRequest& request)
+Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRequest& request)
 {
     (void) request;
 
