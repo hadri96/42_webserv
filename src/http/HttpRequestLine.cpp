@@ -6,7 +6,7 @@
 
 HttpRequestLine::HttpRequestLine(void) : 
 	method_(GET),
-	relativeUri_("/example_response.html"),
+	relativeUri_("/createFile.php"),
 	httpVersion_("HTTP/1.1")
 {}
 

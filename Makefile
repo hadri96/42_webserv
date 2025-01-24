@@ -31,14 +31,15 @@ UTIL =		Logger \
 TYPE =		PathOrUri \
 			Path \
 			Uri \
-			File
+			File \
+			Cgi
 
 HTTP =		HttpResponse \
 			HttpRequest \
 			HttpStatusCode \
 			HttpHeader \
 			HttpRequestLine \
-			HttpRequestInterpreter
+			HttpRequestInterpreter \
 
 SERVER =	Observer \
 			Client \

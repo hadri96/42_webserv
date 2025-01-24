@@ -3,6 +3,7 @@
 #include "HttpMethodType.hpp"
 #include "Logger.hpp"
 #include "ResourceDefault.hpp"
+#include "Cgi.hpp"
 
 #include <string>
 #include <stdexcept>
@@ -35,13 +36,15 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
     HttpMethodType      method = request.getMethod();
     HttpResponse        response;
 
-    /*
+
     if (!config.isMethodAllowed(method, request.getUri()))
         return (HttpResponse(createResourceError(config, 405)));
 
     if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
         return (HttpResponse(createResourceError(config, 413)));
-    */
+
+    if (isCgiRequest(config, request))
+        return (HttpResponse(createResourceCgi(config, request)));
 
     switch (method)
     {
@@ -117,7 +120,8 @@ HttpResponse    HttpRequestInterpreter::handleDeleteRequest(Config& config, Http
 
 Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 {
-	const ConfigErrorPage* customErrorPage = config.getConfigErrorPage(code);
+    Logger::logger()->log(LOG_DEBUG, "handleResourceError...");
+	const ConfigErrorPage*  customErrorPage = config.getConfigErrorPage(code);
 
 	// Do we have a custom error page defined in config and if yes retrieve its path
 	if (!customErrorPage)
@@ -189,5 +193,68 @@ Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRe
 {
     (void) request;
 
+    // if (config.isTypeAllowed(request.getMimeType(), request.getUri()))
+    //     return (createResourceError(config, 415));
+
+    if (request.getMethod() == POST && request.getBody().empty())
+        return (createResourceError(config, 400));
+
+    // Check "inputs" field (map) -> correct types
+        // 422 Unprocessable Entity
+    
+    // Check permissions 
+        // 401 Unauthorised or 403 Forbidden
+    
+    // Check duplicate ? Does the resource already exist? 
+        // 409 Conflict
+
+    // check amount of requests? 
+        // 429 too many requests
+    
+    // protect from sql injection
+
+        
+    Cgi     cgi(config, request);
+
+    cgi.runCgi();
+
+    // create response with CGI script output
+
     return (createResourceError(config, 404));
 }
+
+// ·············································································
+// Utils
+// ·············································································
+
+bool    HttpRequestInterpreter::isCgiRequest(Config& config, HttpRequest& request)
+{
+    Logger::logger()->log(LOG_DEBUG, "request uri : " + request.getUri());
+    const Path*                 pathPtr = config.getPath(request.getUri());
+    if (pathPtr == NULL)
+    {   
+        Logger::logger()->log(LOG_DEBUG, "path from config is NULL, it's not a CGI request"); 
+        return (false);
+    }
+    
+    Path                        realPath = *pathPtr;
+    std::vector<std::string>    pathComponents = realPath.getComponents();
+
+    Logger::logger()->log(LOG_DEBUG, "real path = " + realPath);
+    for (size_t i = 0; i < pathComponents.size(); i++)
+    {
+        Logger::logger()->log(LOG_DEBUG, "path component: " + pathComponents[i]);
+        if (pathComponents[i].find("cgi-bin") != std::string::npos || 
+                pathComponents[i].find(config.getCgiDir()) != std::string::npos ||
+                pathComponents[i].find(".php") != std::string::npos || 
+                pathComponents[i].find(".py") != std::string::npos || 
+                pathComponents[i].find(".cgi") != std::string::npos)
+        {
+            Logger::logger()->log(LOG_DEBUG, "It's a CGI request all right");
+            return (true);
+        }
+    }
+    Logger::logger()->log(LOG_DEBUG, "It's not a CGI request");
+    return (false); 
+}
+

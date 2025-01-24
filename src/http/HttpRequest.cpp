@@ -7,11 +7,14 @@
 // =============================================================================
 
 HttpRequest::HttpRequest() : 
-    rawRequest_(""),
+    rawRequest_("GET /cgi-bin/createFile.php?name=newFileMickey&content=donaldDucknotdonaldTrump HTTP/1.1\r\n Host: http://127.0.0.1:7777/\r\n Connection: close\r\n\r\n"),
     requestLine_(HttpRequestLine()),
     header_(HttpHeader()),
     body_("")
-    {}
+{
+    inputs_.insert(std::make_pair("name", "newFileMickey"));
+    inputs_.insert(std::make_pair("content", "donaldDuck not donaldTrump"));
+}
 
 HttpRequest::~HttpRequest() {}
 
@@ -62,6 +65,10 @@ const Uri& HttpRequest::getUri() const
     return (requestLine_.getRelativeUri());
 }
 
+std::string HttpRequest::getInput(std::string key)
+{
+    return (inputs_[key]);
+}
 
 // ··· "Deep" Getters and utils ···
 
@@ -74,6 +81,11 @@ const std::string   HttpRequest::getRelativeUri() const
 HttpMethodType    HttpRequest::getMethod() const
 {
     return (requestLine_.getMethod());
+}
+
+HttpMimeType    HttpRequest::getMimeType() const
+{
+    return (header_.getMimeType());
 }
 
 
@@ -97,7 +109,7 @@ std::string   HttpRequest::generatePrintString()
 	          << "host_: " << header_.getHost() << "\n"
 	          << "userAgent_: " << header_.getUserAgent() << "\n"
 	          << "contentLength_: " << toString(header_.getContentLength()) << "\n"
-	          << "contentType_: " << header_.getContentType() << "\n"
+	          << "contentType_: " << header_.getMimeType() << "\n"
 	          << "connectionType_: " << header_.getConnectionTypeString() << "\n"
 	          << "accept_: " << header_.getAccept() << "\n"
 	          << "acceptEncoding_: " << header_.getAcceptEncoding() << "\n"

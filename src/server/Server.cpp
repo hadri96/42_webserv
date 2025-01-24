@@ -261,22 +261,22 @@ void	Server::acceptClient(void)
 // -> interprete la requete du client et l'ajoute au client->httpRequest
 void	Server::handleRequestFromClient(int clientFd)
 {
-    char                buffer[1024] = {0};
-    int                 bytesRead;
+    // char                buffer[1024] = {0};
+    // int                 bytesRead;
     Client              *client = getClient(clientFd);
     HttpRequest         request;
     
     client->assignRequest(request);
     
-    while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) -1, 0)) > 0)
-    {
-        request.appendRequest(buffer);
-        if (request.getRawRequest().find("\r\n\r\n") != std::string::npos)
-			break ;
-    }
+    // while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) -1, 0)) > 0)
+    // {
+    //     request.appendRequest(buffer);
+    //     if (request.getRawRequest().find("\r\n\r\n") != std::string::npos)
+	// 		break ;
+    // }
 	Logger::logger()->log(LOG_DEBUG, "Request looks like this: \n" + request.getRawRequest());
-	if (bytesRead < 0)
-		closeClientConnection(clientFd, "read error");
+	// if (bytesRead < 0)
+	// 	closeClientConnection(clientFd, "read error");
 	runInterpreter(request, clientFd);
 }
 

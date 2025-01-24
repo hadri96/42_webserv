@@ -226,7 +226,11 @@ const Path*	Config::getPath(Uri uri) const
 	const ConfigLocation* foundLocation = getConfigLocation(uri);
 
 	if (!foundLocation)
-		return (0);
+	{
+		static const Path		fakeLocation("www/cgi-bin/");
+		return (&fakeLocation);
+		// return (0);
+	}
 
 	return (&foundLocation->getRootPath());
 }
@@ -262,6 +266,23 @@ const ConfigErrorPage*	Config::getConfigErrorPage(int code) const
 	}
 	return (0);
 }
+
+bool	Config::isTypeAllowed(HttpMimeType mimeType, Uri uri) const
+{
+	// Check in location then in main config if mime type is allowed
+	(void) uri;
+	
+	if (mimeType)
+		return (true);
+	return (true);
+}
+
+std::string		Config::getCgiDir()
+{
+	// get the dir associated to CGI handling
+	return ("/cgi_dir/");
+}
+
 
 // =============================================================================
 // Private Methods

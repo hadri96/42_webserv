@@ -13,9 +13,9 @@ HttpHeader::HttpHeader(void) :
     host_("www.example.com"),
     userAgent_("agent"),
     contentLength_(0),
-    contentType_("text/plain"),
+    mimeType_(TEXT_PHP),
     connectionType_(CLOSED),
-    accept_("text/html"),
+    accept_(TEXT_PHP),
     acceptEncoding_("gzip"),
     acceptLanguage_("en-US,en,q=0.9")
 {}
@@ -24,7 +24,7 @@ HttpHeader::HttpHeader(const HttpHeader& other) :
     host_(other.host_),
     userAgent_(other.userAgent_),
     contentLength_(other.contentLength_),
-    contentType_(other.contentType_),
+    mimeType_(other.mimeType_),
     connectionType_(other.connectionType_),
     accept_(other.accept_),
     acceptEncoding_(other.acceptEncoding_),
@@ -69,10 +69,10 @@ std::size_t HttpHeader::getContentLength() const
     return (contentLength_);
 }
 
-// Getter for contentType_
-const std::string& HttpHeader::getContentType() const 
+// Getter for mimeType_
+HttpMimeType HttpHeader::getMimeType() const 
 {
-    return (contentType_);
+    return (mimeType_);
 }
 
 // Getter for connectionType_
@@ -92,7 +92,7 @@ std::string HttpHeader::getConnectionTypeString() const
 }
 
 // Getter for accept_
-const std::string& HttpHeader::getAccept() const 
+const HttpMimeType& HttpHeader::getAccept() const 
 {
     return (accept_);
 }
@@ -131,10 +131,10 @@ void HttpHeader::setContentLength(std::size_t contentLength)
     contentLength_ = contentLength;
 }
 
-// Setter for contentType_
-void HttpHeader::setContentType(const std::string& contentType) 
+// Setter for mimeType_
+void HttpHeader::setMimeType(HttpMimeType mimeType) 
 {
-    contentType_ = contentType;
+    mimeType_ = mimeType;
 }
 
 // Setter for connectionType_
@@ -144,7 +144,7 @@ void HttpHeader::setConnectionType(HttpConnectionType connectionType)
 }
 
 // Setter for accept_
-void HttpHeader::setAccept(const std::string& accept) 
+void HttpHeader::setAccept(const HttpMimeType& accept) 
 {
     accept_ = accept;
 }

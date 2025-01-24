@@ -135,6 +135,12 @@ PathOrUri	PathOrUri::getParent(void) const
 	return (parent);
 }
 
+std::vector<std::string>	PathOrUri::getComponents(void) const
+{
+	return (components_);
+}
+
+
 // =============================================================================
 // Private Methods
 // =============================================================================
