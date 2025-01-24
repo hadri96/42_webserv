@@ -7,7 +7,8 @@
 // =============================================================================
 
 HttpRequest::HttpRequest() : 
-    rawRequest_("GET /cgi-bin/createFile.php?name=newFileMickey&content=donaldDucknotdonaldTrump HTTP/1.1\r\n Host: http://127.0.0.1:7777/\r\n Connection: close\r\n\r\n"),
+    rawRequest_(),
+    //"GET /cgi-bin/hello.php?name=newFileMickey&content=donaldDucknotdonaldTrump HTTP/1.1\r\n Host: http://127.0.0.1:7777/\r\n Connection: close\r\n\r\n"),
     requestLine_(HttpRequestLine()),
     header_(HttpHeader()),
     body_("")
