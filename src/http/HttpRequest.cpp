@@ -66,6 +66,11 @@ const Uri& HttpRequest::getUri() const
     return (requestLine_.getUri());
 }
 
+void	HttpRequest::setUri(Uri uri)
+{
+    requestLine_.setUri(uri);
+}
+
 std::string HttpRequest::getInput(std::string key)
 {
     return (inputs_[key]);

@@ -28,7 +28,10 @@ class HttpRequest
 		const HttpHeader&       			getHttpHeader() const;
 		const std::string&      			getBody() const;
 		int                     			getBodySize() const;
+
 		const Uri&              			getUri() const;
+		void								setUri(Uri uri);
+
 		HttpMimeType						getMimeType() const;
 		std::string							getInput(std::string key);
 

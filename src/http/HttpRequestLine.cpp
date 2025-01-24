@@ -62,6 +62,11 @@ const Uri& HttpRequestLine::getUri() const
     return (uri_);
 }
 
+void	HttpRequestLine::setUri(Uri uri)
+{
+	uri_ = uri;
+}
+
 // Getter for httpVersion_
 const std::string& HttpRequestLine::getHttpVersion() const 
 {
