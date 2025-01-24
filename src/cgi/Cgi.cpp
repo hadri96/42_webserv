@@ -20,7 +20,7 @@ Cgi::Cgi(Config& config, HttpRequest& request)
     char 	cwd[1024];
 
     if (getcwd(cwd, sizeof(cwd)) != NULL)
-        cgiExecutable_ = std::string(cwd) + "/www/cgi-bin/createFile.php";
+        cgiExecutable_ = std::string(cwd) + "/www/cgi-bin/hello.php";
     else
         Logger::logger()->log(LOG_ERROR, "Unable to get current working directory (cwd for CGI)");
     cgiScriptPath_ = "/usr/bin/php"; 
@@ -47,8 +47,6 @@ int    Cgi::runCgi()
 
     pid_t       pid = fork();
 
-    int i = 0;
-
     if (pid < 0)
     {
         Logger::logger()->log(LOG_ERROR, "Error in fork() function");
@@ -57,7 +55,6 @@ int    Cgi::runCgi()
     }
     else if (pid == 0)
     {
-        Logger::logger()->log(LOG_DEBUG, "entered Child Process");
         Logger::logger()->log(LOG_DEBUG, "cgiExecutable : " + cgiExecutable_);
         Logger::logger()->log(LOG_DEBUG, "cgiScriptPath : " + cgiScriptPath_);
         if (execve(cgiExecutable_.c_str(), args, cgiEnv_) == -1)
