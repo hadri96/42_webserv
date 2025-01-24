@@ -63,7 +63,7 @@ int HttpRequest::getBodySize() const
 
 const Uri& HttpRequest::getUri() const
 {
-    return (requestLine_.getRelativeUri());
+    return (requestLine_.getUri());
 }
 
 std::string HttpRequest::getInput(std::string key)
@@ -72,12 +72,6 @@ std::string HttpRequest::getInput(std::string key)
 }
 
 // ··· "Deep" Getters and utils ···
-
-const std::string   HttpRequest::getRelativeUri() const
-{
-    Logger::logger()->log(LOG_DEBUG, "getting URI");
-    return (requestLine_.getRelativeUri());
-}
 
 HttpMethodType    HttpRequest::getMethod() const
 {
@@ -103,7 +97,7 @@ std::string   HttpRequest::generatePrintString()
 	
     ss << "Dummy RequestLine: \n\n" 
 	          << requestLine_.getMethodString() << " ; "
-	          << requestLine_.getRelativeUri() << " ; "
+	          << requestLine_.getUri() << " ; "
 	          << requestLine_.getHttpVersion() << std::endl;
 
     ss << "\nDummy Header:\n\n"

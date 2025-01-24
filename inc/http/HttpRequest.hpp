@@ -20,7 +20,6 @@ class HttpRequest
 		std::string             			generatePrintString();
 		
 	// ··· "Deep" Getters and utils ···  
-		const std::string       			getRelativeUri() const;
 		HttpMethodType          			getMethod() const;
 
 	// ··· Direct getters ···  

@@ -6,13 +6,13 @@
 
 HttpRequestLine::HttpRequestLine(void) : 
 	method_(GET),
-	relativeUri_("/example_response.html"),
+	uri_("/example_response.html"),
 	httpVersion_("HTTP/1.1")
 {}
 
 HttpRequestLine::HttpRequestLine(const HttpRequestLine& other) :
 	method_(other.method_),
-    relativeUri_(other.relativeUri_),
+    uri_(other.uri_),
     httpVersion_(other.httpVersion_)
 {}
 
@@ -27,7 +27,7 @@ HttpRequestLine&	HttpRequestLine::operator=(const HttpRequestLine& other)
 	if (this == &other)
 		return (*this);
 	method_ = other.method_;
-    relativeUri_ = other.relativeUri_;
+    uri_ = other.uri_;
     httpVersion_ = other.httpVersion_;
 
 	return (*this);
@@ -57,9 +57,9 @@ std::string HttpRequestLine::getMethodString() const
 }
 
 // Getter for relativeUri_
-const Uri& HttpRequestLine::getRelativeUri() const 
+const Uri& HttpRequestLine::getUri() const 
 {
-    return (relativeUri_);
+    return (uri_);
 }
 
 // Getter for httpVersion_
