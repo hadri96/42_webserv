@@ -1,20 +1,17 @@
 #!/usr/bin/php
-
 <?php
 
-// Output the correct Content-Type header
-header('Content-Type: text/plain');
+$name = getenv('NAME') ?: 'default_name';
+$content = getenv('CONTENT') ?: 'default_content';
 
-// Extract 'name' and 'message' from the POST data
-$name = $_POST['name'] ?? '';
-$message = $_POST['message'] ?? '';
+$filename = "./" . $name . ".txt";
 
-$name = $_GET['name'] ?? '';
-$message = $_GET['message'] ?? '';
+if (file_put_contents($filename, $content) === false) 
+{
+    echo "Failed to write to file '$filename'. Check permissions or path.\n";
+    exit(1);
+}
 
-// Pass the inputs to the C++ application
-$cppOutput = shell_exec("/path/to/your_cpp_application " . escapeshellarg($name) . " " . escapeshellarg($message));
+echo "File '$filename' created with content: $content\n";
 
-// Output the result from the C++ application
-echo $cppOutput;
 ?>

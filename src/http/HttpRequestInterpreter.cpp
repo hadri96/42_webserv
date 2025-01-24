@@ -3,6 +3,7 @@
 #include "HttpMethodType.hpp"
 #include "Logger.hpp"
 #include "ResourceDefault.hpp"
+#include "Cgi.hpp"
 
 #include <string>
 #include <stdexcept>
@@ -169,8 +170,8 @@ Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRe
 {
     (void) request;
 
-    if (config.isTypeAllowed(request.getMimeType(), request.getUri()))
-        return (createResourceError(config, 415));
+    // if (config.isTypeAllowed(request.getMimeType(), request.getUri()))
+    //     return (createResourceError(config, 415));
 
     if (request.getMethod() == POST && request.getBody().empty())
         return (createResourceError(config, 400));
@@ -188,11 +189,11 @@ Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRe
         // 429 too many requests
     
     // protect from sql injection
-    
-    // Prepare CGI environment
-    // char**   envp = prepareCgiEnvironment(config, request);
 
-    // Run CGI script in new process (fork())
+        
+    Cgi     cgi(config, request);
+
+    cgi.runCgi();
 
     // create response with CGI script output
 
@@ -205,33 +206,32 @@ Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRe
 
 bool    HttpRequestInterpreter::isCgiRequest(Config& config, HttpRequest& request)
 {
-    Path                        realPath = *(config.getPath(request.getUri()));
+    Logger::logger()->log(LOG_DEBUG, "request uri : " + request.getUri());
+    const Path*                 pathPtr = config.getPath(request.getUri());
+    if (pathPtr == NULL)
+    {   
+        Logger::logger()->log(LOG_DEBUG, "path from config is NULL, it's not a CGI request"); 
+        return (false);
+    }
+    
+    Path                        realPath = *pathPtr;
     std::vector<std::string>    pathComponents = realPath.getComponents();
 
+    Logger::logger()->log(LOG_DEBUG, "real path = " + realPath);
     for (size_t i = 0; i < pathComponents.size(); i++)
     {
-        if (pathComponents[i].find("/cgi-bin/") != std::string::npos || 
+        Logger::logger()->log(LOG_DEBUG, "path component: " + pathComponents[i]);
+        if (pathComponents[i].find("cgi-bin") != std::string::npos || 
                 pathComponents[i].find(config.getCgiDir()) != std::string::npos ||
                 pathComponents[i].find(".php") != std::string::npos || 
                 pathComponents[i].find(".py") != std::string::npos || 
                 pathComponents[i].find(".cgi") != std::string::npos)
         {
+            Logger::logger()->log(LOG_DEBUG, "It's a CGI request all right");
             return (true);
         }
     }
+    Logger::logger()->log(LOG_DEBUG, "It's not a CGI request");
     return (false); 
 }
-/*
-char**   HttpRequestInterpreter::prepareCgiEnvironment(Config& config, HttpRequest& request)
-{
-    std::map<std::string, std::string> env;
 
-    env["GATEWAY_INTERFACE"] = "CGI/1.1";
-    env["SERVER_PROTOCOL"] = "HTTP/1.1";
-    env["REQUEST_METHOD"] = HttpMethodTypeToString(request.getMethod());
-    env["SCRIPT_FILENAME"] = config.getPath(request.getUri());
-    env["PATH_INFO"] = config.getPath(request.getUri());
-    
-    return ((char **)env);
-}    
-*/

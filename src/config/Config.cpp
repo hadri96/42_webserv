@@ -226,7 +226,11 @@ const Path*	Config::getPath(Uri uri) const
 	const ConfigLocation* foundLocation = getConfigLocation(uri);
 
 	if (!foundLocation)
-		return (0);
+	{
+		static const Path		fakeLocation("www/cgi-bin/");
+		return (&fakeLocation);
+		// return (0);
+	}
 
 	return (&foundLocation->getRootPath());
 }

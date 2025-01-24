@@ -13,9 +13,9 @@ HttpHeader::HttpHeader(void) :
     host_("www.example.com"),
     userAgent_("agent"),
     contentLength_(0),
-    mimeType_(TEXT_PLAIN),
+    mimeType_(TEXT_PHP),
     connectionType_(CLOSED),
-    accept_("text/html"),
+    accept_(TEXT_PHP),
     acceptEncoding_("gzip"),
     acceptLanguage_("en-US,en,q=0.9")
 {}
@@ -92,7 +92,7 @@ std::string HttpHeader::getConnectionTypeString() const
 }
 
 // Getter for accept_
-const std::string& HttpHeader::getAccept() const 
+const HttpMimeType& HttpHeader::getAccept() const 
 {
     return (accept_);
 }
@@ -144,7 +144,7 @@ void HttpHeader::setConnectionType(HttpConnectionType connectionType)
 }
 
 // Setter for accept_
-void HttpHeader::setAccept(const std::string& accept) 
+void HttpHeader::setAccept(const HttpMimeType& accept) 
 {
     accept_ = accept;
 }

@@ -31,7 +31,7 @@ class HttpRequest
 		int                     			getBodySize() const;
 		const Uri&              			getUri() const;
 		HttpMimeType						getMimeType() const;
-
+		std::string							getInput(std::string key);
 
 	private:
 	// --- Private Attributes ---
@@ -40,7 +40,7 @@ class HttpRequest
 		HttpRequestLine         			requestLine_;
 		HttpHeader             				header_;
 		std::string             			body_;
-		std::map<std::string, std::string>  inputs_; // need to get values from parsing 
+		std::map<std::string, std::string>  inputs_;
 };
 
 #endif

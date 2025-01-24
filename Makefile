@@ -31,7 +31,8 @@ UTIL =		Logger \
 TYPE =		PathOrUri \
 			Path \
 			Uri \
-			File
+			File \
+			Cgi
 
 HTTP =		HttpResponse \
 			HttpRequest \

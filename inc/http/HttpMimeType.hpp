@@ -7,6 +7,7 @@ enum	HttpMimeType
 	TEXT_PLAIN,
     TEXT_CSS,
     TEXT_HTML,
+    TEXT_PHP,
     TEXT_JS,
     IMAGE_GIF,
     IMAGE_JPEG,

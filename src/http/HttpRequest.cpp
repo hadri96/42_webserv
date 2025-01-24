@@ -7,11 +7,14 @@
 // =============================================================================
 
 HttpRequest::HttpRequest() : 
-    rawRequest_(""),
+    rawRequest_("GET /cgi-bin/createFile.php?name=newFileMickey&content=donaldDucknotdonaldTrump HTTP/1.1\r\n Host: http://127.0.0.1:7777/\r\n Connection: close\r\n\r\n"),
     requestLine_(HttpRequestLine()),
     header_(HttpHeader()),
     body_("")
-    {}
+{
+    inputs_.insert(std::make_pair("name", "newFileMickey"));
+    inputs_.insert(std::make_pair("content", "donaldDuck not donaldTrump"));
+}
 
 HttpRequest::~HttpRequest() {}
 
@@ -62,6 +65,10 @@ const Uri& HttpRequest::getUri() const
     return (requestLine_.getRelativeUri());
 }
 
+std::string HttpRequest::getInput(std::string key)
+{
+    return (inputs_[key]);
+}
 
 // ··· "Deep" Getters and utils ···
 

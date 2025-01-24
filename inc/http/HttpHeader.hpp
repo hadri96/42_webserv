@@ -27,7 +27,7 @@ class	HttpHeader
         HttpMimeType            getMimeType() const;
         HttpConnectionType      getConnectionType() const;
         std::string             getConnectionTypeString() const;
-        const std::string&      getAccept() const;
+        const HttpMimeType&     getAccept() const;
         const std::string&      getAcceptEncoding() const;
         const std::string&      getAcceptLanguage() const;
 
@@ -37,7 +37,7 @@ class	HttpHeader
         void                    setContentLength(std::size_t contentLength);
         void                    setMimeType(HttpMimeType contentType);
         void                    setConnectionType(HttpConnectionType connectionType);
-        void                    setAccept(const std::string& accept);
+        void                    setAccept(const HttpMimeType& accept);
         void                    setAcceptEncoding(const std::string& acceptEncoding);
         void                    setAcceptLanguage(const std::string& acceptLanguage);
 
@@ -52,7 +52,7 @@ class	HttpHeader
         HttpMimeType     		mimeType_; // "text/html" | "text/css" | "image/png" etc.
         HttpConnectionType  	connectionType_; // either CLOSED or KEEP_ALIVE
 
-        std::string     		accept_; // "text/html" | "text/css" | "image/png" etc. 
+        HttpMimeType     		accept_; // "text/html" | "text/css" | "image/png" etc. 
         std::string     		acceptEncoding_; // encoding format accepted (zip / deflate / gzip)
         std::string     		acceptLanguage_; // preferred language for response (en / fr)
 
