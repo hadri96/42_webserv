@@ -20,7 +20,6 @@ class HttpRequest
 		std::string             			generatePrintString();
 		
 	// ··· "Deep" Getters and utils ···  
-		const std::string       			getRelativeUri() const;
 		HttpMethodType          			getMethod() const;
 
 	// ··· Direct getters ···  
@@ -29,7 +28,10 @@ class HttpRequest
 		const HttpHeader&       			getHttpHeader() const;
 		const std::string&      			getBody() const;
 		int                     			getBodySize() const;
+
 		const Uri&              			getUri() const;
+		void								setUri(Uri uri);
+
 		HttpMimeType						getMimeType() const;
 		std::string							getInput(std::string key);
 

@@ -32,7 +32,8 @@ TYPE =		PathOrUri \
 			Path \
 			Uri \
 			File
-HTTP =		HttpResponse \
+HTTP =		HttpParser \
+			HttpResponse \
 			HttpRequest \
 			HttpStatusCode \
 			HttpHeader \

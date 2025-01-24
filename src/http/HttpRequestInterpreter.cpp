@@ -86,7 +86,7 @@ HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpReq
 HttpResponse    HttpRequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
 {
     HttpResponse	response;
-    Uri     uri = request.getRelativeUri();
+    Uri     uri = request.getUri();
 
     // formulaire POST prenom, nom  --> page php --> salut Mickey Mouse
     // upload de fichier
@@ -101,7 +101,7 @@ HttpResponse    HttpRequestInterpreter::handlePostRequest(Config& config, HttpRe
 HttpResponse    HttpRequestInterpreter::handleDeleteRequest(Config& config, HttpRequest& request)
 {
     HttpResponse	response;
-    Uri             uri = request.getRelativeUri();
+    Uri             uri = request.getUri();
 
     // allowed to deleter or not --> ResourceError(403)
     // is dir ? 
@@ -154,7 +154,7 @@ Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 
 Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest& request)
 {
-	Uri     uri = request.getRelativeUri();
+	Uri     uri = request.getUri();
 
     const Path* foundPath = config.getPath(uri);
 
