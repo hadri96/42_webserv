@@ -1,6 +1,7 @@
 #include "Server.hpp"
 #include "Logger.hpp"
 #include "ToString.hpp"
+#include "HttpParser.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 #include "HttpRequestInterpreter.hpp"
@@ -264,17 +265,21 @@ void	Server::handleRequestFromClient(int clientFd)
     char                buffer[1024] = {0};
     int                 bytesRead;
     Client              *client = getClient(clientFd);
-    HttpRequest         request;
-    
-    client->assignRequest(request);
+	std::string			httpRequestRaw;
     
     while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) -1, 0)) > 0)
     {
-        request.appendRequest(buffer);
-        if (request.getRawRequest().find("\r\n\r\n") != std::string::npos)
+        httpRequestRaw.append(buffer);
+        if (httpRequestRaw.find("\r\n\r\n") != std::string::npos)
 			break ;
     }
-	Logger::logger()->log(LOG_DEBUG, "Request looks like this: \n" + request.getRawRequest());
+
+	HttpParser httpParser(httpRequestRaw);
+	Logger::logger()->log(LOG_DEBUG, "Raw request looks like this: \n" + httpRequestRaw);
+
+	HttpRequest request = httpParser.parse();
+	client->assignRequest(request);
+
 	if (bytesRead < 0)
 		closeClientConnection(clientFd, "read error");
 	runInterpreter(request, clientFd);
