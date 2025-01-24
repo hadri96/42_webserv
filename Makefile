@@ -2,7 +2,7 @@ NAME = webserv
 
 MAKEFLAGS = --no-print-directory
 
-INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/config/interpreter -I inc/http -I inc/util -I inc/resource -I inc/type
+INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/config/interpreter -I inc/http -I inc/util -I inc/resource -I inc/type -I inc/cgi
 
 CC = c++
 
@@ -31,9 +31,7 @@ UTIL =		Logger \
 TYPE =		PathOrUri \
 			Path \
 			Uri \
-			File \
-			Cgi
-
+			File
 HTTP =		HttpResponse \
 			HttpRequest \
 			HttpStatusCode \
@@ -62,6 +60,8 @@ CONFIG = 	Config \
 RESOURCE =	Resource \
 			ResourceDefault
 
+CGI =		Cgi
+
 # Source directory
 SRCS_DIR = src
 
@@ -72,6 +72,7 @@ HTTP_DIR = http
 SERVER_DIR = server
 CONFIG_DIR = config
 RESOURCE_DIR = resource
+CGI_DIR = cgi
 
 # Source Files
 SRCS = $(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(MAIN)))\
@@ -80,7 +81,8 @@ SRCS = $(addprefix $(SRCS_DIR)/, $(addsuffix .cpp, $(MAIN)))\
 	$(addprefix $(SRCS_DIR)/$(HTTP_DIR)/, $(addsuffix .cpp, $(HTTP)))\
 	$(addprefix $(SRCS_DIR)/$(SERVER_DIR)/, $(addsuffix .cpp, $(SERVER))) \
 	$(addprefix $(SRCS_DIR)/$(CONFIG_DIR)/, $(addsuffix .cpp, $(CONFIG))) \
-	$(addprefix $(SRCS_DIR)/$(RESOURCE_DIR)/, $(addsuffix .cpp, $(RESOURCE)))
+	$(addprefix $(SRCS_DIR)/$(RESOURCE_DIR)/, $(addsuffix .cpp, $(RESOURCE))) \
+	$(addprefix $(SRCS_DIR)/$(CGI_DIR)/, $(addsuffix .cpp, $(CGI)))
 
 
 # Convert source file names to object file names in the OBJ_DIRS directory
@@ -90,7 +92,8 @@ OBJ_DIRS = $(OBJ_DIR) $(addprefix $(OBJ_DIR)/$(UTIL_DIR)/, $(UTIL)) \
 	$(addprefix $(OBJ_DIR)/$(HTTP_DIR)/, $(HTTP)) \
 	$(addprefix $(OBJ_DIR)/$(SERVER_DIR)/, $(SERVER)) \
 	$(addprefix $(OBJ_DIR)/$(CONFIG_DIR)/, $(CONFIG)) \
-	$(addprefix $(OBJ_DIR)/$(RESOURCE_DIR)/, $(RESOURCE))
+	$(addprefix $(OBJ_DIR)/$(RESOURCE_DIR)/, $(RESOURCE)) \
+	$(addprefix $(OBJ_DIR)/$(CGI_DIR)/, $(CGI))
 
 
 OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJ_DIR)/%.o) 
