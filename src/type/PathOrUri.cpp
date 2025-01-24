@@ -1,5 +1,7 @@
 #include "PathOrUri.hpp"
 #include <sstream>
+#include "Path.hpp"
+#include "Uri.hpp"
 
 // =============================================================================
 // Constructors and Destructor
@@ -32,6 +34,19 @@ PathOrUri&	PathOrUri::operator=(const PathOrUri& rhs)
 	components_ = rhs.components_;
 	return (*this);
 }
+
+// --- Implicit conversion to Path ---
+PathOrUri::operator Path() const
+{
+	return Path(*this);
+}
+
+// --- Implicit conversion to Uri ---
+PathOrUri::operator Uri() const
+{
+	return Uri(*this);
+}
+
 
 // --- Implicit conversion to string ---
 PathOrUri::operator std::string() const
@@ -78,6 +93,12 @@ bool	PathOrUri::operator==(const PathOrUri& rhs) const
 {
 	return (components_ == rhs.components_);
 }
+
+bool	PathOrUri::operator!=(const PathOrUri& rhs) const
+{
+	return (components_ != rhs.components_);
+}
+
 
 // --- PathOrUri + string ---
 std::string	PathOrUri::operator+(const std::string& rhs)

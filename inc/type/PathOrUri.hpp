@@ -4,6 +4,9 @@
 # include <vector>
 # include <string>
 
+class 	Path;
+class	Uri;
+
 class	PathOrUri
 {
 	public:
@@ -20,11 +23,14 @@ class	PathOrUri
 		PathOrUri					operator/(const std::string& rhs);
 		PathOrUri					operator/(const PathOrUri& rhs);
 		bool						operator==(const PathOrUri& rhs) const;
+		bool						operator!=(const PathOrUri& rhs) const;
 		// ··· PathOrUri + string ···
 		std::string					operator+(const std::string& rhs);
 
 		// ··· Implicit conversion to string ···
 									operator std::string() const;
+									operator Path() const;
+									operator Uri() const;
 
 		// --- Public Methods ---
 		PathOrUri					getParent(void) const;
