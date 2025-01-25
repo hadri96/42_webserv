@@ -22,11 +22,6 @@ Resource::Resource(int code, std::string body) :
 	body_(body)
 {}
 
-Resource::Resource(int code, File file) :
-	code_(code),
-	body_(file.read())
-{}
-
 Resource::~Resource(void)
 {}
 

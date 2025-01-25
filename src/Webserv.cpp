@@ -2,7 +2,7 @@
 
 #include "Logger.hpp"
 
-#include "File.hpp"
+#include "Path.hpp"
 #include "ConfigLexer.hpp"
 #include "ConfigParser.hpp"
 #include "ConfigInterpreter.hpp"
@@ -26,10 +26,7 @@ Webserv::Webserv(const Webserv& other)
 
 Webserv::Webserv(const std::string& configFile)
 {
-	File file(configFile);
-
-	file.setContent();
-	std::string content = file.getContent();
+	std::string content = Path(configFile).getAbsPath().read();
 
 	ConfigParser parser = ConfigParser(content);
 	parser.parse();

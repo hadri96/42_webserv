@@ -2,7 +2,6 @@
 # define RESOURCE_HPP
 
 # include <string>
-# include "File.hpp"
 
 class	Resource
 {
@@ -13,7 +12,6 @@ class	Resource
 
 							Resource(int code);
 							Resource(int code, std::string body);
-							Resource(int code, File file);
 
 							~Resource(void);
 

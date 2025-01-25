@@ -30,8 +30,8 @@ UTIL =		Logger \
 
 TYPE =		PathOrUri \
 			Path \
-			Uri \
-			File
+			Uri
+
 HTTP =		HttpParser \
 			HttpResponse \
 			HttpRequest \

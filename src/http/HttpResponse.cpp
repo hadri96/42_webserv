@@ -1,7 +1,6 @@
 #include "HttpResponse.hpp"
 #include "Logger.hpp"
 #include "ToString.hpp"
-#include "File.hpp"
 
 #include <iostream>
 #include <fstream>
