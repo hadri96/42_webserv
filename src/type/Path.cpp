@@ -75,6 +75,23 @@ bool	Path::isDir(void) const
     return S_ISDIR(path_stat.st_mode);
 }
 
+std::string	Path::getExtension(void) const
+{
+	std::string filename;
+	std::vector<std::string> components = PathOrUri::getComponents();
+
+	if (components.empty())
+		return ("");
+
+	filename = components.back();
+	size_t dotPos = filename.find_last_of('.');
+
+	if (dotPos == std::string::npos)
+        return ("");
+
+	return filename.substr(dotPos + 1);
+}
+
 std::string	Path::read(void) const
 {
 	std::string         line;

@@ -3,121 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!--<link rel="stylesheet" href="style.css">-->
+	<!--<link rel="stylesheet" href="./style.css">-->
 
-	<style>
-		/* Body Styling */
-		body {
-			font-family: 'Comic Sans MS', sans-serif; /* Playful font */
-			background-color: #ffcc00; /* Bright yellow background */
-			color: #333;
-			text-align: center;
-			padding: 50px;
-			margin: 0;
-			height: 100vh;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: column;
-			overflow: hidden;
-		}
+    <style>
+        /* Body Styling */
+        body {
+            font-family: 'Comic Sans MS', sans-serif; /* Playful font */
+            background-color: #ffcc00; /* Bright yellow background */
+            color: #333;
+            text-align: center;
+            padding: 50px;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-		/* Animated Background */
-		@keyframes rainbow-background {
-			0% { background-color: #ffcc00; }
-			14% { background-color: #ff66cc; }
-			28% { background-color: #66ccff; }
-			42% { background-color: #66ff66; }
-			57% { background-color: #ff9966; }
-			71% { background-color: #ff66ff; }
-			85% { background-color: #ff6600; }
-			100% { background-color: #ffcc00; }
-		}
+        /* Animated Background */
+        @keyframes rainbow-background {
+            0% { background-color: #ffcc00; }
+            14% { background-color: #ff66cc; }
+            28% { background-color: #66ccff; }
+            42% { background-color: #66ff66; }
+            57% { background-color: #ff9966; }
+            71% { background-color: #ff66ff; }
+            85% { background-color: #ff6600; }
+            100% { background-color: #ffcc00; }
+        }
 
-		body {
-			animation: rainbow-background 10s infinite alternate; /* Fun background animation */
-		}
+        body {
+            animation: rainbow-background 10s infinite alternate; /* Fun background animation */
+        }
 
-		/* Header Animation */
-		h1 {
-			font-size: 3em;
-			color: #ffffff;
-			text-transform: uppercase;
-			animation: wobble 2s infinite; /* Wobble effect */
-			font-weight: bold;
-		}
+        /* Header Animation */
+        h1 {
+            font-size: 3em;
+            color: #ffffff;
+            text-transform: uppercase;
+            animation: wobble 2s infinite; /* Wobble effect */
+            font-weight: bold;
+        }
 
-		@keyframes wobble {
-			0% { transform: rotate(0deg); }
-			25% { transform: rotate(10deg); }
-			50% { transform: rotate(-10deg); }
-			75% { transform: rotate(10deg); }
-			100% { transform: rotate(0deg); }
-		}
+        @keyframes wobble {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            50% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
 
-		/* Paragraph Styling */
-		p {
-			font-size: 1.5em;
-			color: #000000;
-			animation: bounce 2s infinite; /* Bouncing effect */
-			margin-top: 20px;
-		}
+        /* Paragraph Styling */
+        p {
+            font-size: 1.5em;
+            color: #000000;
+            animation: bounce 2s infinite; /* Bouncing effect */
+            margin-top: 20px;
+        }
 
-		/* Bouncing Text */
-		@keyframes bounce {
-			0% { transform: translateY(0); }
-			50% { transform: translateY(-20px); }
-			100% { transform: translateY(0); }
-		}
+        /* Bouncing Text */
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
 
-		/* Fun Hover Effect */
-		h1:hover {
-			color: #ff0000; /* Red when hovered */
-			text-shadow: 0 0 20px #ff00ff, 0 0 30px #ff00ff; /* Glowing effect */
-			transform: rotate(360deg); /* Full spin on hover */
-			transition: all 0.5s ease-in-out;
-		}
+        /* Fun Hover Effect */
+        h1:hover {
+            color: #ff0000; /* Red when hovered */
+            text-shadow: 0 0 20px #ff00ff, 0 0 30px #ff00ff; /* Glowing effect */
+            transform: rotate(360deg); /* Full spin on hover */
+            transition: all 0.5s ease-in-out;
+        }
 
-		p:hover {
-			color: #ff6600;
-			font-size: 2em; /* Grow the text on hover */
-			text-decoration: underline wavy #ff3366;
-			transition: all 0.3s ease-in-out;
-		}
+        p:hover {
+            color: #ff6600;
+            font-size: 2em; /* Grow the text on hover */
+            text-decoration: underline wavy #ff3366;
+            transition: all 0.3s ease-in-out;
+        }
 
-		/* Fun Confetti Animation */
-		@keyframes confetti {
-			0% { transform: rotate(0deg); }
-			100% { transform: translateY(100vh) rotate(360deg); }
-		}
+        /* Fun Confetti Animation */
+        @keyframes confetti {
+            0% { transform: rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
 
-		body:after {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			height: 100%;
-			background: url('https://www.pngkit.com/png/detail/68-687721_colorful-confetti-png-colorful-confetti-png-transparent.png') repeat;
-			pointer-events: none;
-			animation: confetti 3s linear infinite;
-			opacity: 0.5;
-		}
+        body:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            /*background: url('https://www.pngkit.com/png/detail/68-687721_colorful-confetti-png-colorful-confetti-png-transparent.png') repeat;*/
+            pointer-events: none;
+            animation: confetti 3s linear infinite;
+            opacity: 0.5;
+        }
 
-		/* Centering the Content */
-		.container {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-		}
-
-	</style>
+        /* Centering the Content */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 
     <title>Basic Index Page</title>
 </head>
 <body>
-    <h1>Jah bless !</h1>
-    <p>Bienvenue les chads.</p>
+    <h1>Hello, world!</h1>
+    <p>-Bienvenue les chads.</p>
 </body>
 </html>

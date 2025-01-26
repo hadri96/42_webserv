@@ -10,40 +10,39 @@
 
 class HttpResponse
 {
-    public:
-    // --- Constructors and Destructor ---
-        HttpResponse();
+	public:
+		// --- Constructors and Destructor ---
+						HttpResponse();
 
-        HttpResponse(Resource resource);
+						HttpResponse(Resource resource);
 
-        ~HttpResponse();
+						~HttpResponse();
 
-    // --- Public Methods ---
-        // ··· Getters and utils ···  
-        HttpResponse&       generateError(Config& config, int errorCode);
+		// --- Public Methods ---
+		// ··· Getters and utils ···  
+		std::string		getFullResponse() const;
+		std::string		getHeaders() const;
+	
+	private:
+		// --- Private Methods ---
+		void			generateBasicHeaders();
+		void			composeFullResponse();
 
-        std::string         getFullResponse() const;
-        std::string         getHeaders() const;
-    
-    private:
-    // --- Private Methods ---
-        void                        generateBasicHeaders();
-        void                        composeFullResponse();
-
-        // --- Error Response Methods ---
-        std::string                 extractStatusText() const;
-        void                        errorStatusLine(ConfigErrorPage& ConfigErrorPage); 
-        
-        // --- Static Response Methods ---
-        void                        staticStatusLine();
+		// --- Error Response Methods ---
+		std::string		extractStatusText() const;
+		void			errorStatusLine(ConfigErrorPage& ConfigErrorPage); 
+		
+		// --- Static Response Methods ---
+		void			staticStatusLine();
 
 
-    // --- Private Attributes ---
+	// --- Private Attributes ---
 
-        std::string     headers_;
-        std::string     statusLine_;
-        std::string     body_;
-        std::string     fullResponse_;
+		std::string		mimeType_;
+		std::string     statusLine_;
+		std::string     headers_;
+		std::string     body_;
+		std::string     fullResponse_;
 };
 
 #endif
