@@ -39,6 +39,7 @@ HTTP =		HttpParser \
 			HttpHeader \
 			HttpRequestLine \
 			HttpRequestInterpreter \
+			HttpMimeTypes
 
 SERVER =	Observer \
 			Client \

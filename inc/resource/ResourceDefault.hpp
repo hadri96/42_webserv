@@ -7,18 +7,18 @@ class	ResourceDefault : public Resource
 {
 	public:
 		// --- Constructors and Destructor ---
-						ResourceDefault(void);
+							ResourceDefault(void);
 
-						ResourceDefault(const ResourceDefault& other);
-						ResourceDefault(int code);
+							ResourceDefault(const ResourceDefault& other);
+							ResourceDefault(int code);
 
-						~ResourceDefault(void);
+							~ResourceDefault(void);
 
 		// --- Operators Overload ---
 		ResourceDefault&	operator=(const ResourceDefault& rhs);
 
 	private:
-		void			createStatusPage(int code);
+		void				createStatusPage(int code);
 };
 
 #endif

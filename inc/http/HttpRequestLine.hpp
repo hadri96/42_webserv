@@ -21,12 +21,14 @@ class	HttpRequestLine
 
 		// --- Getters & Setters ---
 		HttpMethodType      	getMethod() const;
-		std::string				getMethodString() const;
+		void					setMethod(HttpMethodType httpMethod);
 
 		const Uri&				getUri() const;
 		void					setUri(Uri uri);
 
 		const std::string&  	getHttpVersion() const;
+		void					setHttpVersion(const std::string httpVersion);
+
 		const std::string&  	getQueryString() const;
 
 	private:

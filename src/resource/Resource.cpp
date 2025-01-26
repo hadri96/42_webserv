@@ -10,6 +10,7 @@ Resource::Resource(void) :
 
 Resource::Resource(const Resource& other) :
 	code_(other.code_),
+	mimeType_(other.mimeType_),
 	body_(other.body_)
 {}
 
@@ -36,6 +37,7 @@ Resource&	Resource::operator=(const Resource& rhs)
 
 	code_ = rhs.code_;
 	body_ = rhs.body_;
+	mimeType_ = rhs.mimeType_;
 
 	return (*this);
 }
@@ -52,4 +54,21 @@ int	Resource::getCode(void)
 const std::string&	Resource::getBody(void)
 {
 	return (body_);
+}
+
+std::string Resource::getMimeType(void) const
+{
+	return (mimeType_);
+}
+
+#include <iostream>
+void	Resource::setMimeType(std::string mimeType)
+{
+	mimeType_ = mimeType;
+	std::cout << "SET MIMETYPE : " << mimeType_ << std::endl;
+}
+
+void	Resource::setStatusLine(const std::string& statusLine)
+{
+	statusLine_ = statusLine;
 }

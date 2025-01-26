@@ -8,6 +8,7 @@
 // Constructors and Destructor
 // =============================================================================
 
+// REVIST : HARDCODED VALUES
 // Using example values for testing purposes: 
 HttpHeader::HttpHeader(void) :
     host_("www.example.com"),

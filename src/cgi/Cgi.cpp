@@ -1,6 +1,7 @@
 #include "Cgi.hpp"
 #include "Logger.hpp"
 #include "ToString.hpp"
+#include "HttpMethodType.hpp"
 
 #include <cstring>
 #include <unistd.h>
@@ -89,7 +90,7 @@ void    Cgi::prepareCgiEnvironment(Config& config, HttpRequest& request)
 
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
     env["SERVER_PROTOCOL"] = "HTTP/1.1";
-    env["REQUEST_METHOD"] = HttpMethodTypeToString(request.getMethod());
+    env["REQUEST_METHOD"] = httpMethodToString(request.getMethod());
     env["SCRIPT_FILENAME"] = request.getUri();
     env["PATH_INFO"] = *config.getPath(request.getUri());
     env["NAME"] = request.getInput("name");

@@ -22,9 +22,16 @@ class	Resource
 		int					getCode(void);
 		const std::string&	getBody(void);
 
+		std::string			getMimeType(void) const;
+		void				setMimeType(std::string mimeType);
+
+		void				setStatusLine(const std::string& statusLine);
+
 	protected:
 	// --- Protected Attributes ---
 		int					code_;
+		std::string			statusLine_;
+		std::string			mimeType_;
 		std::string			body_;
 
 };

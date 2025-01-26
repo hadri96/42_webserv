@@ -6,7 +6,7 @@
 
 HttpRequestLine::HttpRequestLine(void) : 
 	method_(GET),
-	uri_("/example_response.html"),
+	uri_("/"),
 	httpVersion_("HTTP/1.1")
 {}
 
@@ -16,7 +16,8 @@ HttpRequestLine::HttpRequestLine(const HttpRequestLine& other) :
     httpVersion_(other.httpVersion_)
 {}
 
-HttpRequestLine::~HttpRequestLine(void) {}
+HttpRequestLine::~HttpRequestLine(void)
+{}
 
 // =============================================================================
 // Operators Overload
@@ -37,26 +38,18 @@ HttpRequestLine&	HttpRequestLine::operator=(const HttpRequestLine& other)
 // Getters
 // =============================================================================
 
-// Getter for method_
+// --- Http Method ---
 HttpMethodType HttpRequestLine::getMethod() const 
 {
     return (method_);
 }
 
-// String getter for method_
-std::string HttpRequestLine::getMethodString() const 
+void    HttpRequestLine::setMethod(HttpMethodType httpMethod)
 {
-    if (method_ == 0)
-        return ("GET");
-    else if (method_ == 1)
-        return ("POST");
-    else if (method_ == 2)
-        return ("DELETE");
-    else
-        return ("UNDEFINED");
+    method_ = httpMethod;
 }
 
-// Getter for relativeUri_
+// --- URI ---
 const Uri& HttpRequestLine::getUri() const 
 {
     return (uri_);
@@ -67,13 +60,18 @@ void	HttpRequestLine::setUri(Uri uri)
 	uri_ = uri;
 }
 
-// Getter for httpVersion_
+// --- HTTP Version ---
 const std::string& HttpRequestLine::getHttpVersion() const 
 {
     return (httpVersion_);
 }
 
-// Getter for queryString_
+void    HttpRequestLine::setHttpVersion(const std::string httpVersion)
+{
+    httpVersion_ = httpVersion;
+}
+
+// --- Query string ---
 const std::string& HttpRequestLine::getQueryString() const 
 {
     return (queryString_);

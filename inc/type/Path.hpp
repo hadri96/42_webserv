@@ -23,6 +23,7 @@ class	Path : public PathOrUri
 		Path		getAbsPath(void) const;
 		bool		isInFileSystem(void) const;
 		bool		isDir(void) const;
+		std::string	getExtension(void) const;
 		std::string	read(void) const;
 
 	private:

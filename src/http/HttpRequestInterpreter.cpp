@@ -4,6 +4,7 @@
 #include "Logger.hpp"
 #include "ResourceDefault.hpp"
 #include "Cgi.hpp"
+#include "HttpMimeTypes.hpp"
 
 #include <string>
 #include <stdexcept>
@@ -60,7 +61,7 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
             Logger::logger()->log(LOG_INFO, "CLient sent a DELETE request");
             response = handleDeleteRequest(config, request);
             break;
-        case UNDEFINED:
+        case UNKNOWN:
             throw (HttpRequestInterpreter::BadRequest());
     }
     return (response);
@@ -77,8 +78,10 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
 HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
 {
     (void) request;
+    Resource resource = createResourceFile(config, request);
     Logger::logger()->log(LOG_DEBUG, "handleGetRequest...");
-    return (HttpResponse(createResourceFile(config, request)));
+
+    return (HttpResponse(resource));
     //return (HttpResponse(createResourceError(config, 404)));
 }
 
@@ -167,7 +170,17 @@ Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest&
     if (!(path.getAbsPath().isInFileSystem()))
         return (createResourceError(config, 404));
 
-    return (Resource(200, path.getAbsPath().read()));
+    Resource resource(200, path.getAbsPath().read());
+
+    HttpMimeTypes httpMimeTypes;
+    std::string extension = path.getExtension();
+    std::string mimeType = httpMimeTypes.getMimeType(extension);
+
+    std::cout << "EXTENSION : " << extension << std::endl;
+    std::cout << "CORRESPONDING MIMETYPE : " << mimeType << std::endl;
+
+    resource.setMimeType(mimeType);
+    return (resource);
 
 
 	// check if uri exists 

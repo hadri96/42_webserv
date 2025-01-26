@@ -67,9 +67,11 @@ void	HttpParser::parseHttpRequestLine(void)
 	std::stringstream ss2(httpRequestLine);
     ss2 >> method >> uri >> version;
 
+	httpRequest_.setMethod(stringToHttpMethod(method));
 	httpRequest_.setUri(Uri(uri));
+	httpRequest_.setHttpVersion(version);
 
-	// Print the URI (or you can print method/version if needed)
+	// REVISIT : USE LOGGER INSTEAD
     std::cout << "Method: " << method << std::endl;
     std::cout << "URI: " << uri << std::endl;
     std::cout << "Version: " << version << std::endl;

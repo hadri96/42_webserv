@@ -17,6 +17,9 @@ HttpResponse::HttpResponse()
 
 HttpResponse::HttpResponse(Resource resource)
 {
+    std::cout << "Inside http response, get mimetype : " << resource.getMimeType() << std::endl;
+    mimeType_ = resource.getMimeType();
+    std::cout << "RESOURCE MIME TYPE " << resource.getMimeType() << std::endl;
     //Logger::logger()->log(LOG_DEBUG, "HttpResponse...");
     body_ = resource.getBody();
     //Logger::logger()->log(LOG_DEBUG, body_);
@@ -27,13 +30,12 @@ HttpResponse::HttpResponse(Resource resource)
     //Logger::logger()->log(LOG_DEBUG, fullResponse_);
 }
 
-HttpResponse::~HttpResponse() {}
+HttpResponse::~HttpResponse()
+{}
 
 // =============================================================================
 // Public Methods
 // =============================================================================
-
-
 
 
 // =============================================================================
@@ -61,7 +63,8 @@ void    HttpResponse::generateBasicHeaders()
     std::ostringstream headers;
 
     headers << "Server: Webserv\r\n";
-    headers << "Content-Type: text/html; charset=UTF-8\r\n";
+    //headers << "Content-Type: text/html; charset=UTF-8\r\n"; // REVISIT : REPLACE BY CORRECT MIME TYPE
+    headers << "Content-Type: " <<  mimeType_ << "; charset=UTF-8\r\n"; 
     headers << "Content-Length: " << body_.size() << "\r\n";
     headers << "Connection: keep-alive\r\n\r\n";
 
@@ -88,6 +91,7 @@ std::string     HttpResponse::extractStatusText() const
     return ("Unknown Error");
 }
 
+// REVISIT : NOT WORKING ANYMORE
 void    HttpResponse::errorStatusLine(ConfigErrorPage& configErrorPage)
 {
     std::string             statusText = extractStatusText();

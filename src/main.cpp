@@ -9,10 +9,12 @@
 #include "PathOrUri.hpp"
 #include "Path.hpp"
 
+#include "HttpMimeTypes.hpp"
+#include "ToVector.hpp"
+
 
 int	main(int argc, char** argv)
 {
-
 	std::string configPath;
 
 	if (argc == 1)

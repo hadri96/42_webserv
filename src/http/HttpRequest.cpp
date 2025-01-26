@@ -13,8 +13,8 @@ HttpRequest::HttpRequest() :
     header_(HttpHeader()),
     body_("")
 {
-    inputs_.insert(std::make_pair("name", "newFileMickey"));
-    inputs_.insert(std::make_pair("content", "donaldDuck not donaldTrump"));
+    inputs_.insert(std::make_pair("name", "newFileMickey")); // REVISIT : ?
+    inputs_.insert(std::make_pair("content", "donaldDuck not donaldTrump")); // REVISIT : ?
 }
 
 HttpRequest::~HttpRequest() {}
@@ -31,35 +31,34 @@ void    HttpRequest::appendRequest(std::string input)
 // Getters
 // =============================================================================
 
-
-// Getter for rawRequest_
 const std::string& HttpRequest::getRawRequest() const 
 {
     return (rawRequest_);
 }
 
-// Getter for requestLine_
+// ·············································································
+// Request Line
+// ·············································································
+
 const HttpRequestLine& HttpRequest::getRequestLine() const 
 {
     return (requestLine_);
 }
 
-// Getter for header_
-const HttpHeader& HttpRequest::getHttpHeader() const 
+// --- Method ---
+
+HttpMethodType    HttpRequest::getMethod() const
 {
-    return (header_);
+    return (requestLine_.getMethod());
 }
 
-// Getter for body_
-const std::string& HttpRequest::getBody() const 
+void    HttpRequest::setMethod(HttpMethodType httpMethod)
 {
-    return (body_);
+    requestLine_.setMethod(httpMethod);
 }
 
-int HttpRequest::getBodySize() const 
-{
-    return (body_.length() * sizeof(char));
-}
+
+// --- Uri ---
 
 const Uri& HttpRequest::getUri() const
 {
@@ -71,6 +70,41 @@ void	HttpRequest::setUri(Uri uri)
     requestLine_.setUri(uri);
 }
 
+// --- Http Version ---
+
+const std::string&  HttpRequest::getHttpVersion(void) const
+{
+    return(requestLine_.getHttpVersion());
+}
+
+void    HttpRequest::setHttpVersion(const std::string& httpVersion)
+{
+    requestLine_.setHttpVersion(httpVersion);
+}
+
+// ·············································································
+// Header
+// ·············································································
+
+const HttpHeader& HttpRequest::getHttpHeader() const 
+{
+    return (header_);
+}
+
+// ·············································································
+// Body
+// ·············································································
+
+const std::string& HttpRequest::getBody() const 
+{
+    return (body_);
+}
+
+int HttpRequest::getBodySize() const 
+{
+    return (body_.length() * sizeof(char));
+}
+
 std::string HttpRequest::getInput(std::string key)
 {
     return (inputs_[key]);
@@ -78,21 +112,14 @@ std::string HttpRequest::getInput(std::string key)
 
 // ··· "Deep" Getters and utils ···
 
-HttpMethodType    HttpRequest::getMethod() const
-{
-    return (requestLine_.getMethod());
-}
-
 HttpMimeType    HttpRequest::getMimeType() const
 {
     return (header_.getMimeType());
 }
 
-
 // =============================================================================
 // Public Methods 
 // =============================================================================
-
 
 std::string   HttpRequest::generatePrintString()
 {
@@ -101,7 +128,7 @@ std::string   HttpRequest::generatePrintString()
     ss << "Client Request (RawRequest): " << rawRequest_ << std::endl;
 	
     ss << "Dummy RequestLine: \n\n" 
-	          << requestLine_.getMethodString() << " ; "
+	          << httpMethodToString(requestLine_.getMethod()) << " ; "
 	          << requestLine_.getUri() << " ; "
 	          << requestLine_.getHttpVersion() << std::endl;
 
