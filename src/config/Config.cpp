@@ -267,7 +267,7 @@ const ConfigErrorPage*	Config::getConfigErrorPage(int code) const
 	return (0);
 }
 
-bool	Config::isTypeAllowed(HttpMimeType mimeType, Uri uri) const
+/*bool	Config::isTypeAllowed(HttpMimeType mimeType, Uri uri) const
 {
 	// Check in location then in main config if mime type is allowed
 	(void) uri;
@@ -275,7 +275,7 @@ bool	Config::isTypeAllowed(HttpMimeType mimeType, Uri uri) const
 	if (mimeType)
 		return (true);
 	return (true);
-}
+}*/
 
 std::string		Config::getCgiDir()
 {

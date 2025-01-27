@@ -112,10 +112,10 @@ std::string HttpRequest::getInput(std::string key)
 
 // ··· "Deep" Getters and utils ···
 
-HttpMimeType    HttpRequest::getMimeType() const
+/*HttpMimeType    HttpRequest::getMimeType() const
 {
     return (header_.getMimeType());
-}
+}*/
 
 // =============================================================================
 // Public Methods 
@@ -136,9 +136,9 @@ std::string   HttpRequest::generatePrintString()
 	          << "host_: " << header_.getHost() << "\n"
 	          << "userAgent_: " << header_.getUserAgent() << "\n"
 	          << "contentLength_: " << toString(header_.getContentLength()) << "\n"
-	          << "contentType_: " << header_.getMimeType() << "\n"
+	          //<< "contentType_: " << header_.getMimeType() << "\n"
 	          << "connectionType_: " << header_.getConnectionTypeString() << "\n"
-	          << "accept_: " << header_.getAccept() << "\n"
+	          //<< "accept_: " << header_.getAccept() << "\n"
 	          << "acceptEncoding_: " << header_.getAcceptEncoding() << "\n"
 	          << "acceptLanguage_: " << header_.getAcceptLanguage() << std::endl;
 
