@@ -146,7 +146,8 @@ Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
     }
 
     Path customErrorPagePathObj = *customErrorPagePath;
-    customErrorPagePathObj = customErrorPagePathObj/customErrorPageUriStr;
+    customErrorPagePathObj = static_cast<Path>(customErrorPagePathObj) / customErrorPageUriStr;
+    // customErrorPagePathObj = customErrorPagePathObj/customErrorPageUriStr;
 
 	// If the custom error page is not in the file system, return the default one
 	if (!(customErrorPagePathObj.getAbsPath().isInFileSystem()))
@@ -165,7 +166,8 @@ Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest&
         return (createResourceError(config, 404));
 
     Path path = *foundPath;
-    path = path/uri;
+    path = static_cast<Path>(path) / uri;
+    // path = path/uri;
 
     if (!(path.getAbsPath().isInFileSystem()))
         return (createResourceError(config, 404));

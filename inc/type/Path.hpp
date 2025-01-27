@@ -25,6 +25,8 @@ class	Path : public PathOrUri
 		bool		isDir(void) const;
 		std::string	getExtension(void) const;
 		std::string	read(void) const;
+		static Path fromPathOrUri(const PathOrUri& pathOrUri);
+
 
 	private:
 		// --- Private Methods ---

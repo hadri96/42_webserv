@@ -108,6 +108,11 @@ std::string	Path::read(void) const
 	return (content);
 }
 
+Path Path::fromPathOrUri(const PathOrUri& pathOrUri)
+{
+    return Path(pathOrUri);
+}
+
 // =============================================================================
 // Private Methods
 // =============================================================================

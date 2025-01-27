@@ -1,5 +1,5 @@
 #ifndef CONFIG_LOCATION_HPP
-# define Config_LOCATION_HPP
+# define CONFIG_LOCATION_HPP
 
 # include <ostream>
 # include <vector>

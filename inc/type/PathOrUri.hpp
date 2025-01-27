@@ -29,7 +29,7 @@ class	PathOrUri
 
 		// ··· Implicit conversion to string ···
 									operator std::string() const;
-									operator Path() const;
+									// operator Path() const;
 									operator Uri() const;
 
 		// --- Public Methods ---
