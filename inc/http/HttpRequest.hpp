@@ -37,7 +37,7 @@ class HttpRequest
 		// ··· Header ··· 
 		const HttpHeader&       			getHttpHeader() const;  // REVISIT : USELESS ?
 
-		HttpMimeType						getMimeType() const;
+		//HttpMimeType						getMimeType() const;
 
 		// ··· Body ··· 
 		const std::string&      			getBody() const;

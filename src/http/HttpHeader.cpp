@@ -14,9 +14,9 @@ HttpHeader::HttpHeader(void) :
     host_("www.example.com"),
     userAgent_("agent"),
     contentLength_(0),
-    mimeType_(TEXT_PHP),
+    //mimeType_(TEXT_PHP),
     connectionType_(CLOSED),
-    accept_(TEXT_PHP),
+    //accept_(TEXT_PHP),
     acceptEncoding_("gzip"),
     acceptLanguage_("en-US,en,q=0.9")
 {}
@@ -25,9 +25,9 @@ HttpHeader::HttpHeader(const HttpHeader& other) :
     host_(other.host_),
     userAgent_(other.userAgent_),
     contentLength_(other.contentLength_),
-    mimeType_(other.mimeType_),
+    //mimeType_(other.mimeType_),
     connectionType_(other.connectionType_),
-    accept_(other.accept_),
+    //accept_(other.accept_),
     acceptEncoding_(other.acceptEncoding_),
     acceptLanguage_(other.acceptLanguage_)
 {}
@@ -71,10 +71,10 @@ std::size_t HttpHeader::getContentLength() const
 }
 
 // Getter for mimeType_
-HttpMimeType HttpHeader::getMimeType() const 
+/*HttpMimeType HttpHeader::getMimeType() const 
 {
     return (mimeType_);
-}
+}*/
 
 // Getter for connectionType_
 HttpConnectionType HttpHeader::getConnectionType() const 
@@ -93,10 +93,10 @@ std::string HttpHeader::getConnectionTypeString() const
 }
 
 // Getter for accept_
-const HttpMimeType& HttpHeader::getAccept() const 
+/*const HttpMimeType& HttpHeader::getAccept() const 
 {
     return (accept_);
-}
+}*/
 
 // Getter for acceptEncoding_
 const std::string& HttpHeader::getAcceptEncoding() const 
@@ -133,10 +133,10 @@ void HttpHeader::setContentLength(std::size_t contentLength)
 }
 
 // Setter for mimeType_
-void HttpHeader::setMimeType(HttpMimeType mimeType) 
+/*void HttpHeader::setMimeType(HttpMimeType mimeType) 
 {
     mimeType_ = mimeType;
-}
+}*/
 
 // Setter for connectionType_
 void HttpHeader::setConnectionType(HttpConnectionType connectionType) 
@@ -145,10 +145,10 @@ void HttpHeader::setConnectionType(HttpConnectionType connectionType)
 }
 
 // Setter for accept_
-void HttpHeader::setAccept(const HttpMimeType& accept) 
+/*void HttpHeader::setAccept(const HttpMimeType& accept) 
 {
     accept_ = accept;
-}
+}*/
 
 // Setter for acceptEncoding_
 void HttpHeader::setAcceptEncoding(const std::string& acceptEncoding) 
@@ -174,7 +174,7 @@ std::string     HttpHeader::generateHttpHeaderString() const
     HttpHeaders << "User Agent: " << getUserAgent() << "\r\n";
     HttpHeaders << "Content Length: " << toString(getContentLength()) << "\r\n";
     HttpHeaders << "Connection Type: " << getConnectionTypeString() << "\r\n";
-    HttpHeaders << "Accept: " << getAccept() << "\r\n";
+    //HttpHeaders << "Accept: " << getAccept() << "\r\n";
     HttpHeaders << "Accept Encoding: " << getAcceptEncoding() << "\r\n";
     HttpHeaders << "Accept Language: " << getAcceptLanguage() << "\r\n";
     

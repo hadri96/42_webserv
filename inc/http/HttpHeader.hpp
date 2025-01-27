@@ -2,7 +2,7 @@
 # define HTTP_HttpHeader_HPP
 
 # include "HttpConnectionType.hpp"
-# include "HttpMimeType.hpp"
+//# include "HttpMimeType.hpp"
 
 # include <string>
 
@@ -24,10 +24,10 @@ class	HttpHeader
         const std::string&      getHost() const;
         const std::string&      getUserAgent() const;
         std::size_t             getContentLength() const;
-        HttpMimeType            getMimeType() const;
+        //HttpMimeType            getMimeType() const;
         HttpConnectionType      getConnectionType() const;
         std::string             getConnectionTypeString() const;
-        const HttpMimeType&     getAccept() const;
+        //const HttpMimeType&     getAccept() const;
         const std::string&      getAcceptEncoding() const;
         const std::string&      getAcceptLanguage() const;
 
@@ -35,9 +35,9 @@ class	HttpHeader
         void                    setHost(const std::string& host);
         void                    setUserAgent(const std::string& userAgent);
         void                    setContentLength(std::size_t contentLength);
-        void                    setMimeType(HttpMimeType contentType);
+        //void                    setMimeType(HttpMimeType contentType);
         void                    setConnectionType(HttpConnectionType connectionType);
-        void                    setAccept(const HttpMimeType& accept);
+        //void                    setAccept(const HttpMimeType& accept);
         void                    setAcceptEncoding(const std::string& acceptEncoding);
         void                    setAcceptLanguage(const std::string& acceptLanguage);
 
@@ -49,10 +49,10 @@ class	HttpHeader
         std::string     		userAgent_;
 
         std::size_t     		contentLength_; // body.size()
-        HttpMimeType     		mimeType_; // "text/html" | "text/css" | "image/png" etc.
+        //HttpMimeType     		mimeType_; // "text/html" | "text/css" | "image/png" etc.
         HttpConnectionType  	connectionType_; // either CLOSED or KEEP_ALIVE
 
-        HttpMimeType     		accept_; // "text/html" | "text/css" | "image/png" etc. 
+       	//HttpMimeType     		accept_; // "text/html" | "text/css" | "image/png" etc. 
         std::string     		acceptEncoding_; // encoding format accepted (zip / deflate / gzip)
         std::string     		acceptLanguage_; // preferred language for response (en / fr)
 
