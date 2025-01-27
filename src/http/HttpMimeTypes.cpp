@@ -24,12 +24,15 @@ HttpMimeTypes::HttpMimeTypes(void)
 	std::string mimeType5 = "image/gif";
 	const char* extensions5[] = {"gif", 0};
 
+	std::string mimeType6 = "image/x-icon";
+	const char* extensions6[] = {"ico", 0};
+
 	addMimeType(mimeType1, toVector(extensions1));
 	addMimeType(mimeType2, toVector(extensions2));
 	addMimeType(mimeType3, toVector(extensions3));
 	addMimeType(mimeType4, toVector(extensions4));
 	addMimeType(mimeType5, toVector(extensions5));
-
+	addMimeType(mimeType6, toVector(extensions6));
 }
 
 HttpMimeTypes::HttpMimeTypes(const HttpMimeTypes& other) :
