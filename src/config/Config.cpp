@@ -225,6 +225,7 @@ const Path*	Config::getPath(Uri uri) const
 {
 	const ConfigLocation* foundLocation = getConfigLocation(uri);
 
+	// REVISIT : isn't that a mistake ?
 	if (!foundLocation)
 	{
 		static const Path		fakeLocation("www/cgi-bin/");

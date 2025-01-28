@@ -11,6 +11,7 @@
 #include <sys/stat.h> // For struct stat and stat()
 #include <unistd.h>   // For realpath()
 #include <limits.h>   // For PATH_MAX
+#include <dirent.h>   // opendir, readdir, closedir
 
 // =============================================================================
 // Constructors and Destructor
@@ -51,16 +52,16 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
     switch (method)
     {
         case GET:
-            Logger::logger()->log(LOG_INFO, "CLient sent a GET request");
+            Logger::logger()->log(LOG_INFO, "Client sent a GET request");
             response = handleGetRequest(config, request);
             break;
         case POST:
-            Logger::logger()->log(LOG_INFO, "CLient sent a POST request");
+            Logger::logger()->log(LOG_INFO, "Client sent a POST request");
             // get request content length header (if too big --> 403)
             response = handlePostRequest(config, request);
             break;
         case DELETE:
-            Logger::logger()->log(LOG_INFO, "CLient sent a DELETE request");
+            Logger::logger()->log(LOG_INFO, "Client sent a DELETE request");
             response = handleDeleteRequest(config, request);
             break;
         case UNKNOWN:
@@ -160,49 +161,127 @@ Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 
 Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest& request)
 {
+    // Extract the URI from the request
 	Uri     uri = request.getUri();
 
-    const Path* foundPath = config.getPath(uri);
+    // Get the root path corresponding to the URI
+    const Path* rootPath = config.getPath(uri);
 
-    if (!foundPath)
+    // Error 404 if there is no root path in config matching the uri
+    if (!rootPath)
+    {
+        Logger::logger()->log(LOG_DEBUG, "createResourceFile : no root path in config matching the uri");
         return (createResourceError(config, 404));
+    }
 
-    Path path = *foundPath;
+    // Appends the URI to the root path
+    Path path = *rootPath;
     path = static_cast<Path>(path) / uri;
     // path = path/uri;
 
-    if (!(path.getAbsPath().isInFileSystem()))
-        return (createResourceError(config, 404));
+    Logger::logger()->log(LOG_DEBUG, "createResourceFile : path : " + path.getAbsPath());
 
+    // If the resource is a directory, pass the task to the appropriate handler
+    if (path.getAbsPath().isDir())
+    {
+        Logger::logger()->log(LOG_DEBUG, "createResourceFile : the resource is a directory");
+        return (createResourceDirectory(config, request));
+
+    }
+
+    // Error 404 if the resource does not exist
+    if (!(path.getAbsPath().isInFileSystem()))
+    {
+        Logger::logger()->log(LOG_DEBUG, "createResourceFile : the resource does not exist (error 404)");
+        return (createResourceError(config, 404));
+    }
+    
     Resource resource(200, path.getAbsPath().read());
 
     HttpMimeTypes httpMimeTypes;
     std::string extension = path.getExtension();
     std::string mimeType = httpMimeTypes.getMimeType(extension);
 
-    std::cout << "EXTENSION : " << extension << std::endl;
-    std::cout << "CORRESPONDING MIMETYPE : " << mimeType << std::endl;
+    Logger::logger()->log(LOG_DEBUG, "createResourceFile : resource file extension : " + extension);
+    Logger::logger()->log(LOG_DEBUG, "createResourceFile : resource file mime type : " + mimeType);
 
     resource.setMimeType(mimeType);
     return (resource);
-
-
-	// check if uri exists 
-	// check if directory or file 
-        // if directory get index file
-    // check if directory listing is on
-    // build File object
-    // check permissions
-	// check if redirection
-	// if redirection  return  resourceRedirection
-
 }
 
-Resource	HttpRequestInterpreter::createResourceDirectoryList(Config& config, Path path)
+Resource	HttpRequestInterpreter::createResourceDirectory(Config& config, HttpRequest& request)
 {
-	(void) path;
-    (void) config;
-	return (Resource(200, "Directory list..."));
+    // Extract the URI from the request (REVISIT : was already done earlier)
+	Uri     uri = request.getUri();
+
+    // Get the root path corresponding to the URI (REVISIT : was already done earlier)
+    const Path* rootPath = config.getPath(uri);
+
+    // Appends the URI to the root path (REVISIT : was already done earlier)
+    Path path = *rootPath;
+    path = static_cast<Path>(path) / uri;
+
+    // Get the location that matches the URI
+    const ConfigLocation* configLocation = config.getConfigLocation(uri);
+
+    // Display the default page if autoindex is off
+    if (!configLocation->getAutoIndex())
+    {
+        Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : autoindex is off");
+        // REVISIT : Implement custom default file
+        //if (configLocation->getDefaultFile())
+
+        Path indexPath = path/"index.html";
+        Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : index file path " + indexPath.getAbsPath());
+        if (!(indexPath.getAbsPath().isInFileSystem()))
+        {
+            Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : index file not found (error 404)");
+            return (createResourceError(config, 404));
+        }
+
+        Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : index file found");
+        Resource resource(200, indexPath.getAbsPath().read());
+        return (resource);
+    }
+    Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : autoindex is on");
+
+    DIR *dir;
+    struct dirent *entry;
+    std::string pathStr = path.getAbsPath();
+    const char *absPath = pathStr.c_str();
+
+    // Open the directory
+    dir = opendir(absPath);
+    if (dir == NULL) {
+        Logger::logger()->log(LOG_DEBUG, "createResourceDirectory: Failed to open directory : " + pathStr);
+        return createResourceError(config, 404);
+    }
+
+    std::string directoryListing = "<h1>Index of " + uri + "</h1><table><tr><td><a href=\"" + uri.getParent() + "\">../</a></td></tr>";
+
+    // Read and accumulate directory contents
+    while ((entry = readdir(dir)) != NULL) {
+        // Use std::string to avoid strcmp
+        std::string entryName(entry->d_name);
+
+        
+        // Skip . and .. (current and parent directories)
+        if (entryName != "." && entryName != "..")
+        {
+            directoryListing.append("<tr><td><a href=\"" + uri/entryName + "\">");
+            directoryListing.append(entryName);
+            directoryListing.append("</a></td>");
+            directoryListing.append("</tr>\n");
+        }
+    }
+
+    directoryListing.append("</table>");
+
+    // Close the directory
+    closedir(dir);
+
+
+	return (Resource(200, directoryListing));
 }
 
 Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRequest& request)

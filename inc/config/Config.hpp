@@ -45,6 +45,7 @@ class	Config
 
 		void							addConfigLocation(const ConfigLocation& location);
 		std::vector<ConfigLocation>&	getConfigLocations(void);
+		const ConfigLocation*			getConfigLocation(Uri uri) const;
 						
 		bool							checkPathInConfig(Uri& uri, Path& outputPath) const;
 
@@ -90,8 +91,7 @@ class	Config
 		std::vector<ConfigLocation>		locations_;
 
 		// --- Private Methods ---
-		
-		const ConfigLocation*			getConfigLocation(Uri uri) const;
+	
 };
 
 //std::ostream&	operator<<(std::ostream& os, Config& object);
