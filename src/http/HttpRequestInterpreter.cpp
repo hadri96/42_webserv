@@ -80,7 +80,6 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
 
 HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
 {
-    (void) request;
     Resource resource = createResourceFile(config, request);
     Logger::logger()->log(LOG_DEBUG, "handleGetRequest...");
 
@@ -235,8 +234,8 @@ Resource	HttpRequestInterpreter::createResourceDirectory(Config& config, HttpReq
         Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : index file path " + indexPath.getAbsPath());
         if (!(indexPath.getAbsPath().isInFileSystem()))
         {
-            Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : index file not found (error 404)");
-            return (createResourceError(config, 404));
+            Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : index file not found (error 403) and autoindex off");
+            return (createResourceError(config, 403));
         }
 
         Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : index file found");
