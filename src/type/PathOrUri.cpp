@@ -36,10 +36,10 @@ PathOrUri&	PathOrUri::operator=(const PathOrUri& rhs)
 }
 
 // --- Implicit conversion to Path ---
-PathOrUri::operator Path() const
-{
-	return Path(*this);
-}
+// PathOrUri::operator Path() const
+// {
+// 	return Path(*this);
+// }
 
 // --- Implicit conversion to Uri ---
 PathOrUri::operator Uri() const

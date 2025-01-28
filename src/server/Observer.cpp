@@ -69,17 +69,17 @@ void	Observer::monitorEvents(void)
 					Logger::logger()->log(LOG_DEBUG, toString(fds_[i].fd) + " is POLLIN");
 					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_SENDING_REQUEST, fds_[i].fd);
 					updatePollEvent(fds_[i].fd, POLLOUT);
-					if (fds_[i].revents & POLLOUT)
-					{	
-						getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_EXPECTING_RESPONSE, fds_[i].fd);
-						updatePollEvent(fds_[i].fd, POLLIN);
-					}
 				}
-				// 	Logger::logger()->log(LOG_WARNING, toString(fds_[i].fd) + " is POLLOUT");
-				// else if (fds_[i].revents & POLLHUP)
-				// 	getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_DISCONNECTED, fds_[i].fd);
-				// else if (fds_[i].revents & POLLERR)
-				// 	getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_ERROR, fds_[i].fd);
+				else if (fds_[i].revents & POLLOUT)
+				{	
+					Logger::logger()->log(LOG_DEBUG, toString(fds_[i].fd) + " is POLLOUT");
+					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_EXPECTING_RESPONSE, fds_[i].fd);
+					updatePollEvent(fds_[i].fd, POLLIN);
+				}
+				else if (fds_[i].revents & POLLHUP)
+					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_DISCONNECTED, fds_[i].fd);
+				else if (fds_[i].revents & POLLERR)
+					getServerFromFd(fds_[i].fd)->handleEvent(CLIENT_ERROR, fds_[i].fd);
 			}
 		}
 	}
