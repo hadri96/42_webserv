@@ -43,8 +43,10 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
     // if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
     //     return (HttpResponse(createResourceError(config, 413)));
 
+    /* REVISIT : Disabled because of some path error
+    
     if (isCgiRequest(config, request))
-        return (HttpResponse(createResourceCgi(config, request)));
+        return (HttpResponse(createResourceCgi(config, request)));*/ 
 
     switch (method)
     {
