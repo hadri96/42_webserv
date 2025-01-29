@@ -64,7 +64,7 @@ void    HttpResponse::generateBasicHeaders()
 
     headers << "Server: Webserv\r\n";
     //headers << "Content-Type: text/html; charset=UTF-8\r\n"; // REVISIT : REPLACE BY CORRECT MIME TYPE
-    headers << "Content-Type: " <<  mimeType_ << "; charset=UTF-8\r\n"; 
+    headers << "Content-Type: " <<  mimeType_ << "; charset=UTF-8\r\n";
     headers << "Content-Length: " << body_.size() << "\r\n";
     headers << "Connection: keep-alive\r\n\r\n";
 

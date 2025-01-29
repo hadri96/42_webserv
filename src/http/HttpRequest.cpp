@@ -28,12 +28,48 @@ void    HttpRequest::appendRequest(std::string input)
 }
 
 // =============================================================================
-// Getters
+// Getters & Setters
 // =============================================================================
 
 const std::string& HttpRequest::getRawRequest() const 
 {
     return (rawRequest_);
+}
+
+void HttpRequest::setInputs(std::string& queryString)
+{
+    inputs_.clear();
+
+    std::string                 key;
+    std::string                 value;
+    std::string::size_type      pos = 0;
+    std::string::size_type      ampPos;
+    std::string::size_type      eqPos;
+
+    while (pos < queryString.length())
+    {
+        ampPos = queryString.find('&', pos);
+        if (ampPos == std::string::npos)
+            ampPos = queryString.length();
+
+        eqPos = queryString.find('=', pos);
+        
+        if (eqPos != std::string::npos && eqPos < ampPos)
+        {
+            key = queryString.substr(pos, eqPos - pos);
+            value = queryString.substr(eqPos + 1, ampPos - eqPos - 1);
+        }
+        else
+        {
+            key = queryString.substr(pos, ampPos - pos);
+            value = "";
+        }
+
+        if (!key.empty())
+            inputs_[key] = value;
+
+        pos = ampPos + 1;
+    }
 }
 
 // ·············································································
@@ -143,4 +179,21 @@ std::string   HttpRequest::generatePrintString()
 	          << "acceptLanguage_: " << header_.getAcceptLanguage() << std::endl;
 
     return (ss.str());
+}
+
+void        HttpRequest::log()
+{
+    Logger::logger()->log(LOG_DEBUG, "method : " + requestLine_.getMethod());
+	Logger::logger()->log(LOG_DEBUG, "uri : " + requestLine_.getUri());
+	Logger::logger()->log(LOG_DEBUG, "version : " + requestLine_.getHttpVersion());
+    
+    std::string inputsLog = "inputs : \n";
+    std::map<std::string, std::string>::const_iterator      it;
+
+    for (it = inputs_.begin(); it != inputs_.end(); ++it)
+    {
+        inputsLog += "  " + it->first + " : " + it->second + "\n";
+    }
+
+    Logger::logger()->log(LOG_DEBUG, inputsLog);
 }
