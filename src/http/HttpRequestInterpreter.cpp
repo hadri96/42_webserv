@@ -158,6 +158,12 @@ Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
 	return (Resource(code, customErrorPagePathObj.getAbsPath().read()));
 }
 
+Resource	HttpRequestInterpreter::createResourceRedirection(Config& config, int code)
+{
+	(void) config;
+	return (Resource(code, "Redirection"));
+}
+
 Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest& request)
 {
     // Extract the URI from the request
@@ -172,6 +178,17 @@ Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest&
         Logger::logger()->log(LOG_DEBUG, "createResourceFile : no root path in config matching the uri");
         return (createResourceError(config, 404));
     }
+
+	// Check if there is a redirection in location block
+	// Get the location that matches the URI
+    const ConfigLocation* configLocation = config.getConfigLocation(uri);
+	const ConfigRedirection configRedirection = configLocation->getConfigRedirection();
+	if (configRedirection.getStatusCode() != 0)
+	{
+		Logger::logger()->log(LOG_DEBUG, "createResourceFile : redirection set in location block");
+		return (createResourceRedirection(config, configRedirection.getStatusCode()));
+	}
+
 
     // Appends the URI to the root path
     Path path = *rootPath;

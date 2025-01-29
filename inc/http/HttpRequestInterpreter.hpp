@@ -45,6 +45,7 @@ class HttpRequestInterpreter
 		Resource		createResourceError(Config& config, int code); // -> creer custom Error
 		Resource		createResourceDirectory(Config& config, HttpRequest& request);
         Resource        createResourceCgi(Config& config, HttpRequest& request);
+		Resource		createResourceRedirection(Config& config, int code);
 
         bool            fileInServer(std::string uri, Config& config);
         bool            isCgiRequest(Config& config, HttpRequest& request);
