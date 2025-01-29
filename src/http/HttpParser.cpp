@@ -54,12 +54,11 @@ HttpRequest	HttpParser::parse(void)
 
 void	HttpParser::parseHttpRequestLine(void)
 {
-	std::string method;
-	std::string uri;
-	std::string version;
-
-	std::stringstream ss;
-	std::string httpRequestLine;
+	std::string 		method;
+	std::string 		uri;
+	std::string 		version;
+	std::stringstream 	ss;
+	std::string 		httpRequestLine;
 
 	ss << httpRequestRaw_;
 	std::getline(ss, httpRequestLine);
@@ -67,14 +66,26 @@ void	HttpParser::parseHttpRequestLine(void)
 	std::stringstream ss2(httpRequestLine);
     ss2 >> method >> uri >> version;
 
+	std::string 		path;
+	std::string 		queryString;
+	size_t 				questionMark = uri.find('?');
+
+	if (questionMark != std::string::npos)
+	{
+		path = uri.substr(0, questionMark);
+		queryString = uri.substr(questionMark + 1);
+	}
+	else
+	{
+		path = uri;
+	}
+
 	httpRequest_.setMethod(stringToHttpMethod(method));
-	httpRequest_.setUri(Uri(uri));
+	httpRequest_.setUri(Uri(path));
+	httpRequest_.setInputs(queryString);
 	httpRequest_.setHttpVersion(version);
 
-	// REVISIT : USE LOGGER INSTEAD
-    std::cout << "Method: " << method << std::endl;
-    std::cout << "URI: " << uri << std::endl;
-    std::cout << "Version: " << version << std::endl;
+	httpRequest_.log();
 }
 
 void	HttpParser::parseHttpHeader(void)

@@ -223,7 +223,7 @@ std::vector<ConfigLocation>&	Config::getConfigLocations(void)
 
 const Path*	Config::getPath(Uri uri) const
 {
-	const ConfigLocation* foundLocation = getConfigLocation(uri);
+	const ConfigLocation* 	foundLocation = getConfigLocation(uri);
 
 	// REVISIT : isn't that a mistake ?
 	if (!foundLocation)
@@ -268,15 +268,15 @@ const ConfigErrorPage*	Config::getConfigErrorPage(int code) const
 	return (0);
 }
 
-/*bool	Config::isTypeAllowed(HttpMimeType mimeType, Uri uri) const
-{
-	// Check in location then in main config if mime type is allowed
-	(void) uri;
+// bool	Config::isTypeAllowed(HttpMimeType mimeType, Uri uri) const
+// {
+// 	// Check in location then in main config if mime type is allowed
+// 	(void) uri;
 	
-	if (mimeType)
-		return (true);
-	return (true);
-}*/
+// 	if (mimeType)
+// 		return (true);
+// 	return (true);
+// }
 
 std::string		Config::getCgiDir()
 {

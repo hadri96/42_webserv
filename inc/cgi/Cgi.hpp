@@ -16,7 +16,7 @@ class Cgi
                         ~Cgi();
 
 		// --- Public Methods ---
-        int             runCgi();
+        int             runCgi(std::string& output);
 
     private:
     	// --- Private Attributes ---
@@ -28,6 +28,8 @@ class Cgi
     	// --- Private Methods ---
         void            prepareCgiEnvironment(Config& config, HttpRequest& request);
         void            freeCgiEnv();
+        std::string     urlDecode(const std::string& encoded);
+
 
 };
 
