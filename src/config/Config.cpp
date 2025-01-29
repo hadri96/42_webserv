@@ -223,7 +223,7 @@ std::vector<ConfigLocation>&	Config::getConfigLocations(void)
 
 const Path*	Config::getPath(Uri uri) const
 {
-	const ConfigLocation* foundLocation = getConfigLocation(uri);
+	const ConfigLocation* 	foundLocation = getConfigLocation(uri);
 
 	// REVISIT : isn't that a mistake ?
 	if (!foundLocation)

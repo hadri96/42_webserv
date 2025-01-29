@@ -313,7 +313,6 @@ void    Server::sendResponseToClient(int clientFd)
     size_t			bytesSent = 0;
 
 	Logger::logger()->log(LOG_DEBUG, "sendResponseToClient");
-	Logger::logger()->log(LOG_DEBUG, fullResponse);
     while (bytesSent < totalSize) 
     {
         size_t      chunkSize = std::min(bufferSize, totalSize - bytesSent);

@@ -18,9 +18,11 @@ class HttpRequest
 		// --- Public Methods ---
 		void                    			appendRequest(std::string input); // REVISIT : USELESS ?
 		std::string             			generatePrintString();
+		void								log();
 
 		// --- Getters and Setters --- 
 		const std::string&      			getRawRequest() const;
+		void								setInputs(std::string& queryString);
 
 		// ··· Request Line ··· 
 		const HttpRequestLine&  			getRequestLine() const; // REVISIT : USELESS ?

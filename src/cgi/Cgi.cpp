@@ -42,11 +42,6 @@ int    Cgi::runCgi(std::string& output)
 {
     int         pipeFd[2];
 
-    args[0] = const_cast<char*>(cgiScriptPath_.c_str());
-    args[1] = const_cast<char*>(cgiExecutable_.c_str());
-    args[2] = NULL;
-
-
     if (pipe(pipeFd) == -1)
     {
         Logger::logger()->log(LOG_ERROR, "Error creating pipe");
@@ -68,10 +63,12 @@ int    Cgi::runCgi(std::string& output)
         close(pipeFd[1]);
 
         char*       args[3];
+
+        args[0] = const_cast<char*>(cgiScriptPath_.c_str());
+        args[1] = const_cast<char*>(cgiExecutable_.c_str());
+        args[2] = NULL;
         
-        Logger::logger()->log(LOG_DEBUG, "cgiExecutable : " + cgiExecutable_);
-        Logger::logger()->log(LOG_DEBUG, "cgiScriptPath : " + cgiScriptPath_);
-        if (execve(cgiExecutable_.c_str(), args, cgiEnv_) == -1)
+        if (execve(args[0], args, cgiEnv_) == -1)
         {
             Logger::logger()->log(LOG_ERROR, "Execve failed in child process");
             freeCgiEnv();
@@ -103,6 +100,34 @@ int    Cgi::runCgi(std::string& output)
 // Private Methods
 // =============================================================================
 
+std::string Cgi::urlDecode(const std::string& encoded)
+{
+    std::string             decoded;
+    std::istringstream      iss(encoded);
+    // char                    c;
+    int                     hex;
+
+    for (size_t i = 0; i < encoded.length(); i++)
+    {
+        if (encoded[i] == '%' && i + 2 < encoded.length())
+        {
+            std::istringstream hexStream(encoded.substr(i + 1, 2));
+            hexStream >> std::hex >> hex;
+            decoded += static_cast<char>(hex);
+            i += 2;
+        }
+        else if (encoded[i] == '+')
+        {
+            decoded += ' ';
+        }
+        else
+        {
+            decoded += encoded[i];
+        }
+    }
+    return decoded;
+}
+
 
 void    Cgi::prepareCgiEnvironment(Config& config, HttpRequest& request)
 {
@@ -114,7 +139,7 @@ void    Cgi::prepareCgiEnvironment(Config& config, HttpRequest& request)
     env["SCRIPT_FILENAME"] = request.getUri();
     env["PATH_INFO"] = *config.getPath(request.getUri());
     env["NAME"] = request.getInput("name");
-    env["CONTENT"] = request.getInput("content");
+    env["CONTENT"] = urlDecode(request.getInput("content"));
 
     cgiEnv_ = new char*[env.size() + 1];
 
@@ -126,6 +151,7 @@ void    Cgi::prepareCgiEnvironment(Config& config, HttpRequest& request)
 
         cgiEnv_[i] = new char[entry.size() + 1];
         std::strcpy(cgiEnv_[i], entry.c_str());
+        Logger::logger()->log(LOG_DEBUG, "cgiEnv[" + toString(i) + "] : " + cgiEnv_[i]);
         i++;
     }
     cgiEnv_[i] = NULL;

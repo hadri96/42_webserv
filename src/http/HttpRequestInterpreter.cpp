@@ -44,10 +44,13 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
     // if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
     //     return (HttpResponse(createResourceError(config, 413)));
 
-    /* REVISIT : Disabled because of some path error
+    // REVISIT : Disabled because of some path error
     
     if (isCgiRequest(config, request))
-        return (HttpResponse(createResourceCgi(config, request)));*/ 
+    {   
+        Logger::logger()->log(LOG_DEBUG, "Is a CGI Request"); 
+        return (HttpResponse(createResourceCgi(config, request)));
+    } 
 
     switch (method)
     {
@@ -65,7 +68,8 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
             response = handleDeleteRequest(config, request);
             break;
         case UNKNOWN:
-            throw (HttpRequestInterpreter::BadRequest());
+            break;
+            //throw (HttpRequestInterpreter::BadRequest());
     }
     return (response);
 }
@@ -194,7 +198,8 @@ Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest&
         Logger::logger()->log(LOG_DEBUG, "createResourceFile : the resource does not exist (error 404)");
         return (createResourceError(config, 404));
     }
-    
+
+   
     Resource resource(200, path.getAbsPath().read());
 
     HttpMimeTypes httpMimeTypes;
@@ -306,17 +311,15 @@ Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRe
     
     // protect from sql injection
 
-        
     Cgi     cgi(config, request);
 
     std::string     cgiOutput;
 
     if (cgi.runCgi(cgiOutput) != 0)
-        return createResourceError(config, 500);
+        return (createResourceError(config, 500));
 
     // Create a Resource object with CGI output
-    Resource cgiResource;
-    cgiResource.setContent(cgiOutput);
+    Resource cgiResource(200, cgiOutput);
     cgiResource.setMimeType("text/html");
 
     return (cgiResource);
@@ -329,7 +332,10 @@ Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRe
 bool    HttpRequestInterpreter::isCgiRequest(Config& config, HttpRequest& request)
 {
     Logger::logger()->log(LOG_DEBUG, "request uri : " + request.getUri());
-    const Path*                 pathPtr = config.getPath(request.getUri());
+    const Path*                 pathPtr = config.getPath(request.getUri()); 
+    // const Path                  pathCgi = Path("/www/cgi-bin");
+    // const Path*                 pathPtr = &pathCgi;
+    
     if (pathPtr == NULL)
     {   
         Logger::logger()->log(LOG_DEBUG, "path from config is NULL, it's not a CGI request"); 
