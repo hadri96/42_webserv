@@ -2,6 +2,8 @@
 #include "Logger.hpp"
 #include "ToString.hpp"
 
+#include "ResourceRedirection.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -15,18 +17,44 @@
 HttpResponse::HttpResponse()
 {}
 
-HttpResponse::HttpResponse(Resource resource)
+HttpResponse::HttpResponse(Resource* resource)
 {
-    std::cout << "Inside http response, get mimetype : " << resource.getMimeType() << std::endl;
-    mimeType_ = resource.getMimeType();
-    std::cout << "RESOURCE MIME TYPE " << resource.getMimeType() << std::endl;
-    //Logger::logger()->log(LOG_DEBUG, "HttpResponse...");
-    body_ = resource.getBody();
-    //Logger::logger()->log(LOG_DEBUG, body_);
-    //errorStatusLine(resource.getCode());
+	Logger::logger()->log(LOG_DEBUG, "HttpResponse...");
+
+
+    mimeType_ = resource->getMimeType();
+	if (mimeType_.empty())
+		mimeType_ = "text/html";
+
+    body_ = resource->getBody();
+
     staticStatusLine();
-    generateBasicHeaders();
-    composeFullResponse();
+    
+	
+	//generateBasicHeaders();
+
+	std::ostringstream headers;
+	headers << "Server: Webserv\r\n";
+    headers << "Content-Type: " <<  mimeType_ << "; charset=UTF-8\r\n";
+    headers << "Content-Length: " << body_.size() << "\r\n";
+    headers << "Connection: keep-alive\r\n";
+
+    
+	ResourceRedirection* resourceRedirection = dynamic_cast<ResourceRedirection*>(resource);
+	if (resourceRedirection)
+	{
+		Logger::logger()->log(LOG_DEBUG, "HttpResponse : ResourceRedirection");
+		statusLine_ = "HTTP/1.1 301 Moved Permanently\n\r";
+		headers << "Location: " + resourceRedirection->getUri() + "\r\n";
+	}
+
+	headers << "\r\n";
+    headers_ = headers.str();
+	std::cout << headers_ << std::endl;
+	
+	composeFullResponse();
+
+	delete resource;
     //Logger::logger()->log(LOG_DEBUG, fullResponse_);
 }
 

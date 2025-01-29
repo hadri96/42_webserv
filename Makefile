@@ -60,7 +60,8 @@ CONFIG = 	Config \
 			interpreter/ConfigInterpreterRule
 
 RESOURCE =	Resource \
-			ResourceDefault
+			ResourceDefault \
+			ResourceRedirection
 
 CGI =		Cgi
 
