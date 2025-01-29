@@ -279,7 +279,6 @@ Resource	HttpRequestInterpreter::createResourceDirectory(Config& config, HttpReq
     // Close the directory
     closedir(dir);
 
-
 	return (Resource(200, directoryListing));
 }
 
@@ -310,11 +309,17 @@ Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRe
         
     Cgi     cgi(config, request);
 
-    cgi.runCgi();
+    std::string     cgiOutput;
 
-    // create response with CGI script output
+    if (cgi.runCgi(cgiOutput) != 0)
+        return createResourceError(config, 500);
 
-    return (createResourceError(config, 404));
+    // Create a Resource object with CGI output
+    Resource cgiResource;
+    cgiResource.setContent(cgiOutput);
+    cgiResource.setMimeType("text/html");
+
+    return (cgiResource);
 }
 
 // ·············································································

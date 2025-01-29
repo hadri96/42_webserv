@@ -16,7 +16,7 @@ class Cgi
                         ~Cgi();
 
 		// --- Public Methods ---
-        int             runCgi();
+        int             runCgi(std::string& output);
 
     private:
     	// --- Private Attributes ---

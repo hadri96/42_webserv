@@ -38,13 +38,20 @@ Cgi::~Cgi()
 // Public Methods
 // =============================================================================
 
-int    Cgi::runCgi()
+int    Cgi::runCgi(std::string& output)
 {
-    char*       args[3];
+    int         pipeFd[2];
 
     args[0] = const_cast<char*>(cgiScriptPath_.c_str());
     args[1] = const_cast<char*>(cgiExecutable_.c_str());
     args[2] = NULL;
+
+
+    if (pipe(pipeFd) == -1)
+    {
+        Logger::logger()->log(LOG_ERROR, "Error creating pipe");
+        return -1;
+    }
 
     pid_t       pid = fork();
 
@@ -56,6 +63,12 @@ int    Cgi::runCgi()
     }
     else if (pid == 0)
     {
+        close(pipeFd[0]);
+        dup2(pipeFd[1], STDOUT_FILENO);
+        close(pipeFd[1]);
+
+        char*       args[3];
+        
         Logger::logger()->log(LOG_DEBUG, "cgiExecutable : " + cgiExecutable_);
         Logger::logger()->log(LOG_DEBUG, "cgiScriptPath : " + cgiScriptPath_);
         if (execve(cgiExecutable_.c_str(), args, cgiEnv_) == -1)
@@ -67,14 +80,21 @@ int    Cgi::runCgi()
     }
     else
     {
-        int     status;
+        close(pipeFd[1]);
 
-        if (waitpid(pid, &status, 0) == -1) 
+        char        buffer[1024];
+        ssize_t     bytesRead;
+        
+        output.clear();
+
+        while ((bytesRead = read(pipeFd[0], buffer, sizeof(buffer) - 1)) > 0)
         {
-            Logger::logger()->log(LOG_ERROR, "Problem waiting for the Cgi Process");
-            freeCgiEnv();
-            return (-1);
+            buffer[bytesRead] = '\0';
+            output += buffer;
         }
+
+        close(pipeFd[0]);
+        waitpid(pid, NULL, 0);
     }
     return (0);
 }
