@@ -13,7 +13,7 @@ class	Resource
 							Resource(int code);
 							Resource(int code, std::string body);
 
-							~Resource(void);
+		virtual				~Resource(void);
 
 	// --- Operators Overload ---
 		Resource&			operator=(const Resource& rhs);
