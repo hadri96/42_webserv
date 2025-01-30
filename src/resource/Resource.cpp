@@ -61,11 +61,9 @@ std::string Resource::getMimeType(void) const
 	return (mimeType_);
 }
 
-#include <iostream>
 void	Resource::setMimeType(std::string mimeType)
 {
 	mimeType_ = mimeType;
-	std::cout << "SET MIMETYPE : " << mimeType_ << std::endl;
 }
 
 void	Resource::setStatusLine(const std::string& statusLine)

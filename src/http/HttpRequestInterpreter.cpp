@@ -96,7 +96,8 @@ HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpReq
 HttpResponse    HttpRequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
 {
     Uri             uri = request.getUri();
-    Resource*       resource = createResourceCgi(config, request);
+    Resource*        resource = createResourceCgi(config, request);
+
 
     return (HttpResponse(resource));
 }

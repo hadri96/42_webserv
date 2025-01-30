@@ -39,7 +39,7 @@ class	Logger
 		void			logTitle(LogLevel level, const std::string& title, int titleLevel = 1) const;
 		void			logTitle(LogLevel level, const std::ostringstream& oss, int titleLevel = 1, bool reset = true) const;
 
-		void			log(LogLevel level, const std::string& message) const;
+		void			log(LogLevel level, const std::string& message, bool prefix = true) const;
 		void			log(LogLevel level, const std::ostringstream& oss, bool reset = true) const;
 		// void			logStream(std::stringstream ss);
 };

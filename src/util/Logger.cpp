@@ -68,8 +68,16 @@ void	Logger::logTitle(LogLevel level, const std::ostringstream& oss, int titleLe
 }
 
 // --- Message ---
-void	Logger::log(LogLevel level, const std::string& message) const
+void	Logger::log(LogLevel level, const std::string& message, bool prefix) const
 {
+	if (!prefix)
+	{
+		std::cout	<< getColor(level)
+			<< message
+			<< RESET
+			<< std::endl;
+	}
+
 	std::cout	<< getColor(level)
 				<< getCurrentTime()
 				<< std::left << std::setw(width_) << getLevel(level)
