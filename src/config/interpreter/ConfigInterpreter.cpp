@@ -235,6 +235,19 @@ void	ConfigInterpreter::handleBlock(ConfigParserNode* node)
 		ConfigLocation& currentLocation = currentConfig.getConfigLocations().back();
 		currentLocation.setUri(Uri(node->getParameters()[0]));
 	}
+	else if (node->getName() == "limit_except")
+	{
+		ConfigLocation& currentLocation = currentConfig.getConfigLocations().back();
+
+		for (size_t i = 0; i != node->getParameters().size(); ++i)
+		{
+			std::string httpMethodTypeStr = node->getParameters()[i];
+			HttpMethodType httpMethodType = stringToHttpMethod(httpMethodTypeStr);
+			if (httpMethodType == UNKNOWN)
+				throw std::runtime_error("Directive `" + node->getName() + "` : wrong method name");
+			currentLocation.addAllowedMethod(httpMethodType);
+		}
+	}
 }
 
 void	ConfigInterpreter::handleDirective(ConfigParserNode* node, const std::string& parent)
@@ -337,7 +350,7 @@ void	ConfigInterpreter::handleErrorPage(ConfigParserNode* node)
 	}
 
 	uri = node->getParameters().back();
-	std::cout << uri << std::endl;
+	//std::cout << uri << std::endl;
 
 	for (size_t i = 0; i != errorCodes.size(); ++i)
 	{

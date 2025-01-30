@@ -98,6 +98,12 @@ void	ConfigLocation::log(void)
     oss << "  root path : " << getRootPath();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
+	oss << "  allowed methods : ";
+
+	for (size_t i = 0; i != allowedMethods_.size(); ++i)
+		oss << httpMethodToString(allowedMethods_[i]) << " ";
+	Logger::logger()->log(LOG_DEBUG, oss);
+
     oss << "  autoindex : " << getAutoIndex();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
