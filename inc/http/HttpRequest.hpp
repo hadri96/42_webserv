@@ -46,7 +46,8 @@ class HttpRequest
 		int                     			getBodySize() const;
 
 		std::string							getInput(std::string key); // REVISIT : WHAT FOR ?
-
+		void								setInputs(std::map<std::string, std::string> parsedData);
+		
 	private:
 		// --- Private Attributes ---
 		std::string             			rawRequest_; // REVISIT : USELESS ?

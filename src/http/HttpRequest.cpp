@@ -93,7 +93,6 @@ void    HttpRequest::setMethod(HttpMethodType httpMethod)
     requestLine_.setMethod(httpMethod);
 }
 
-
 // --- Uri ---
 
 const Uri& HttpRequest::getUri() const
@@ -144,6 +143,11 @@ int HttpRequest::getBodySize() const
 std::string HttpRequest::getInput(std::string key)
 {
     return (inputs_[key]);
+}
+
+void    HttpRequest::setInputs(std::map<std::string, std::string> parsedData)
+{
+    inputs_ = parsedData;
 }
 
 // ··· "Deep" Getters and utils ···

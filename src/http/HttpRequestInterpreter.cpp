@@ -60,7 +60,6 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
             break;
         case POST:
             Logger::logger()->log(LOG_INFO, "Client sent a POST request");
-            // get request content length header (if too big --> 403)
             response = handlePostRequest(config, request);
             break;
         case DELETE:
@@ -69,7 +68,6 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
             break;
         case UNKNOWN:
             break;
-            //throw (HttpRequestInterpreter::BadRequest());
     }
     return (response);
 }
@@ -88,7 +86,6 @@ HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpReq
     Logger::logger()->log(LOG_DEBUG, "handleGetRequest...");
 
     return (HttpResponse(resource));
-    //return (HttpResponse(createResourceError(config, 404)));
 }
 
 
@@ -99,7 +96,7 @@ HttpResponse    HttpRequestInterpreter::handlePostRequest(Config& config, HttpRe
 
     // formulaire POST prenom, nom  --> page php --> salut Mickey Mouse
     // upload de fichier
-
+    Logger::logger()->log(LOG_DEBUG, "full post request here : " + request.getBody());
     Logger::logger()->log(LOG_INFO, config.getServerName());
     // check if resource exists
     // check if resource is allowed
