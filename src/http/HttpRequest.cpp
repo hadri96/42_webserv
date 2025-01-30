@@ -10,7 +10,6 @@ HttpRequest::HttpRequest() :
     rawRequest_(),
     //"GET /cgi-bin/hello.php?name=newFileMickey&content=donaldDucknotdonaldTrump HTTP/1.1\r\n Host: http://127.0.0.1:7777/\r\n Connection: close\r\n\r\n"),
     requestLine_(HttpRequestLine()),
-    header_(HttpHeader()),
     body_("")
 {
     inputs_.insert(std::make_pair("name", "newFileMickey")); // REVISIT : ?
@@ -82,11 +81,6 @@ void    HttpRequest::setInputsPost(std::map<std::string, std::string> parsedData
 // Request Line
 // ·············································································
 
-const HttpRequestLine& HttpRequest::getRequestLine() const 
-{
-    return (requestLine_);
-}
-
 // --- Method ---
 
 HttpMethodType    HttpRequest::getMethod() const
@@ -127,10 +121,6 @@ void    HttpRequest::setHttpVersion(const std::string& httpVersion)
 // Header
 // ·············································································
 
-const HttpHeader& HttpRequest::getHttpHeader() const 
-{
-    return (header_);
-}
 
 // ·············································································
 // Body
@@ -151,58 +141,47 @@ std::string HttpRequest::getInput(std::string key)
     return (inputs_[key]);
 }
 
+void    HttpRequest::setHeader(std::string key, std::string value)
+{
+    headers_[key] = value;
+}
 
+std::string HttpRequest::getHeader(std::string key)
+{
+    return (headers_[key]);
+}
 
 // ··· "Deep" Getters and utils ···
 
-/*HttpMimeType    HttpRequest::getMimeType() const
-{
-    return (header_.getMimeType());
-}*/
 
 // =============================================================================
 // Public Methods 
 // =============================================================================
-
-std::string   HttpRequest::generatePrintString()
-{
-    std::stringstream ss;
-
-    ss << "Client Request (RawRequest): " << rawRequest_ << std::endl;
-	
-    ss << "Dummy RequestLine: \n\n" 
-	          << httpMethodToString(requestLine_.getMethod()) << " ; "
-	          << requestLine_.getUri() << " ; "
-	          << requestLine_.getHttpVersion() << std::endl;
-
-    ss << "\nDummy Header:\n\n"
-	          << "host_: " << header_.getHost() << "\n"
-	          << "userAgent_: " << header_.getUserAgent() << "\n"
-	          << "contentLength_: " << toString(header_.getContentLength()) << "\n"
-	          //<< "contentType_: " << header_.getMimeType() << "\n"
-	          << "connectionType_: " << header_.getConnectionTypeString() << "\n"
-	          //<< "accept_: " << header_.getAccept() << "\n"
-	          << "acceptEncoding_: " << header_.getAcceptEncoding() << "\n"
-	          << "acceptLanguage_: " << header_.getAcceptLanguage() << std::endl;
-
-    return (ss.str());
-}
 
 void        HttpRequest::log()
 {
     Logger::logger()->log(LOG_DEBUG, "method : " + toString(requestLine_.getMethod()));
 	Logger::logger()->log(LOG_DEBUG, "uri : " + requestLine_.getUri());
 	Logger::logger()->log(LOG_DEBUG, "version : " + requestLine_.getHttpVersion());
+
+    if (headers_.empty())
+        Logger::logger()->log(LOG_DEBUG, "headers empty !!!");
+
+    std::string             headersLog = "headers : \n";
+    std::map<std::string, std::string>::const_iterator      it;
+
+    for (it = headers_.begin(); it != headers_.end(); ++it)
+        headersLog += "  " + it->first + " : " + it->second + "\n";
+
+    Logger::logger()->log(LOG_DEBUG, headersLog);
+
     if (inputs_.empty())
         Logger::logger()->log(LOG_DEBUG, "inputs empty !!!");
 
-    std::string inputsLog = "inputs : \n";
-    std::map<std::string, std::string>::const_iterator      it;
+    std::string             inputsLog = "inputs : \n";
 
     for (it = inputs_.begin(); it != inputs_.end(); ++it)
-    {
         inputsLog += "  " + it->first + " : " + it->second + "\n";
-    }
 
     Logger::logger()->log(LOG_DEBUG, inputsLog);
 }
