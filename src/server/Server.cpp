@@ -287,8 +287,8 @@ void	Server::handleRequestFromClient(int clientFd)
 
 void	Server::runInterpreter(HttpRequest& request, int clientFd)
 {
-	HttpRequestInterpreter 	interpreter = HttpRequestInterpreter(this);
-	Client* 			client = getClient(clientFd);
+	HttpRequestInterpreter 		interpreter = HttpRequestInterpreter(this);
+	Client* 					client = getClient(clientFd);
 
 	Logger::logger()->log(LOG_DEBUG, "Run Interpreter");
 	try 

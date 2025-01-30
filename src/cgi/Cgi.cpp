@@ -104,7 +104,6 @@ std::string Cgi::urlDecode(const std::string& encoded)
 {
     std::string             decoded;
     std::istringstream      iss(encoded);
-    // char                    c;
     int                     hex;
 
     for (size_t i = 0; i < encoded.length(); i++)
@@ -125,7 +124,7 @@ std::string Cgi::urlDecode(const std::string& encoded)
             decoded += encoded[i];
         }
     }
-    return decoded;
+    return (decoded);
 }
 
 

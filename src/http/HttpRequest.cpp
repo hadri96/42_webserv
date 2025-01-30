@@ -36,7 +36,7 @@ const std::string& HttpRequest::getRawRequest() const
     return (rawRequest_);
 }
 
-void HttpRequest::setInputs(std::string& queryString)
+void HttpRequest::setInputsGet(std::string& queryString)
 {
     inputs_.clear();
 
@@ -72,6 +72,12 @@ void HttpRequest::setInputs(std::string& queryString)
     }
 }
 
+void    HttpRequest::setInputsPost(std::map<std::string, std::string> parsedData)
+{
+    inputs_.clear();
+    inputs_ = parsedData;
+}
+
 // ·············································································
 // Request Line
 // ·············································································
@@ -92,7 +98,6 @@ void    HttpRequest::setMethod(HttpMethodType httpMethod)
 {
     requestLine_.setMethod(httpMethod);
 }
-
 
 // --- Uri ---
 
@@ -146,6 +151,8 @@ std::string HttpRequest::getInput(std::string key)
     return (inputs_[key]);
 }
 
+
+
 // ··· "Deep" Getters and utils ···
 
 /*HttpMimeType    HttpRequest::getMimeType() const
@@ -183,10 +190,12 @@ std::string   HttpRequest::generatePrintString()
 
 void        HttpRequest::log()
 {
-    Logger::logger()->log(LOG_DEBUG, "method : " + requestLine_.getMethod());
+    Logger::logger()->log(LOG_DEBUG, "method : " + toString(requestLine_.getMethod()));
 	Logger::logger()->log(LOG_DEBUG, "uri : " + requestLine_.getUri());
 	Logger::logger()->log(LOG_DEBUG, "version : " + requestLine_.getHttpVersion());
-    
+    if (inputs_.empty())
+        Logger::logger()->log(LOG_DEBUG, "inputs empty !!!");
+
     std::string inputsLog = "inputs : \n";
     std::map<std::string, std::string>::const_iterator      it;
 
