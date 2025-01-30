@@ -24,25 +24,15 @@ class HttpResponse
 		std::string		getHeaders() const;
 	
 	private:
-		// --- Private Methods ---
-		void			generateBasicHeaders();
-		void			composeFullResponse();
-
-		// --- Error Response Methods ---
-		std::string		extractStatusText() const;
-		void			errorStatusLine(ConfigErrorPage& ConfigErrorPage); 
-		
-		// --- Static Response Methods ---
-		void			staticStatusLine();
-
-
-	// --- Private Attributes ---
-
+		// --- Private Attributes ---
 		std::string		mimeType_;
 		std::string     statusLine_;
 		std::string     headers_;
 		std::string     body_;
 		std::string     fullResponse_;
+
+		// --- Private Methods ---
+		void			composeFullResponse();
 };
 
 #endif
