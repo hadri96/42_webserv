@@ -275,7 +275,9 @@ void	Server::handleRequestFromClient(int clientFd)
     }
 
 	HttpParser httpParser(httpRequestRaw);
-	Logger::logger()->log(LOG_DEBUG, "Raw request looks like this: \n" + httpRequestRaw);
+
+	Logger::logger()->logTitle(LOG_DEBUG, "HTTP Request");
+	//Logger::logger()->log(LOG_DEBUG, httpRequestRaw, false);
 
 	HttpRequest request = httpParser.parse();
 	client->assignRequest(request);
