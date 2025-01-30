@@ -71,6 +71,8 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
             response = handleDeleteRequest(config, request);
             break;
         case UNKNOWN:
+            Logger::logger()->log(LOG_WARNING, "Received UNKNOWN request method");
+            return (HttpResponse(createResourceError(config, 400)));
             break;
     }
     return (response);
@@ -92,11 +94,10 @@ HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpReq
     return (HttpResponse(resource));
 }
 
-
 HttpResponse    HttpRequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
 {
-    Uri             uri = request.getUri();
-    Resource*        resource = createResourceCgi(config, request);
+    Uri                 uri = request.getUri();
+    Resource*           resource = createResourceCgi(config, request);
 
 
     return (HttpResponse(resource));
@@ -106,12 +107,14 @@ HttpResponse    HttpRequestInterpreter::handleDeleteRequest(Config& config, Http
 {
     HttpResponse    response;
     Uri             uri = request.getUri();
-
-    (void)config;
+    std::string     token = request.getHeader("Authorization");
 
     // Check authorisation ("authorisation" header should have an access token (defined in env?))
+    if (token.empty() || isValidToken(token)) // REVISIT : isValidToken needs to be implremented
+        return (HttpResponse(createResourceError(config, 401)));
 
-    // allowed to deleter or not --> ResourceError(403)
+    // Check if user has permission
+        // if not -> error 403
     // is dir ? 
     // deleteResource(Uri)
 
@@ -370,3 +373,9 @@ bool    HttpRequestInterpreter::isCgiRequest(Config& config, HttpRequest& reques
     return (false); 
 }
 
+bool    HttpRequestInterpreter::isValidToken(std::string token)
+{
+    if (!token.empty())
+        return (true);
+    return (false);
+}

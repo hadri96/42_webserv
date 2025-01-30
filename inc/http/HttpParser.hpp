@@ -18,8 +18,8 @@ class	HttpParser
 		// --- Operators Overload ---
 		HttpParser&		operator=(const HttpParser& rhs);
 
+		// --- Public Methods ---
 		HttpRequest								parse(void);
-
 
 	private:
 		// --- Private Attributes ---
@@ -27,9 +27,12 @@ class	HttpParser
 		HttpRequest								httpRequest_;
 
 		// --- Private Methods ---
+			// Main Parsing Methods
 		void									parseHttpRequestLine(void);
 		void									parseHttpHeader(void);
 		void									parseHttpBody(void);
+			// Parsing Utils
+		std::string								trimString(const std::string& str);
 		std::string 							urlPostDecode(const std::string& encoded);
 		std::map<std::string, std::string>		parsePostData(const std::string& postData);
 		std::string								extractHttpBody(const std::string& httpRequest);

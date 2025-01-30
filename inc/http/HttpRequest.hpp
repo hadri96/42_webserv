@@ -2,7 +2,6 @@
 # define HTTPREQUEST_HPP
 
 # include "HttpRequestLine.hpp"
-# include "HttpHeader.hpp"
 
 # include <string>
 # include <sstream>
@@ -17,16 +16,15 @@ class HttpRequest
 
 		// --- Public Methods ---
 		void                    			appendRequest(std::string input); // REVISIT : USELESS ?
-		std::string             			generatePrintString();
 		void								log();
 
 		// --- Getters and Setters --- 
 		const std::string&      			getRawRequest() const;
 		void								setInputsGet(std::string& queryString);
 		void								setInputsPost(std::map<std::string, std::string> parsedData);
+		void								setHeader(std::string key, std::string value);
 
 		// ··· Request Line ··· 
-		const HttpRequestLine&  			getRequestLine() const; // REVISIT : USELESS ?
 
 		HttpMethodType          			getMethod() const;
 		void								setMethod(HttpMethodType httpMethod);
@@ -37,25 +35,21 @@ class HttpRequest
 		const std::string&					getHttpVersion(void) const;
 		void								setHttpVersion(const std::string& httpVersion);
 
-		// ··· Header ··· 
-		const HttpHeader&       			getHttpHeader() const;  // REVISIT : USELESS ?
-
-		//HttpMimeType						getMimeType() const;
-
 		// ··· Body ··· 
 		const std::string&      			getBody() const;
 		int                     			getBodySize() const;
 
-		std::string							getInput(std::string key); // REVISIT : WHAT FOR ?
-		
+		std::string							getInput(std::string key);
+		std::string							getHeader(std::string key);
+
 	private:
 		// --- Private Attributes ---
 		std::string             			rawRequest_; // REVISIT : USELESS ?
 
 		HttpRequestLine         			requestLine_;
-		HttpHeader             				header_;
-		std::string             			body_;
+		std::map<std::string, std::string>  headers_;
 		std::map<std::string, std::string>  inputs_;
+		std::string             			body_;
 };
 
 #endif

@@ -3,7 +3,6 @@
 
 # include <string>
 
-# include "HttpHeader.hpp"
 # include "Config.hpp"
 # include "Resource.hpp"
 # include "ConfigErrorPage.hpp"

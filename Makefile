@@ -36,7 +36,6 @@ HTTP =		HttpParser \
 			HttpResponse \
 			HttpRequest \
 			HttpStatusCode \
-			HttpHeader \
 			HttpRequestLine \
 			HttpRequestInterpreter \
 			HttpMimeTypes
