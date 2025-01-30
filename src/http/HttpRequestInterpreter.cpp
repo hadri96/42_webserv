@@ -242,7 +242,12 @@ Resource*	HttpRequestInterpreter::createResourceDirectory(Config& config, HttpRe
         // REVISIT : Implement custom default file
         //if (configLocation->getDefaultFile())
 
-        Path                    indexPath = path/"index.html";
+        Path customIndex = configLocation->getDefaultFile();
+        Path indexPath = path/customIndex;
+
+        if (std::string(customIndex) == "/")
+            indexPath = path/"index.html";
+        
         Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : index file path " + indexPath.getAbsPath());
         if (!(indexPath.getAbsPath().isInFileSystem()))
         {

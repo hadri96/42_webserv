@@ -101,6 +101,9 @@ void	ConfigLocation::log(void)
     oss << "  autoindex : " << getAutoIndex();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
+	oss << "  index : " << getDefaultFile();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
 	if (getConfigRedirection().getStatusCode() != 0)
 	{
 		oss << "  redirection : ";

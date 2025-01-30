@@ -255,6 +255,8 @@ void	ConfigInterpreter::handleDirective(ConfigParserNode* node, const std::strin
 		handleRoot(node);
 	else if (node->getName() == "autoindex")
 		handleAutoIndex(node);
+	else if (node->getName() == "index")
+		handleIndex(node);
 	else if (node->getName() == "deny")
 		handleDeny(node);
 }
@@ -310,6 +312,11 @@ void	ConfigInterpreter::handleIndex(ConfigParserNode* node)
 
 	if (node->getParameters().size() != 1)
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
+
+	Config& currentConfig = configs_.back();
+	ConfigLocation& currentLocation = currentConfig.getConfigLocations().back();
+
+	currentLocation.setDefaultFile(node->getParameters()[0]);
 }
 void	ConfigInterpreter::handleErrorPage(ConfigParserNode* node)
 {
