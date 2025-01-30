@@ -42,8 +42,8 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
     HttpMethodType      method = request.getMethod();
     HttpResponse        response;
 
-    if (!config.isMethodAllowed(method, request.getUri()))
-         return (HttpResponse(createResourceError(config, 405)));
+    /*if (!config.isMethodAllowed(method, request.getUri()))
+         return (HttpResponse(createResourceError(config, 405)));*/
 
     // if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
     //     return (HttpResponse(createResourceError(config, 413)));
