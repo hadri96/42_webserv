@@ -90,7 +90,9 @@ void	HttpParser::parseHttpRequestLine(void)
 }
 
 void	HttpParser::parseHttpHeader(void)
-{}
+{
+    
+}
 
 void	HttpParser::parseHttpBody(void)
 {

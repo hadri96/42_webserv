@@ -98,6 +98,7 @@ HttpResponse    HttpRequestInterpreter::handlePostRequest(Config& config, HttpRe
     Uri             uri = request.getUri();
     Resource*        resource = createResourceCgi(config, request);
 
+
     return (HttpResponse(resource));
 }
 
