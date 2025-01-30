@@ -14,7 +14,7 @@ class HttpResponse
 		// --- Constructors and Destructor ---
 						HttpResponse();
 
-						HttpResponse(Resource resource);
+						HttpResponse(Resource* resource);
 
 						~HttpResponse();
 

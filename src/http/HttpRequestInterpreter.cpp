@@ -2,7 +2,11 @@
 #include "ToString.hpp"
 #include "HttpMethodType.hpp"
 #include "Logger.hpp"
+
+
 #include "ResourceDefault.hpp"
+#include "ResourceRedirection.hpp"
+
 #include "Cgi.hpp"
 #include "HttpMimeTypes.hpp"
 
@@ -82,7 +86,7 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
 
 HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpRequest& request)
 {
-    Resource resource = createResourceFile(config, request);
+    Resource* resource = createResourceFile(config, request);
     Logger::logger()->log(LOG_DEBUG, "handleGetRequest...");
 
     return (HttpResponse(resource));
@@ -119,16 +123,16 @@ HttpResponse    HttpRequestInterpreter::handleDeleteRequest(Config& config, Http
 
 # include <iostream>
 
-Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
+Resource*	HttpRequestInterpreter::createResourceError(Config& config, int code)
 {
 	const   ConfigErrorPage*    customErrorPage = config.getConfigErrorPage(code);
 	if (!customErrorPage)
-		return (ResourceDefault(code));
-
+		return (new ResourceDefault(code));
+   
 	Uri                         customErrorPageUri = customErrorPage->getUri();
 	const Path*                 customErrorPagePath = config.getPath(customErrorPageUri);
 	if (!customErrorPagePath)
-		return (ResourceDefault(code));
+		return (new ResourceDefault(code));
 
 	// Replace x.html by the last digit of the code .
     std::string                 customErrorPageUriStr = customErrorPageUri;
@@ -146,12 +150,26 @@ Resource	HttpRequestInterpreter::createResourceError(Config& config, int code)
     customErrorPagePathObj = static_cast<Path>(customErrorPagePathObj) / customErrorPageUriStr;
 
 	if (!(customErrorPagePathObj.getAbsPath().isInFileSystem()))
-		return (ResourceDefault(code));
+		return (new ResourceDefault(code));
 
-	return (Resource(code, customErrorPagePathObj.getAbsPath().read()));
+	return (new Resource(code, customErrorPagePathObj.getAbsPath().read()));
 }
 
-Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest& request)
+Resource*	HttpRequestInterpreter::createResourceRedirection(Config& config, HttpRequest& request)
+{
+	// Extract the URI from the request
+	Uri     uri = request.getUri();
+
+	// Get the location that matches the URI
+    const ConfigLocation* configLocation = config.getConfigLocation(uri);
+
+	int statusCode = configLocation->getConfigRedirection().getStatusCode();
+	Uri redirUri = configLocation->getConfigRedirection().getUri();
+
+	return (new ResourceRedirection(statusCode, redirUri));
+}
+
+Resource*	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest& request)
 {
 	Uri                 uri = request.getUri();
     const Path*         rootPath = config.getPath(uri);
@@ -162,7 +180,20 @@ Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest&
         return (createResourceError(config, 404));
     }
 
-    Path                path = *rootPath;
+	// Check if there is a redirection in location block
+	// Get the location that matches the URI
+    const ConfigLocation* configLocation = config.getConfigLocation(uri);
+	const ConfigRedirection configRedirection = configLocation->getConfigRedirection();
+
+	if (configRedirection.getStatusCode() != 0)
+	{
+		Logger::logger()->log(LOG_DEBUG, "createResourceFile : redirection set in location block");
+		return (createResourceRedirection(config, request));
+	}
+
+
+    // Appends the URI to the root path
+    Path            path = *rootPath;
     path = static_cast<Path>(path) / uri;
 
     // If the resource is a directory, pass the task to the appropriate handler
@@ -180,19 +211,20 @@ Resource	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest&
         return (createResourceError(config, 404));
     }
    
-    Resource            resource(200, path.getAbsPath().read());
-    HttpMimeTypes       httpMimeTypes;
-    std::string         extension = path.getExtension();
-    std::string         mimeType = httpMimeTypes.getMimeType(extension);
+
+    Resource*       resource = new Resource(200, path.getAbsPath().read());
+    HttpMimeTypes   httpMimeTypes;
+    std::string     extension = path.getExtension();
+    std::string     mimeType = httpMimeTypes.getMimeType(extension);
 
     // Logger::logger()->log(LOG_DEBUG, "createResourceFile : resource file extension : " + extension);
     // Logger::logger()->log(LOG_DEBUG, "createResourceFile : resource file mime type : " + mimeType);
 
-    resource.setMimeType(mimeType);
+    resource->setMimeType(mimeType);
     return (resource);
 }
 
-Resource	HttpRequestInterpreter::createResourceDirectory(Config& config, HttpRequest& request)
+Resource*	HttpRequestInterpreter::createResourceDirectory(Config& config, HttpRequest& request)
 {
 	Uri                         uri = request.getUri(); // (REVISIT : was already done earlier)
     const Path*                 rootPath = config.getPath(uri); //(REVISIT : was already done earlier)
@@ -218,7 +250,7 @@ Resource	HttpRequestInterpreter::createResourceDirectory(Config& config, HttpReq
         }
 
         Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : index file found");
-        Resource                resource(200, indexPath.getAbsPath().read());
+        Resource* resource = new Resource(200, indexPath.getAbsPath().read());
         return (resource);
     }
     Logger::logger()->log(LOG_DEBUG, "createResourceDirectory : autoindex is on");
@@ -257,10 +289,10 @@ Resource	HttpRequestInterpreter::createResourceDirectory(Config& config, HttpReq
     // Close the directory
     closedir(dir);
 
-	return (Resource(200, directoryListing));
+	return (new Resource(200, directoryListing));
 }
 
-Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRequest& request)
+Resource*        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRequest& request)
 {
     (void) request;
 
@@ -291,9 +323,9 @@ Resource        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRe
         return (createResourceError(config, 500));
 
     // Create a Resource object with CGI output
-    Resource        cgiResource(200, cgiOutput);
 
-    cgiResource.setMimeType("text/html");
+    Resource*       cgiResource = new Resource(200, cgiOutput);
+    cgiResource->setMimeType("text/html");
 
     return (cgiResource);
 }
