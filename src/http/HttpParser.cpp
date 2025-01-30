@@ -1,4 +1,6 @@
 #include "HttpParser.hpp"
+#include "Logger.hpp"
+#include "ToString.hpp"
 
 #include <sstream>
 
@@ -39,11 +41,11 @@ HttpParser&	HttpParser::operator=(const HttpParser& rhs)
 
 HttpRequest	HttpParser::parse(void)
 {
-	HttpRequest httpRequest;
+	// HttpRequest httpRequest;
 
 	parseHttpRequestLine();
 	parseHttpBody();
-
+    httpRequest_.log();
 	return (httpRequest_);
 }
 
@@ -75,6 +77,7 @@ void	HttpParser::parseHttpRequestLine(void)
 	{
 		path = uri.substr(0, questionMark);
 		queryString = uri.substr(questionMark + 1);
+	    httpRequest_.setInputsGet(queryString);
 	}
 	else
 	{
@@ -83,10 +86,7 @@ void	HttpParser::parseHttpRequestLine(void)
 
 	httpRequest_.setMethod(stringToHttpMethod(method));
 	httpRequest_.setUri(Uri(path));
-	httpRequest_.setInputs(queryString);
 	httpRequest_.setHttpVersion(version);
-
-	httpRequest_.log();
 }
 
 void	HttpParser::parseHttpHeader(void)
@@ -97,10 +97,10 @@ void	HttpParser::parseHttpBody(void)
 	std::map<std::string, std::string> 		parsedData; 
 	std::string								body = extractHttpBody(httpRequestRaw_);
 	
-    if (body.length() != 0)
+    if (httpRequest_.getMethod() == POST)
     {
 	    parsedData = parsePostData(body);
-        httpRequest_.setInputs(parsedData);
+        httpRequest_.setInputsPost(parsedData);
     }
 }
 
@@ -113,7 +113,7 @@ std::string 	HttpParser::extractHttpBody(const std::string& httpRequest)
 
     while (std::getline(ss, line)) 
 	{
-        if (line == "\r\n\r\n") 
+        if (line == "\r") 
 		{
             isBody = true;
             continue;

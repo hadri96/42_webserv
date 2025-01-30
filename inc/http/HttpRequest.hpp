@@ -22,7 +22,8 @@ class HttpRequest
 
 		// --- Getters and Setters --- 
 		const std::string&      			getRawRequest() const;
-		void								setInputs(std::string& queryString);
+		void								setInputsGet(std::string& queryString);
+		void								setInputsPost(std::map<std::string, std::string> parsedData);
 
 		// ··· Request Line ··· 
 		const HttpRequestLine&  			getRequestLine() const; // REVISIT : USELESS ?
@@ -46,7 +47,6 @@ class HttpRequest
 		int                     			getBodySize() const;
 
 		std::string							getInput(std::string key); // REVISIT : WHAT FOR ?
-		void								setInputs(std::map<std::string, std::string> parsedData);
 		
 	private:
 		// --- Private Attributes ---
