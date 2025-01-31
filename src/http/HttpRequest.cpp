@@ -12,8 +12,8 @@ HttpRequest::HttpRequest() :
     requestLine_(HttpRequestLine()),
     body_("")
 {
-    inputs_.insert(std::make_pair("name", "newFileMickey")); // REVISIT : ?
-    inputs_.insert(std::make_pair("content", "donaldDuck not donaldTrump")); // REVISIT : ?
+    // inputs_.insert(std::make_pair("name", "newFileMickey")); // REVISIT : ?
+    // inputs_.insert(std::make_pair("content", "donaldDuck not donaldTrump")); // REVISIT : ?
 }
 
 HttpRequest::~HttpRequest() {}

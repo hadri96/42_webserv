@@ -245,12 +245,6 @@ bool	Config::isMethodAllowed(HttpMethodType method, Uri uri) const
 	if (location)
 		return (location->isMethodAllowed(method));
 
-	// --- Server level ---
-
-	// --- Default ---
-	if (method == POST  || method == GET)
-		return (true);
-
 	return (false);
 }
 
