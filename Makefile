@@ -26,7 +26,8 @@ UTIL =		Logger \
 			Join \
 			ToVector \
 			AllOf \
-			IsIp
+			IsIp \
+			StringToInt
 
 TYPE =		PathOrUri \
 			Path \

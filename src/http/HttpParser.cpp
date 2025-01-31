@@ -127,15 +127,22 @@ void HttpParser::parseHttpHeader(void)
     }
 }
 
-void	HttpParser::parseHttpBody(void)
+void HttpParser::parseHttpBody(void)
 {
-	std::map<std::string, std::string> 		parsedData; 
-	std::string								body = extractHttpBody(httpRequestRaw_);
-	
+    std::string         body = extractHttpBody(httpRequestRaw_);
+    std::string         contentType = httpRequest_.getHeader("Content-Type");
+
     if (httpRequest_.getMethod() == POST)
     {
-	    parsedData = parsePostData(body);
-        httpRequest_.setInputsPost(parsedData);
+        if (contentType.find("multipart/form-data") != std::string::npos)
+        {
+            httpRequest_.setMultipartData(parseMultipartData(body, contentType));
+        }
+        else
+        {
+            std::map<std::string, std::string> parsedData = parsePostData(body);
+            httpRequest_.setInputsPost(parsedData);
+        }
     }
 }
 
@@ -225,5 +232,83 @@ std::map<std::string, std::string>	HttpParser::parsePostData(const std::string& 
             parsedData[urlPostDecode(key)] = urlPostDecode(value);
         }
     }
+    return (parsedData);
+}
+
+// ·············································································
+// Multipart data Parsing
+// ·············································································
+
+
+std::map<std::string, std::string>  HttpParser::parseMultipartData(const std::string& body, const std::string& contentType)
+{
+    std::map<std::string, std::string>  parsedData;
+    std::string                         boundary;
+    size_t                              boundaryPos = contentType.find("boundary=");
+
+    if (boundaryPos == std::string::npos)
+        return parsedData;
+
+    boundary = "--" + contentType.substr(boundaryPos + 9); // Skip "boundary="
+
+    std::vector<std::string>            parts;
+    size_t                              pos = 0;
+    size_t                              nextPos;
+
+    while ((nextPos = body.find(boundary, pos)) != std::string::npos)
+    {
+        std::string part = body.substr(pos, nextPos - pos);
+        pos = nextPos + boundary.length();
+        if (!part.empty())
+            parts.push_back(part);
+    }
+
+    for (size_t i = 0; i < parts.size(); i++)
+    {
+        std::istringstream      stream(parts[i]);
+        std::string             line;
+        std::string             fieldName;
+        std::string             fileName;
+        std::string             content;
+        bool                    isFile = false;
+
+        while (std::getline(stream, line) && !line.empty())
+        {
+            if (line.find("Content-Disposition:") != std::string::npos)
+            {
+                size_t          namePos = line.find("name=\"");
+                if (namePos != std::string::npos)
+                {
+                    size_t      nameEnd = line.find("\"", namePos + 6);
+                    fieldName = line.substr(namePos + 6, nameEnd - (namePos + 6));
+                }
+
+                size_t          filePos = line.find("filename=\"");
+                if (filePos != std::string::npos)
+                {
+                    size_t      fileEnd = line.find("\"", filePos + 10);
+                    fileName = line.substr(filePos + 10, fileEnd - (filePos + 10));
+                    isFile = true;
+                }
+            }
+        }
+
+        while (std::getline(stream, line))
+            content += line + "\n";
+
+        if (!content.empty() && content[content.length() - 1] == '\n')
+            content.erase(content.length() - 1);
+
+        if (isFile)
+        {
+            parsedData["file_name"] = fileName;
+            parsedData["file_content"] = content;
+        }
+        else
+        {
+            parsedData[fieldName] = content;
+        }
+    }
+
     return (parsedData);
 }

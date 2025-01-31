@@ -8,7 +8,6 @@
 
 HttpRequest::HttpRequest() : 
     rawRequest_(),
-    //"GET /cgi-bin/hello.php?name=newFileMickey&content=donaldDucknotdonaldTrump HTTP/1.1\r\n Host: http://127.0.0.1:7777/\r\n Connection: close\r\n\r\n"),
     requestLine_(HttpRequestLine()),
     body_("")
 {
@@ -76,6 +75,17 @@ void    HttpRequest::setInputsPost(std::map<std::string, std::string> parsedData
     inputs_.clear();
     inputs_ = parsedData;
 }
+
+void    HttpRequest::setMultipartData(const std::map<std::string, std::string>& data) 
+{ 
+    multipartData_ = data; 
+}
+
+std::map<std::string, std::string> 	HttpRequest::getMultipartData() const 
+{ 
+    return (multipartData_); 
+}
+
 
 // ·············································································
 // Request Line
@@ -174,6 +184,8 @@ void        HttpRequest::log()
         headersLog += "  " + it->first + " : " + it->second + "\n";
 
     Logger::logger()->log(LOG_DEBUG, headersLog);
+
+    Logger::logger()->log(LOG_DEBUG, "body : " + body_);
 
     if (inputs_.empty())
         Logger::logger()->log(LOG_DEBUG, "inputs empty !!!");

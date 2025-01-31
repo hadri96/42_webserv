@@ -25,7 +25,6 @@ class	HttpParser
 		// --- Private Attributes ---
 		std::string								httpRequestRaw_;
 		HttpRequest								httpRequest_;
-
 		// --- Private Methods ---
 			// Main Parsing Methods
 		void									parseHttpRequestLine(void);
@@ -36,6 +35,7 @@ class	HttpParser
 		std::string 							urlPostDecode(const std::string& encoded);
 		std::map<std::string, std::string>		parsePostData(const std::string& postData);
 		std::string								extractHttpBody(const std::string& httpRequest);
+		std::map<std::string, std::string>		parseMultipartData(const std::string& body, const std::string& contentType);
 };
 
 #endif

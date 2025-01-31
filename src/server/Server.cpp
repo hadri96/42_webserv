@@ -5,6 +5,7 @@
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 #include "HttpRequestInterpreter.hpp"
+#include "StringToInt.hpp"
 
 #include <iostream>
 
@@ -260,31 +261,55 @@ void	Server::acceptClient(void)
 
 // --- handleClientRead ---
 // -> interprete la requete du client et l'ajoute au client->httpRequest
-void	Server::handleRequestFromClient(int clientFd)
+void Server::handleRequestFromClient(int clientFd) 
 {
-    char                buffer[1024] = {0};
-    int                 bytesRead;
-    Client              *client = getClient(clientFd);
-	std::string			httpRequestRaw;
-    
-    while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) -1, 0)) > 0)
-    {
-        httpRequestRaw.append(buffer);
-        if (httpRequestRaw.find("\r\n\r\n") != std::string::npos)
-			break ;
+    char 			buffer[1024] = {0};
+    int 			bytesRead;
+    Client* 		client = getClient(clientFd);
+    std::string& 	httpRequestRaw = client->getRequestBuffer();
+
+    while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0)) > 0) 
+	{
+        buffer[bytesRead] = '\0';
+        httpRequestRaw.append(buffer, bytesRead);
+
+        size_t 		headersEnd = httpRequestRaw.find("\r\n\r\n");
+
+        if (headersEnd != std::string::npos) 
+		{
+            HttpParser 			tempParser(httpRequestRaw);
+            HttpRequest 		tempRequest = tempParser.parse();
+            std::string 		contentLengthStr = tempRequest.getHeader("Content-Length");
+
+            if (!contentLengthStr.empty()) 
+			{
+                int 	contentLength = StringToInt::stoi(contentLengthStr);
+                int 	receivedBodySize = httpRequestRaw.size() - (headersEnd + 4);
+                
+                while (receivedBodySize < contentLength) 
+				{
+                    bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
+                    if (bytesRead <= 0) 
+						break;
+                    buffer[bytesRead] = '\0';
+                    httpRequestRaw.append(buffer, bytesRead);
+                    receivedBodySize += bytesRead;
+                }
+            }
+            break;
+        }
     }
 
-	HttpParser httpParser(httpRequestRaw);
+    if (httpRequestRaw.empty() || bytesRead < 0) 
+	{
+        closeClientConnection(clientFd, "read error or empty request");
+        return;
+    }
 
-	Logger::logger()->logTitle(LOG_DEBUG, "HTTP Request");
-	//Logger::logger()->log(LOG_DEBUG, httpRequestRaw, false);
-
-	HttpRequest request = httpParser.parse();
-	client->assignRequest(request);
-
-	if (bytesRead < 0)
-		closeClientConnection(clientFd, "read error");
-	runInterpreter(request, clientFd);
+    HttpParser 		httpParser(httpRequestRaw);
+    HttpRequest 	request = httpParser.parse();
+    client->assignRequest(request);
+    runInterpreter(request, clientFd);
 }
 
 void	Server::runInterpreter(HttpRequest& request, int clientFd)
@@ -337,3 +362,5 @@ void	Server::closeClientConnection(int clientFd, std::string message)
 	Logger::logger()->log(LOG_DEBUG, "Closing client connection [fd = " + toString(clientFd) + "] : " + message);
 	close(clientFd);
 }
+
+

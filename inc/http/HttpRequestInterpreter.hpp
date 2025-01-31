@@ -51,8 +51,8 @@ class HttpRequestInterpreter
         bool            fileInServer(std::string uri, Config& config);
         bool            isCgiRequest(Config& config, HttpRequest& request);
         char**          prepareCgiEnvironment(Config& config, HttpRequest& request);
-        bool            isValidToken(std::string token);
-
+        Uri             sanitizeUri(const Uri& uri);
+        int             saveUploadedFile(Config& config, HttpRequest& request);
 };
 
 #endif

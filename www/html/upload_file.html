@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload & Delete</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input, button { margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+    <h2>Upload a File</h2>
+    <form action="/uploads/" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <br>
+        <button type="submit">Upload</button>
+    </form>
+
+    <h2>Delete a File</h2>
+    <form action="/uploads/" method="POST">
+        <input type="hidden" name="_method" value="DELETE">
+        <input type="text" name="filename" placeholder="Enter filename (e.g., image.jpg)" required>
+        <br>
+        <button type="submit">Delete</button>
+    </form>
+
+</body>
+</html>

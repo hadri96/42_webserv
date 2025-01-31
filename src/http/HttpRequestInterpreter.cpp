@@ -16,6 +16,8 @@
 #include <unistd.h>
 #include <limits.h>
 #include <dirent.h>
+#include <cstdio> 
+#include <fstream>
 
 // =============================================================================
 // Constructors and Destructor
@@ -94,32 +96,88 @@ HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpReq
     return (HttpResponse(resource));
 }
 
-HttpResponse    HttpRequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
+HttpResponse HttpRequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
 {
-    Uri                 uri = request.getUri();
-    Resource*           resource = createResourceCgi(config, request);
+    Logger::logger()->log(LOG_DEBUG, request.getInput("_method"));
 
+    // Handle method override (_method=DELETE for HTML forms)
+    if (request.getInput("_method") == std::string("DELETE"))
+    {
+        Logger::logger()->log(LOG_DEBUG, "Actually it's a DELETE request!");
+        std::string fileName = request.getInput("filename");
+        request.setUri(fileName);
+        return handleDeleteRequest(config, request);
+    }
 
+    std::string contentType = request.getHeader("Content-Type");
+
+    // Check for multipart file upload
+    if (contentType.find("multipart/form-data") != std::string::npos)
+    {
+        Logger::logger()->log(LOG_INFO, "Processing file upload request...");
+
+        int result = saveUploadedFile(config, request);
+        if (result == 0)
+        {
+            Logger::logger()->log(LOG_INFO, "File uploaded successfully.");
+            return HttpResponse(new Resource(201, "File uploaded successfully."));
+        }
+        else
+        {
+            Logger::logger()->log(LOG_ERROR, "File upload failed.");
+            return HttpResponse(createResourceError(config, 500));
+        }
+    }
+
+    Uri             uri = request.getUri();
+    Resource*       resource = createResourceCgi(config, request);
     return (HttpResponse(resource));
 }
 
-HttpResponse    HttpRequestInterpreter::handleDeleteRequest(Config& config, HttpRequest& request)
+
+
+
+HttpResponse HttpRequestInterpreter::handleDeleteRequest(Config& config, HttpRequest& request) 
 {
-    HttpResponse    response;
-    Uri             uri = request.getUri();
-    std::string     token = request.getHeader("Authorization");
+    Uri         uri = sanitizeUri(request.getUri());
+    Path        filePath;  
 
-    // Check authorisation ("authorisation" header should have an access token (defined in env?))
-    if (token.empty() || isValidToken(token)) // REVISIT : isValidToken needs to be implremented
-        return (HttpResponse(createResourceError(config, 401)));
+    if (request.getInput("_method") == std::string("DELETE"))
+        filePath = Path("www/html/uploads") / uri;
+    else
+        filePath = uri;
 
-    // Check if user has permission
-        // if not -> error 403
-    // is dir ? 
-    // deleteResource(Uri)
+    std::string absPath = filePath.getAbsPath();
 
-    return (response);
+    Logger::logger()->log(LOG_INFO, "Processing DELETE request for: " + std::string(uri));
+    Logger::logger()->log(LOG_WARNING, "absPath = " + absPath);
+
+    // NO IDEA WHY BUT FOR SOME REASON IT IS IMPOSSIBLE TO FIND THE FILE IN THE FILESYSTEM
+    // if (!(filePath.getAbsPath().isInFileSystem()))
+    // {
+    //     Logger::logger()->log(LOG_WARNING, "DELETE request failed - File not found");
+    //     return (HttpResponse(createResourceError(config, 404)));
+    // }
+
+    if (filePath.getAbsPath().isDir()) 
+    {
+        Logger::logger()->log(LOG_WARNING, "DELETE request denied - Attempted to delete directory");
+        return (HttpResponse(createResourceError(config, 403)));
+    }
+
+    if (remove(absPath.c_str()) == 0) 
+    {
+        Logger::logger()->log(LOG_INFO, "DELETE successful - File removed");
+        Resource*       resource = new Resource(200, "File successfully deleted.\n"); 
+        return (HttpResponse(resource));
+    } 
+    else 
+    {
+        Logger::logger()->log(LOG_ERROR, "DELETE request failed - File deletion error");
+        return (HttpResponse(createResourceError(config, 500)));
+    }
 }
+
 
 // ·············································································
 // Resource Makers
@@ -135,6 +193,7 @@ Resource*	HttpRequestInterpreter::createResourceError(Config& config, int code)
    
 	Uri                         customErrorPageUri = customErrorPage->getUri();
 	const Path*                 customErrorPagePath = config.getPath(customErrorPageUri);
+
 	if (!customErrorPagePath)
 		return (new ResourceDefault(code));
 
@@ -373,9 +432,86 @@ bool    HttpRequestInterpreter::isCgiRequest(Config& config, HttpRequest& reques
     return (false); 
 }
 
-bool    HttpRequestInterpreter::isValidToken(std::string token)
+Uri     HttpRequestInterpreter::sanitizeUri(const Uri& uri) 
 {
-    if (!token.empty())
-        return (true);
-    return (false);
+    std::vector<std::string>    components = uri.getComponents();
+    std::vector<std::string>    sanitized_components;
+
+    for (size_t i = 0; i < components.size(); ++i) 
+    {
+        const std::string& part = components[i];
+
+        if (part == "..") 
+        {
+            Logger::logger()->log(LOG_WARNING, "Security Warning: Attempted directory traversal detected.");
+            return (Uri(""));
+        }
+
+        if (!part.empty()) 
+        {
+            sanitized_components.push_back(part);
+        }
+    }
+
+    Uri     sanitized_uri;
+    for (size_t i = 0; i < sanitized_components.size(); ++i) 
+    {
+        sanitized_uri = sanitized_uri / sanitized_components[i];
+    }
+
+    return (sanitized_uri);
+}
+
+// Upload POST request is sent in a multipart/form-data shape, which comes in multiple parts seperated by boundaries
+// The boundary is defined in the Content-Type header
+int     HttpRequestInterpreter::saveUploadedFile(Config& config, HttpRequest& request)
+{
+    std::string     contentType = request.getHeader("Content-Type");
+    size_t          boundaryPos = contentType.find("boundary=");
+
+    if (boundaryPos == std::string::npos)
+    {
+        Logger::logger()->log(LOG_ERROR, "Invalid multipart/form-data request (missing boundary)");
+        return (-1);
+    }
+
+    std::string     boundary = "--" + contentType.substr(boundaryPos + 9);
+    std::string     body = request.getBody();
+    size_t          filenamePos = body.find("filename=\"");
+    
+    if (filenamePos == std::string::npos)
+    {
+        Logger::logger()->log(LOG_ERROR, "No file uploaded (missing filename)");
+        return (-1);
+    }
+
+    size_t          filenameEnd = body.find("\"", filenamePos + 10);
+    std::string     filename = body.substr(filenamePos + 10, filenameEnd - (filenamePos + 10));
+    size_t          fileStart = body.find("\r\n\r\n", filenameEnd) + 4;
+    size_t          fileEnd = body.find(boundary, fileStart) - 2;
+
+    if (fileStart == std::string::npos || fileEnd == std::string::npos || fileStart >= fileEnd)
+    {
+        Logger::logger()->log(LOG_ERROR, "Failed to extract file content");
+        return (-1);
+    }
+
+    std::string     fileContent = body.substr(fileStart, fileEnd - fileStart);
+    // Might need to get the fullPath for the Uploads dir from the Config file
+    std::string     fullPath = "www/html/uploads/" + filename;
+    (void)config;
+
+    std::ofstream   outFile(fullPath.c_str(), std::ios::binary);
+
+    if (!outFile)
+    {
+        Logger::logger()->log(LOG_ERROR, "Failed to create file: " + fullPath);
+        return (-1);
+    }
+
+    outFile.write(fileContent.c_str(), fileContent.size());
+    outFile.close();
+
+    Logger::logger()->log(LOG_INFO, "File saved successfully: " + fullPath);
+    return (0);
 }

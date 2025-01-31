@@ -25,10 +25,12 @@ class	Client
 		HttpResponse	getCurrentResponse(void) const;
         HttpRequest		getCurrentRequest(void) const;
 		std::string		getResponseString(void) const;
+		std::string&	getRequestBuffer(void);
 
 		// --- Public Methods ---
 		void			assignRequest(HttpRequest request);
 		void			assignResponse(HttpResponse response);
+		void			clearRequestBuffer(void);
 
 	private:
 		// --- Private Attributes ---
@@ -36,8 +38,9 @@ class	Client
 		std::string		ip_;
 		int				port_;
 
-		HttpRequest	currentRequest_;
+		HttpRequest		currentRequest_;
 		HttpResponse	currentResponse_;
+		std::string		requestBuffer_;
 
 };
 

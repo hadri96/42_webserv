@@ -60,7 +60,9 @@ Path	Path::getAbsPath(void) const
 
 bool	Path::isInFileSystem(void) const
 {
-	std::string path = *this;
+	std::string 	path = *this;
+
+	Logger::logger()->log(LOG_WARNING, "checking file : " + path);
 	if (access(path.c_str(), F_OK) == 0)
 		return (true);
 	return (false);
@@ -68,11 +70,12 @@ bool	Path::isInFileSystem(void) const
 
 bool	Path::isDir(void) const
 {
-    struct stat path_stat;
-	std::string path = *this;
+    struct 			stat path_stat;
+	std::string 	path = *this;
+
     if (stat(path.c_str(), &path_stat) != 0)
         return (false);
-    return S_ISDIR(path_stat.st_mode);
+    return (S_ISDIR(path_stat.st_mode));
 }
 
 std::string	Path::getExtension(void) const

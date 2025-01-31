@@ -23,7 +23,8 @@ class HttpRequest
 		void								setInputsGet(std::string& queryString);
 		void								setInputsPost(std::map<std::string, std::string> parsedData);
 		void								setHeader(std::string key, std::string value);
-
+		void 								setMultipartData(const std::map<std::string, std::string>& data);
+    	std::map<std::string, std::string> 	getMultipartData() const;
 		// ··· Request Line ··· 
 
 		HttpMethodType          			getMethod() const;
@@ -49,6 +50,7 @@ class HttpRequest
 		HttpRequestLine         			requestLine_;
 		std::map<std::string, std::string>  headers_;
 		std::map<std::string, std::string>  inputs_;
+		std::map<std::string, std::string> 	multipartData_;
 		std::string             			body_;
 };
 

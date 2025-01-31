@@ -55,6 +55,10 @@ std::string	Client::getResponseString(void) const
 	return (currentResponse_.getFullResponse());
 }
 
+std::string&	Client::getRequestBuffer(void)
+{
+	return (requestBuffer_);
+}
 
 // =============================================================================
 // Public Methods
@@ -68,4 +72,9 @@ void	Client::assignRequest(HttpRequest request)
 void	Client::assignResponse(HttpResponse response)
 {
 	currentResponse_ = response;
+}
+
+void	Client::clearRequestBuffer()
+{
+	requestBuffer_.clear();
 }
