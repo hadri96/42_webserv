@@ -42,6 +42,9 @@ class HttpRequest
 		std::string							getInput(std::string key);
 		std::string							getHeader(std::string key);
 
+		const std::string&  				getQueryString() const;
+		void  								setQueryString(const std::string queryString);
+
 	private:
 		// --- Private Attributes ---
 		std::string             			rawRequest_; // REVISIT : USELESS ?

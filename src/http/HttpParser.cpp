@@ -92,6 +92,7 @@ void	HttpParser::parseHttpRequestLine(void)
 	httpRequest_.setMethod(stringToHttpMethod(method));
 	httpRequest_.setUri(Uri(path));
 	httpRequest_.setHttpVersion(version);
+    httpRequest_.setQueryString(queryString);
 }
 
 

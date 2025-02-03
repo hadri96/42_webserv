@@ -105,6 +105,18 @@ void	HttpRequest::setUri(Uri uri)
     requestLine_.setUri(uri);
 }
 
+// --- Query string ---
+
+const std::string&  HttpRequest::getQueryString() const
+{
+    return (requestLine_.getQueryString());
+}
+
+void  HttpRequest::setQueryString(const std::string queryString)
+{
+    return (requestLine_.setQueryString(queryString));
+}
+
 // --- Http Version ---
 
 const std::string&  HttpRequest::getHttpVersion(void) const

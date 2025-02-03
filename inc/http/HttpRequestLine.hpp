@@ -30,6 +30,7 @@ class	HttpRequestLine
 		void					setHttpVersion(const std::string httpVersion);
 
 		const std::string&  	getQueryString() const;
+		void					setQueryString(const std::string queryString);
 
 	private:
 		// --- Private Attributes ---
