@@ -246,10 +246,11 @@ std::map<std::string, std::string>  HttpParser::parseMultipartData(const std::st
     std::string                         boundary;
     size_t                              boundaryPos = contentType.find("boundary=");
 
+    Logger::logger()->log(LOG_DEBUG, "Parsing multipartData request");
     if (boundaryPos == std::string::npos)
         return parsedData;
 
-    boundary = "--" + contentType.substr(boundaryPos + 9); // Skip "boundary="
+    boundary = "--" + contentType.substr(boundaryPos + 9);
 
     std::vector<std::string>            parts;
     size_t                              pos = 0;

@@ -100,13 +100,13 @@ HttpResponse HttpRequestInterpreter::handlePostRequest(Config& config, HttpReque
 {
     Logger::logger()->log(LOG_DEBUG, request.getInput("_method"));
 
-    // Handle method override (_method=DELETE for HTML forms)
+    // Checks if the Post method is actually a delete one
     if (request.getInput("_method") == std::string("DELETE"))
     {
         Logger::logger()->log(LOG_DEBUG, "Actually it's a DELETE request!");
         std::string fileName = request.getInput("filename");
         request.setUri(fileName);
-        return handleDeleteRequest(config, request);
+        return (handleDeleteRequest(config, request));
     }
 
     std::string contentType = request.getHeader("Content-Type");
@@ -152,7 +152,6 @@ HttpResponse HttpRequestInterpreter::handleDeleteRequest(Config& config, HttpReq
     Logger::logger()->log(LOG_INFO, "Processing DELETE request for: " + std::string(uri));
     Logger::logger()->log(LOG_WARNING, "absPath = " + absPath);
 
-    // NO IDEA WHY BUT FOR SOME REASON IT IS IMPOSSIBLE TO FIND THE FILE IN THE FILESYSTEM
     // if (!(filePath.getAbsPath().isInFileSystem()))
     // {
     //     Logger::logger()->log(LOG_WARNING, "DELETE request failed - File not found");
@@ -464,44 +463,23 @@ Uri     HttpRequestInterpreter::sanitizeUri(const Uri& uri)
 
 // Upload POST request is sent in a multipart/form-data shape, which comes in multiple parts seperated by boundaries
 // The boundary is defined in the Content-Type header
-int     HttpRequestInterpreter::saveUploadedFile(Config& config, HttpRequest& request)
+int HttpRequestInterpreter::saveUploadedFile(Config& config, HttpRequest& request)
 {
-    std::string     contentType = request.getHeader("Content-Type");
-    size_t          boundaryPos = contentType.find("boundary=");
-
-    if (boundaryPos == std::string::npos)
-    {
-        Logger::logger()->log(LOG_ERROR, "Invalid multipart/form-data request (missing boundary)");
-        return (-1);
-    }
-
-    std::string     boundary = "--" + contentType.substr(boundaryPos + 9);
-    std::string     body = request.getBody();
-    size_t          filenamePos = body.find("filename=\"");
-    
-    if (filenamePos == std::string::npos)
-    {
-        Logger::logger()->log(LOG_ERROR, "No file uploaded (missing filename)");
-        return (-1);
-    }
-
-    size_t          filenameEnd = body.find("\"", filenamePos + 10);
-    std::string     filename = body.substr(filenamePos + 10, filenameEnd - (filenamePos + 10));
-    size_t          fileStart = body.find("\r\n\r\n", filenameEnd) + 4;
-    size_t          fileEnd = body.find(boundary, fileStart) - 2;
-
-    if (fileStart == std::string::npos || fileEnd == std::string::npos || fileStart >= fileEnd)
-    {
-        Logger::logger()->log(LOG_ERROR, "Failed to extract file content");
-        return (-1);
-    }
-
-    std::string     fileContent = body.substr(fileStart, fileEnd - fileStart);
-    // Might need to get the fullPath for the Uploads dir from the Config file
-    std::string     fullPath = "www/html/uploads/" + filename;
+    // Still need to check the config object to see where to save the file
     (void)config;
+    std::map<std::string, std::string>      multipartData = request.getMultipartData();
 
-    std::ofstream   outFile(fullPath.c_str(), std::ios::binary);
+    if (multipartData.find("file_name") == multipartData.end() ||
+        multipartData.find("file_content") == multipartData.end())
+    {
+        Logger::logger()->log(LOG_ERROR, "No file uploaded (missing filename or file content)");
+        return (-1);
+    }
+
+    std::string         filename = multipartData["file_name"];
+    std::string         fileContent = multipartData["file_content"];
+    std::string         fullPath = "www/html/uploads/" + filename; // temporarily hardcoded 
+    std::ofstream       outFile(fullPath.c_str(), std::ios::binary);
 
     if (!outFile)
     {

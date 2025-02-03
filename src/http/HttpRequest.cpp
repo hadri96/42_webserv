@@ -11,8 +11,8 @@ HttpRequest::HttpRequest() :
     requestLine_(HttpRequestLine()),
     body_("")
 {
-    inputs_.insert(std::make_pair("name", "newFileMickey")); // REVISIT : ?
-    inputs_.insert(std::make_pair("content", "donaldDuck not donaldTrump")); // REVISIT : ?
+    // inputs_.insert(std::make_pair("name", "newFileMickey")); // REVISIT : ?
+    // inputs_.insert(std::make_pair("content", "donaldDuck not donaldTrump")); // REVISIT : ?
 }
 
 HttpRequest::~HttpRequest() {}
@@ -170,6 +170,9 @@ std::string HttpRequest::getHeader(std::string key)
 
 void        HttpRequest::log()
 {
+    if (requestLine_.getMethod() == 0)
+        return ;
+    Logger::logger()->logTitle(LOG_DEBUG, "REQUEST PRINT");
     Logger::logger()->log(LOG_DEBUG, "method : " + toString(requestLine_.getMethod()));
 	Logger::logger()->log(LOG_DEBUG, "uri : " + requestLine_.getUri());
 	Logger::logger()->log(LOG_DEBUG, "version : " + requestLine_.getHttpVersion());
