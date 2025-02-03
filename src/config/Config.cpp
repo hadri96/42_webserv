@@ -252,8 +252,18 @@ bool	Config::isSizeAllowed(int byteSize, Uri uri) const
 {
 	(void) uri;
 	(void) byteSize;
+	const ConfigLocation* location = getConfigLocation(uri);
 
-	return (true);
+	// --- Location setting ---
+	if (location && location->getClientMaxBodySize() >= 0)
+		return (location->isSizeAllowed(byteSize));
+
+	// --- Server setting ---
+	if (getClientMaxBodySize() >= 0)
+		return (byteSize <= getClientMaxBodySize());
+
+	// --- Default setting ---
+	return (byteSize <= 1024);
 }
 
 const ConfigErrorPage*	Config::getConfigErrorPage(int code) const

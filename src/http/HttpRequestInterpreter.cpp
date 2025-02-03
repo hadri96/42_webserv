@@ -45,8 +45,8 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
     if (!config.isMethodAllowed(method, request.getUri()))
          return (HttpResponse(createResourceError(config, 405)));
 
-    // if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
-    //     return (HttpResponse(createResourceError(config, 413)));
+    if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
+         return (HttpResponse(createResourceError(config, 413)));
 
     // REVISIT : Disabled because of some path error
     
