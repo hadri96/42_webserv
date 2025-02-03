@@ -195,6 +195,15 @@ Resource*	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest
 		return (createResourceRedirection(config, request));
 	}
 
+	/*
+	// Check if there is a redirection in server block
+	if (config.getConfigRedirection().getStatusCode() != 0)
+	{
+		Logger::logger()->log(LOG_DEBUG, "createResourceFile : redirection set in server block");
+		return (new ResourceRedirection(config.getConfigRedirection().getStatusCode(), config.getConfigRedirection().getUri()));
+		//return (createResourceRedirection(config, request));
+	}
+	*/
 
     // Appends the URI to the root path
     Path            path = *rootPath;

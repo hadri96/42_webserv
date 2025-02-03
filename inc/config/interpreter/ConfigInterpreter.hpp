@@ -55,7 +55,7 @@ class	ConfigInterpreter
 		void				handleIndex(ConfigParserNode* node);
 		void				handleErrorPage(ConfigParserNode* node);
 		void				handleClientMaxBodySize(ConfigParserNode* node, const std::string& parent);
-		void				handleReturn(ConfigParserNode* node, const std::string& parent);
+		void				handleReturn(ConfigParserNode* node);
 
 		void				handleRoot(ConfigParserNode* node);
 		void				handleAutoIndex(ConfigParserNode* node);
