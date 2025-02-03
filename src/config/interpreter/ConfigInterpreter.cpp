@@ -48,7 +48,7 @@ ConfigInterpreter::ConfigInterpreter(void) :
 	// --- Context : root, http, server ---
 	const char* context3[]		= {"root", "http", "server", 0};
 	const char*	blocks3[]		= {"location", 0};
-	const char* directives3[]	= {"server_name", "listen", "index", "error_page", "client_max_body_size", "return", 0};
+	const char* directives3[]	= {"server_name", "listen", "error_page", "client_max_body_size", 0};
 
 	// --- Context : root, http, server, location ---
 	const char* context4[]		= {"root", "http", "server", "location", 0};
@@ -263,7 +263,7 @@ void	ConfigInterpreter::handleDirective(ConfigParserNode* node, const std::strin
 	else if (node->getName() == "client_max_body_size")
 		handleClientMaxBodySize(node, parent);
 	else if (node->getName() == "return")
-		handleReturn(node, parent);
+		handleReturn(node);
 	else if (node->getName() == "root")
 		handleRoot(node);
 	else if (node->getName() == "autoindex")
@@ -396,7 +396,7 @@ void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node, const st
 	else if (parent == "location")
 		configs_.back().getConfigLocations().back().setClientMaxBodySize(factor * toInt(numberPart));
 }
-void	ConfigInterpreter::handleReturn(ConfigParserNode* node, const std::string& parent)
+void	ConfigInterpreter::handleReturn(ConfigParserNode* node)
 {
 	if (node->getParameters().size() != 2) // also could be 1 parameter ; see that case later
 		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have 2 parameters");
@@ -413,10 +413,11 @@ void	ConfigInterpreter::handleReturn(ConfigParserNode* node, const std::string& 
 
 	std::string uri = node->getParameters()[1];
 
-	if (parent == "server")
+	/*if (parent == "server")
 		configs_.back().setConfigRedirection(ConfigRedirection(statusCode, Uri(uri)));
-	else if (parent == "location")
-		configs_.back().getConfigLocations().back().setConfigRedirection(ConfigRedirection(statusCode, Uri(uri)));
+	else if (parent == "location")*/
+
+	configs_.back().getConfigLocations().back().setConfigRedirection(ConfigRedirection(statusCode, Uri(uri)));
 		
 }
 
