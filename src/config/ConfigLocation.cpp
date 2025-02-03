@@ -26,6 +26,7 @@ ConfigLocation::ConfigLocation(const ConfigLocation& other) :
 	autoIndex_(other.autoIndex_),
 	defaultFile_(other.defaultFile_),
 	uploadDirectory_(other.uploadDirectory_),
+	clientMaxBodySize_(other.clientMaxBodySize_),
 	isCgi_(other.isCgi_),
 	cgi_(other.cgi_)
 {}
@@ -103,6 +104,9 @@ void	ConfigLocation::log(void)
 
 	for (size_t i = 0; i != allowedMethods_.size(); ++i)
 		oss << httpMethodToString(allowedMethods_[i]) << " ";
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	oss << "  client max body size : " << getClientMaxBodySize();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
     oss << "  autoindex : " << getAutoIndex();
@@ -231,6 +235,11 @@ const std::vector<HttpMethodType>&	ConfigLocation::getAllowedMethods(void) const
 int	ConfigLocation::getClientMaxBodySize(void) const
 {
 	return (clientMaxBodySize_);
+}
+
+void	ConfigLocation::setClientMaxBodySize(int clientMaxBodySize)
+{
+	clientMaxBodySize_ = clientMaxBodySize;
 }
 
 // =============================================================================

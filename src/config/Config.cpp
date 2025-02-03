@@ -94,13 +94,14 @@ void	Config::log(void)
 	oss << "  port : " << getPort();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
+	oss << "  client max body size : " << getClientMaxBodySize();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
 	// Error pages
 	for (size_t i = 0; i != getConfigErrorPages().size(); ++i)
 	{
 		getConfigErrorPages()[i].display();
 	}
-	oss << "  client_max_body_size : " << getClientMaxBodySize();
-	Logger::logger()->log(LOG_DEBUG, oss);
 
 	// Redirection
 	getConfigRedirection().log();
