@@ -1,21 +1,16 @@
-<?php
-// Tell the browser the content type is HTML
-header('Content-Type: text/html');
+<style>
+table, tr, td {
+    border: 1px solid #000;
+    border-collapse: collapse;
+}
+</style>
 
-// Retrieve query parameters
-$name = getenv("NAME") ? htmlspecialchars(getenv("NAME")) : 'World';
-$content = getenv("CONTENT") ? htmlspecialchars(getenv("CONTENT")) : 'This is a default message.';
+<h1>Hello <?= htmlspecialchars($_GET['firstname']) ?> <?= htmlspecialchars($_GET['lastname']) ?>!</h1>
 
-// Generate the dynamic HTML output
-echo "<!DOCTYPE html>";
-echo "<html>";
-echo "<head>";
-echo "    <title>PHP CGI Example</title>";
-echo "</head>";
-echo "<body>";
-echo "    <h1>Hello, $name!</h1>";
-echo "    <p>$content</p>";
-echo "</body>";
-echo "</html>";
+<table>
 
-?>
+<tr><td>$_SERVER['QUERY_STRING']</td><td><?= htmlspecialchars($_SERVER['QUERY_STRING']) ?></td></tr>
+<tr><td>$_GET['firstname'] </td><td><?= htmlspecialchars($_GET['firstname']) ?></td></tr>
+<tr><td>$_GET['lastname'] </td><td><?= htmlspecialchars($_GET['lastname']) ?></td></tr>
+
+</table>

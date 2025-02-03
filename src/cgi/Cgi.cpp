@@ -14,7 +14,8 @@
 // Constructors and Destructor
 // =============================================================================
 
-Cgi::Cgi(void) {}
+Cgi::Cgi(void)
+{}
 
 Cgi::Cgi(Config& config, HttpRequest& request)
 {
@@ -24,7 +25,10 @@ Cgi::Cgi(Config& config, HttpRequest& request)
         cgiExecutable_ = std::string(cwd) + "/www/cgi-bin/hello.php";
     else
         Logger::logger()->log(LOG_ERROR, "Unable to get current working directory (cwd for CGI)");
-    cgiScriptPath_ = "/usr/bin/php"; 
+    
+    cgiScriptPath_ = "/usr/bin/php-cgi"; // php-cgi and not php
+    //cgiScriptPath_ = "/run/current-system/sw/bin/php-cgi";
+    
     prepareCgiEnvironment(config, request);
 }
 
@@ -45,7 +49,7 @@ int    Cgi::runCgi(std::string& output)
     if (pipe(pipeFd) == -1)
     {
         Logger::logger()->log(LOG_ERROR, "Error creating pipe");
-        return -1;
+        return (-1);
     }
 
     pid_t       pid = fork();
@@ -100,45 +104,32 @@ int    Cgi::runCgi(std::string& output)
 // Private Methods
 // =============================================================================
 
-std::string Cgi::urlDecode(const std::string& encoded)
-{
-    std::string             decoded;
-    std::istringstream      iss(encoded);
-    int                     hex;
-
-    for (size_t i = 0; i < encoded.length(); i++)
-    {
-        if (encoded[i] == '%' && i + 2 < encoded.length())
-        {
-            std::istringstream hexStream(encoded.substr(i + 1, 2));
-            hexStream >> std::hex >> hex;
-            decoded += static_cast<char>(hex);
-            i += 2;
-        }
-        else if (encoded[i] == '+')
-        {
-            decoded += ' ';
-        }
-        else
-        {
-            decoded += encoded[i];
-        }
-    }
-    return (decoded);
-}
-
 
 void    Cgi::prepareCgiEnvironment(Config& config, HttpRequest& request)
 {
     std::map<std::string, std::string>      env;
 
+    (void) config;
+
+    // Absolute path to script
+    env["SCRIPT_FILENAME"] = cgiExecutable_; // Use full filesystem path
+    
+    // Required for PHP-CGI security check
+    env["REDIRECT_STATUS"] = "200";
+    
+    // Standard CGI variables
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
     env["SERVER_PROTOCOL"] = "HTTP/1.1";
     env["REQUEST_METHOD"] = httpMethodToString(request.getMethod());
-    env["SCRIPT_FILENAME"] = request.getUri();
-    env["PATH_INFO"] = *config.getPath(request.getUri());
-    env["NAME"] = request.getInput("name");
-    env["CONTENT"] = urlDecode(request.getInput("content"));
+    env["QUERY_STRING"] = request.getQueryString();
+    
+    // URL-related variables
+    env["REQUEST_URI"] = request.getUri();
+    env["SCRIPT_NAME"] = request.getUri(); // URL path to script
+    env["PATH_INFO"] = ""; // Empty unless using path-based routing
+
+    // Server information
+    env["SERVER_SOFTWARE"] = "webserv/1.0";
 
     cgiEnv_ = new char*[env.size() + 1];
 

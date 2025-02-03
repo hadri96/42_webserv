@@ -13,7 +13,8 @@ HttpRequestLine::HttpRequestLine(void) :
 HttpRequestLine::HttpRequestLine(const HttpRequestLine& other) :
 	method_(other.method_),
     uri_(other.uri_),
-    httpVersion_(other.httpVersion_)
+    httpVersion_(other.httpVersion_),
+    queryString_(other.queryString_)
 {}
 
 HttpRequestLine::~HttpRequestLine(void)
@@ -75,4 +76,9 @@ void    HttpRequestLine::setHttpVersion(const std::string httpVersion)
 const std::string& HttpRequestLine::getQueryString() const 
 {
     return (queryString_);
+}
+
+void    HttpRequestLine::setQueryString(const std::string queryString)
+{
+    queryString_ = queryString;
 }
