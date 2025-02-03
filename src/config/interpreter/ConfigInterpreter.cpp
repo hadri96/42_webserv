@@ -53,7 +53,7 @@ ConfigInterpreter::ConfigInterpreter(void) :
 	// --- Context : root, http, server, location ---
 	const char* context4[]		= {"root", "http", "server", "location", 0};
 	const char* blocks4[]		= {"limit_except", 0};
-	const char* directives4[]	= {"root", "autoindex", "index", "return", 0};
+	const char* directives4[]	= {"root", "autoindex", "index", "return", "client_max_body_size", 0};
 	
 	// --- Context : root, http, server, location, limit_except ---
 	const char* context5[]		= {"root", "http", "server", "location", "limit_except", 0};
@@ -261,7 +261,7 @@ void	ConfigInterpreter::handleDirective(ConfigParserNode* node, const std::strin
 	else if (node->getName() == "error_page")
 		handleErrorPage(node);
 	else if (node->getName() == "client_max_body_size")
-		handleClientMaxBodySize(node);
+		handleClientMaxBodySize(node, parent);
 	else if (node->getName() == "return")
 		handleReturn(node, parent);
 	else if (node->getName() == "root")
@@ -357,7 +357,7 @@ void	ConfigInterpreter::handleErrorPage(ConfigParserNode* node)
 		configs_.back().addConfigErrorPage(ConfigErrorPage(errorCodes[i], Uri(uri)));
 	}
 }
-void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node)
+void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node, const std::string& parent)
 {
     (void) node;
     //std::cout << "handleClientMaxBodySize..." << std::endl;
@@ -378,9 +378,9 @@ void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node)
     if (!std::isdigit(unit))
     {
         if (unit == 'M' || unit == 'm')
-            factor = 1000000;
+            factor = 1048576;
         else if (unit == 'K' || unit == 'k')
-            factor = 1000;
+            factor = 1024;
         else
             throw std::runtime_error("Directive `" + node->getName() + "` : wrong unit ; must be `M/m`, `K/k` or none (size given in bytes)");
 
@@ -389,8 +389,12 @@ void	ConfigInterpreter::handleClientMaxBodySize(ConfigParserNode* node)
 
     if (!allOf(numberPart, std::isdigit))
         throw std::runtime_error("Directive `" + node->getName() + "` : size must be a number with or without unit (`M/m` or `K/k`)");
+	else
 
-    configs_.back().setClientMaxBodySize(factor * toInt(numberPart));
+	if (parent == "server")
+		configs_.back().setClientMaxBodySize(factor * toInt(numberPart));
+	else if (parent == "location")
+		configs_.back().getConfigLocations().back().setClientMaxBodySize(factor * toInt(numberPart));
 }
 void	ConfigInterpreter::handleReturn(ConfigParserNode* node, const std::string& parent)
 {
