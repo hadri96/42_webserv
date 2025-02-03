@@ -13,6 +13,7 @@ ConfigLocation::ConfigLocation(void) :
 	autoIndex_(false),
 	defaultFile_(),
 	uploadDirectory_(),
+	clientMaxBodySize_(-1),
 	isCgi_(false),
 	cgi_()
 {}
@@ -227,6 +228,11 @@ const std::vector<HttpMethodType>&	ConfigLocation::getAllowedMethods(void) const
 	return (allowedMethods_);
 }
 
+int	ConfigLocation::getClientMaxBodySize(void) const
+{
+	return (clientMaxBodySize_);
+}
+
 // =============================================================================
 // Public Methods
 // =============================================================================
@@ -239,5 +245,14 @@ bool	ConfigLocation::isMethodAllowed(HttpMethodType method) const
 		if (allowedMethods_[i] == method)
 			return (true);
 	}
+	return (false);
+}
+
+bool	ConfigLocation::isSizeAllowed(int byteSize) const
+{
+	
+
+	if (byteSize <= clientMaxBodySize_)
+		return (true);
 	return (false);
 }

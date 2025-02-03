@@ -47,9 +47,13 @@ class	ConfigLocation
 	const ConfigCgi&					getCgi(void) const;
 	const std::vector<HttpMethodType>&	getAllowedMethods(void) const;
 
+	void								setClientMaxBodySize(int clientMaxBodySize);
+	int									getClientMaxBodySize(void) const;
+
 	void								log(void);
 
 	bool								isMethodAllowed(HttpMethodType method) const;
+	bool								isSizeAllowed(int byteSize) const;
 
 	private:
 		// --- Private Attributes ---
@@ -58,11 +62,13 @@ class	ConfigLocation
 
 		std::vector<HttpMethodType>		allowedMethods_;
 
-		ConfigRedirection					redirection_; // priorite 1
+		ConfigRedirection				redirection_; // priorite 1
 		
 		bool							autoIndex_; // priorite 3
 		Path							defaultFile_; // priorite 2
 		Path							uploadDirectory_;
+
+		int								clientMaxBodySize_;
 
 		bool							isCgi_;
 		ConfigCgi						cgi_;
