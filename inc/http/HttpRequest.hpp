@@ -41,6 +41,7 @@ class HttpRequest
 		int                     			getBodySize() const;
 
 		std::string							getInput(std::string key);
+		void								addInput(std::string key, std::string value);
 		std::string							getHeader(std::string key);
 
 	private:

@@ -151,6 +151,12 @@ std::string HttpRequest::getInput(std::string key)
     return (inputs_[key]);
 }
 
+void	HttpRequest::addInput(std::string key, std::string value)
+{
+    inputs_[key] = value;
+}
+
+
 void    HttpRequest::setHeader(std::string key, std::string value)
 {
     headers_[key] = value;

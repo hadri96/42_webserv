@@ -98,11 +98,69 @@ HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpReq
 
 HttpResponse HttpRequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
 {
+    std::string method = request.getInput("_method");
+    Logger::logger()->log(LOG_DEBUG, method);
+
+    if (method == std::string("DELETE"))
+    {
+        Logger::logger()->log(LOG_DEBUG, "Actually it's a DELETE request! Running delete.php script.");
+        
+        // add "filename" parameter to request 
+        
+        request.setUri("/delete.php");
+
+        Resource*       cgiResource = createResourceCgi(config, request); 
+        std::string     output = cgiResource->getBody(); 
+        
+        delete (cgiResource);  
+
+        if (output == "ok") 
+            return HttpResponse(new Resource(200, "File successfully deleted.\n"));
+        else if (output.find("error:") != std::string::npos) 
+            return (HttpResponse(createResourceError(config, 500)));
+        return (HttpResponse(createResourceError(config, 500)));
+    }
+
+    std::string         contentType = request.getHeader("Content-Type");
+
+    if (contentType.find("multipart/form-data") != std::string::npos)
+    {
+        Logger::logger()->log(LOG_INFO, "Processing file upload request using upload.php script...");
+        request.setUri("/upload.php");
+        Resource*       cgiResource = createResourceCgi(config, request);
+        std::string     output = cgiResource->getBody();
+        delete (cgiResource);
+
+        if (output == "ok") 
+            return HttpResponse(new Resource(201, "File uploaded successfully."));
+        else if (output.find("error:") != std::string::npos) 
+            return HttpResponse(createResourceError(config, 500));
+        return HttpResponse(createResourceError(config, 500));
+    }
+
+    // All other POST requests: 
+    Uri             uri = request.getUri();
+    Resource*       resource = createResourceCgi(config, request);
+    return HttpResponse(resource);
+}
+
+
+/*
+HttpResponse HttpRequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
+{
     Logger::logger()->log(LOG_DEBUG, request.getInput("_method"));
 
     // Checks if the Post method is actually a delete one
     if (request.getInput("_method") == std::string("DELETE"))
     {
+        if (request.getInput("_method") == std::string("DELETE"))
+        {
+            Logger::logger()->log(LOG_DEBUG, "Actually it's a DELETE request! Running delete.php script.");
+            request.setUri("/delete.php");
+            // PUT THE FILENAME IN THE POST REQUEST DATA 
+            return (HttpResponse(createResourceCgi(config, request)));
+        }
+
         Logger::logger()->log(LOG_DEBUG, "Actually it's a DELETE request!");
         std::string fileName = request.getInput("filename");
         request.setUri(fileName);
@@ -133,7 +191,7 @@ HttpResponse HttpRequestInterpreter::handlePostRequest(Config& config, HttpReque
     Resource*       resource = createResourceCgi(config, request);
     return (HttpResponse(resource));
 }
-
+*/
 
 
 
@@ -387,7 +445,9 @@ Resource*        HttpRequestInterpreter::createResourceCgi(Config& config, HttpR
     std::string     cgiOutput;
 
     if (cgi.runCgi(cgiOutput) != 0)
+    {    
         return (createResourceError(config, 500));
+    }
 
     // Create a Resource object with CGI output
 
