@@ -143,6 +143,11 @@ const std::string& HttpRequest::getBody() const
     return (body_);
 }
 
+void    HttpRequest::setBody(const std::string& body)
+{
+    body_ = body;
+}
+
 int HttpRequest::getBodySize() const 
 {
     return (body_.length() * sizeof(char));

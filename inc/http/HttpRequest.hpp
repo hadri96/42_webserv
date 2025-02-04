@@ -37,6 +37,7 @@ class HttpRequest
 
 		// ··· Body ··· 
 		const std::string&      			getBody() const;
+		void								setBody(const std::string& body);
 		int                     			getBodySize() const;
 
 		std::string							getInput(std::string key);
