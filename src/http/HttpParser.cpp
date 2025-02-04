@@ -132,7 +132,8 @@ void	HttpParser::parseHttpBody(void)
 {
 	std::map<std::string, std::string> 		parsedData; 
 	std::string								body = extractHttpBody(httpRequestRaw_);
-	
+
+    httpRequest_.setBody(body);
     if (httpRequest_.getMethod() == POST)
     {
 	    parsedData = parsePostData(body);
