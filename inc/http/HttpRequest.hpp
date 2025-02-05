@@ -12,7 +12,13 @@ class HttpRequest
 	public:
 		// --- Constructors and Destructor ---
 											HttpRequest();
+		
+											HttpRequest(const HttpRequest& other);
+
 											~HttpRequest();
+
+		// --- Operators overload ---
+		HttpRequest&						operator=(const HttpRequest& rhs);
 
 		// --- Public Methods ---
 		void                    			appendRequest(std::string input); // REVISIT : USELESS ?
@@ -20,6 +26,8 @@ class HttpRequest
 
 		// --- Getters and Setters --- 
 		const std::string&      			getRawRequest() const;
+		void								setRawRequest(const std::string& rawRequest);
+
 		void								setInputsGet(std::string& queryString);
 		void								setInputsPost(std::map<std::string, std::string> parsedData);
 		void								setHeader(std::string key, std::string value);

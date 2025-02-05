@@ -31,6 +31,9 @@ class	HttpParser
 		void									parseHttpRequestLine(void);
 		void									parseHttpHeader(void);
 		void									parseHttpBody(void);
+		//void									parseMultipartData(const std::string& body, const std::string& boundary);
+		std::map<std::string, std::string> 		parseMultipartData(const std::string& body, const std::string& contentType);
+
 			// Parsing Utils
 		std::string								trimString(const std::string& str);
 		std::string 							urlPostDecode(const std::string& encoded);
