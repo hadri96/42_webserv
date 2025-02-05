@@ -1,6 +1,7 @@
 #include "Server.hpp"
 #include "Logger.hpp"
 #include "ToString.hpp"
+#include "ToInt.hpp"
 #include "HttpParser.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
@@ -260,13 +261,15 @@ void	Server::acceptClient(void)
 
 // --- handleClientRead ---
 // -> interprete la requete du client et l'ajoute au client->httpRequest
-void	Server::handleRequestFromClient(int clientFd)
+/*void	Server::handleRequestFromClient(int clientFd)
 {
     char                buffer[1024] = {0};
     int                 bytesRead;
     Client              *client = getClient(clientFd);
 	std::string			httpRequestRaw;
-    
+	HttpParser httpParser(httpRequestRaw);
+
+  
     while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) -1, 0)) > 0)
     {
         httpRequestRaw.append(buffer);
@@ -274,17 +277,113 @@ void	Server::handleRequestFromClient(int clientFd)
 			break ;
     }
 
-	HttpParser httpParser(httpRequestRaw);
-
+	
 	Logger::logger()->logTitle(LOG_DEBUG, "HTTP Request");
-	//Logger::logger()->log(LOG_DEBUG, httpRequestRaw, false);
 
 	HttpRequest request = httpParser.parse();
+	request.setRawRequest(httpRequestRaw); // REVISIT : make everything cleaner
 	client->assignRequest(request);
 
 	if (bytesRead < 0)
 		closeClientConnection(clientFd, "read error");
+
 	runInterpreter(request, clientFd);
+}*/
+
+/*void Server::handleRequestFromClient(int clientFd)
+{
+    char buffer[1024] = {0};
+    int bytesRead;
+    Client *client = getClient(clientFd);
+    std::string httpRequestRaw;
+    int totalBytesRead = 0;
+    
+    while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0)) > 0)
+    {
+        totalBytesRead += bytesRead;
+        httpRequestRaw.append(buffer, bytesRead);
+        if (httpRequestRaw.find("\r\n\r\n") != std::string::npos)
+            break;
+    }
+
+    HttpParser httpParser(httpRequestRaw);
+
+    Logger::logger()->logTitle(LOG_DEBUG, "HTTP Request");
+
+    HttpRequest request = httpParser.parse();
+    request.setRawRequest(httpRequestRaw); // REVISIT : make everything cleaner
+    client->assignRequest(request);
+
+    if (bytesRead < 0)
+        closeClientConnection(clientFd, "read error");
+
+    // Read the rest of the body if Content-Length header is present
+    std::string contentLengthStr = request.getHeader("Content-Length");
+    if (!contentLengthStr.empty())
+    {
+        int contentLength = toInt(contentLengthStr);
+        while (totalBytesRead < contentLength)
+        {
+            memset(buffer, 0, sizeof(buffer));
+            bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
+            if (bytesRead <= 0)
+                break;
+            totalBytesRead += bytesRead;
+            httpRequestRaw.append(buffer, bytesRead);
+        }
+    }
+
+    runInterpreter(request, clientFd);
+}*/
+
+void Server::handleRequestFromClient(int clientFd) {
+    char buffer[1024] = {0};
+    int bytesRead;
+    Client* client = getClient(clientFd);
+    std::string httpRequestRaw;
+
+    // Read headers
+    while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0)) > 0) {
+        httpRequestRaw.append(buffer, bytesRead);
+        if (httpRequestRaw.find("\r\n\r\n") != std::string::npos) {
+            break; // End of headers
+        }
+    }
+
+    HttpParser httpParser(httpRequestRaw);
+    HttpRequest request = httpParser.parse();
+    request.setRawRequest(httpRequestRaw);
+    client->assignRequest(request);
+
+    // Read the body if it exists (POST requests)
+    if (request.getMethod() == POST) {
+        std::string contentLengthStr = request.getHeader("Content-Length");
+        if (!contentLengthStr.empty()) {
+            size_t contentLength = toInt(contentLengthStr);
+            size_t bodyStartPos = httpRequestRaw.find("\r\n\r\n") + 4;
+            size_t bodyBytesRead = httpRequestRaw.size() - bodyStartPos;
+
+            // Read remaining body data
+            while (bodyBytesRead < contentLength) {
+                bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
+                if (bytesRead <= 0) {
+                    break; // Error or connection closed
+                }
+                httpRequestRaw.append(buffer, bytesRead);
+                bodyBytesRead += bytesRead;
+            }
+
+            // Update the request body
+            std::string body = httpRequestRaw.substr(bodyStartPos, contentLength);
+            request.setBody(body);
+        }
+    }
+
+    if (bytesRead < 0) {
+        closeClientConnection(clientFd, "read error");
+    }
+
+    runInterpreter(request, clientFd);
 }
 
 void	Server::runInterpreter(HttpRequest& request, int clientFd)

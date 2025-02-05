@@ -16,6 +16,14 @@ HttpRequest::HttpRequest() :
     // inputs_.insert(std::make_pair("content", "donaldDuck not donaldTrump")); // REVISIT : ?
 }
 
+HttpRequest::HttpRequest(const HttpRequest& other) :
+	rawRequest_(other.rawRequest_),
+	requestLine_(other.requestLine_),
+	headers_(other.headers_),
+	inputs_(other.inputs_),
+	body_(other.body_)
+{}
+
 HttpRequest::~HttpRequest() {}
 
 void    HttpRequest::appendRequest(std::string input)
@@ -27,12 +35,35 @@ void    HttpRequest::appendRequest(std::string input)
 }
 
 // =============================================================================
+// Operators Overload
+// =============================================================================
+
+HttpRequest&	HttpRequest::operator=(const HttpRequest& rhs)
+{
+	if (this == &rhs)
+		return (*this);
+
+	rawRequest_ = rhs.rawRequest_;
+	requestLine_ = rhs.requestLine_;
+	headers_ = rhs.headers_;
+	inputs_ = rhs.inputs_;
+	body_ = rhs.body_;
+
+	return (*this);
+}
+
+// =============================================================================
 // Getters & Setters
 // =============================================================================
 
 const std::string& HttpRequest::getRawRequest() const 
 {
     return (rawRequest_);
+}
+
+void	HttpRequest::setRawRequest(const std::string& rawRequest)
+{
+	rawRequest_ = rawRequest;
 }
 
 void HttpRequest::setInputsGet(std::string& queryString)

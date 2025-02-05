@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <dirent.h>
+#include <iostream>
 
 // =============================================================================
 // Constructors and Destructor
@@ -97,7 +98,8 @@ HttpResponse    HttpRequestInterpreter::handleGetRequest(Config& config, HttpReq
 HttpResponse    HttpRequestInterpreter::handlePostRequest(Config& config, HttpRequest& request)
 {
 	Uri                 uri = request.getUri();
-	Resource*           resource = createResourceCgi(config, request);
+	Resource* 			resource = createResourceFile(config, request);
+	// Resource*           resource = createResourceCgi(config, request);
 
 
 	return (HttpResponse(resource));
@@ -177,7 +179,6 @@ Resource*	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest
 {
 	Uri                 uri = request.getUri();
 	const Path*         rootPath = config.getPath(uri);
-
 	if (!rootPath)
 	{
 		Logger::logger()->log(LOG_DEBUG, "createResourceFile : no root path in config matching the uri");
@@ -222,7 +223,7 @@ Resource*	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest
 		Logger::logger()->log(LOG_DEBUG, "createResourceFile : the resource does not exist (error 404)");
 		return (createResourceError(config, 404));
 	}
-
+	
 	if (path.getExtension() == "php")
 	{
 		Logger::logger()->log(LOG_DEBUG, "createResourceFile : the resource is a php script");
@@ -316,7 +317,6 @@ Resource*	HttpRequestInterpreter::createResourceDirectory(Config& config, HttpRe
 
 Resource*        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRequest& request)
 {
-	(void) request;
 
 	// if (config.isTypeAllowed(request.getMimeType(), request.getUri()))
 	//     return (createResourceError(config, 415));
@@ -337,7 +337,6 @@ Resource*        HttpRequestInterpreter::createResourceCgi(Config& config, HttpR
 		// 429 too many requests
 	
 	// protect from sql injection
-
 	Cgi             cgi(config, request);
 	std::string     cgiOutput;
 

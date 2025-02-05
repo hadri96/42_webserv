@@ -7,3 +7,9 @@
 2025-02-04 14:55:16 - ERROR: Error moving file: 71VGcHBaAHL.jpg. Temporary file: . Target directory: /home/dcortes/Documents/42/webserv/www/html/uploads
 2025-02-04 14:59:08 - ERROR: Error moving file: 71VGcHBaAHL.jpg. Temporary file: . Target directory: /home/dcortes/Documents/42/webserv/www/html/uploads
 2025-02-04 15:03:22 - ERROR: File upload error: File was only partially uploaded.
+2025-02-05 14:58:16 - ERROR: File upload error: File was only partially uploaded.
+2025-02-05 15:19:53 - ERROR: File upload error: File was only partially uploaded.
+2025-02-05 15:20:02 - ERROR: File upload error: File was only partially uploaded.
+2025-02-05 15:37:51 - ERROR: File upload error: File was only partially uploaded.
+2025-02-05 16:15:19 - ERROR: Invalid file type: ico for file: favicon.ico
+2025-02-05 16:15:19 - ERROR: Upload failed for file: favicon.ico
