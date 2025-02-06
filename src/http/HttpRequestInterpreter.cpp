@@ -17,6 +17,8 @@
 #include <limits.h>
 #include <dirent.h>
 #include <iostream>
+#include <cstdio>
+
 
 // =============================================================================
 // Constructors and Destructor
@@ -46,16 +48,8 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
 	if (!config.isMethodAllowed(method, request.getUri()))
 		 return (HttpResponse(createResourceError(config, 405)));
 
-	//if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
-		 //return (HttpResponse(createResourceError(config, 413)));
-
-	// REVISIT : Disabled because of some path error
-	
-	/*if (isCgiRequest(config, request))
-	{   
-		Logger::logger()->log(LOG_DEBUG, "Is a CGI Request"); 
-		return (HttpResponse(createResourceCgi(config, request)));
-	}*/
+	if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
+		 return (HttpResponse(createResourceError(config, 413)));
 
 	switch (method)
 	{
@@ -99,28 +93,35 @@ HttpResponse    HttpRequestInterpreter::handlePostRequest(Config& config, HttpRe
 {
 	Uri                 uri = request.getUri();
 	Resource* 			resource = createResourceFile(config, request);
-	// Resource*           resource = createResourceCgi(config, request);
-
 
 	return (HttpResponse(resource));
 }
 
-HttpResponse    HttpRequestInterpreter::handleDeleteRequest(Config& config, HttpRequest& request)
+HttpResponse HttpRequestInterpreter::handleDeleteRequest(Config& config, HttpRequest& request)
 {
-	HttpResponse    response;
-	Uri             uri = request.getUri();
-	std::string     token = request.getHeader("Authorization");
+    Uri 			uri = request.getUri();
+    Path 			filePath = *config.getPath(uri);
+	filePath = filePath / uri;
+	Path			absFilePath = filePath.getAbsPath();
+	std::string		pathString = absFilePath;
 
-	// Check authorisation ("authorisation" header should have an access token (defined in env?))
-	if (token.empty() || isValidToken(token)) // REVISIT : isValidToken needs to be implremented
-		return (HttpResponse(createResourceError(config, 401)));
+	Logger::logger()->log(LOG_DEBUG, "pathString : " + pathString);
 
-	// Check if user has permission
-		// if not -> error 403
-	// is dir ? 
-	// deleteResource(Uri)
+    if (access(pathString.c_str(), W_OK) != 0) 
+	{
+        Logger::logger()->log(LOG_WARNING, "DELETE request: Permission denied");
+        return HttpResponse(createResourceError(config, 403));
+    }
+	Logger::logger()->log(LOG_ERROR, "HELLOOO");
+    if (remove(pathString.c_str()) != 0) 
+	{
+        Logger::logger()->log(LOG_ERROR, "DELETE request: Failed to delete resource");
+        return HttpResponse(createResourceError(config, 500)); 
+    }
 
-	return (response);
+    Logger::logger()->log(LOG_INFO, "DELETE request: Resource deleted successfully");
+	Resource* 		resource = new Resource(204, "File deleted successfully");
+	return HttpResponse(resource);
 }
 
 // ·············································································
@@ -134,7 +135,6 @@ Resource*	HttpRequestInterpreter::createResourceError(Config& config, int code)
 	const   ConfigErrorPage*    customErrorPage = config.getConfigErrorPage(code);
 	if (!customErrorPage)
 		return (new ResourceDefault(code));
-   
 	Uri                         customErrorPageUri = customErrorPage->getUri();
 	const Path*                 customErrorPagePath = config.getPath(customErrorPageUri);
 	if (!customErrorPagePath)
@@ -147,9 +147,7 @@ Resource*	HttpRequestInterpreter::createResourceError(Config& config, int code)
 	size_t                      pos = customErrorPageUriStr.find(toReplace);
 
 	if (pos != std::string::npos) 
-	{
 		customErrorPageUriStr.replace(pos, toReplace.length(), replacement);
-	}
 
 	Path                        customErrorPagePathObj = *customErrorPagePath;
 
@@ -163,14 +161,10 @@ Resource*	HttpRequestInterpreter::createResourceError(Config& config, int code)
 
 Resource*	HttpRequestInterpreter::createResourceRedirection(Config& config, HttpRequest& request)
 {
-	// Extract the URI from the request
-	Uri     uri = request.getUri();
-
-	// Get the location that matches the URI
-	const ConfigLocation* configLocation = config.getConfigLocation(uri);
-
-	int statusCode = configLocation->getConfigRedirection().getStatusCode();
-	Uri redirUri = configLocation->getConfigRedirection().getUri();
+	Uri     				uri = request.getUri();
+	const ConfigLocation* 	configLocation = config.getConfigLocation(uri);
+	int 					statusCode = configLocation->getConfigRedirection().getStatusCode();
+	Uri 					redirUri = configLocation->getConfigRedirection().getUri();
 
 	return (new ResourceRedirection(statusCode, redirUri));
 }
@@ -187,8 +181,8 @@ Resource*	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest
 
 	// Check if there is a redirection in location block
 	// Get the location that matches the URI
-	const ConfigLocation* configLocation = config.getConfigLocation(uri);
-	const ConfigRedirection configRedirection = configLocation->getConfigRedirection();
+	const ConfigLocation* 		configLocation = config.getConfigLocation(uri);
+	const ConfigRedirection 	configRedirection = configLocation->getConfigRedirection();
 
 	if (configRedirection.getStatusCode() != 0)
 	{
@@ -317,33 +311,11 @@ Resource*	HttpRequestInterpreter::createResourceDirectory(Config& config, HttpRe
 
 Resource*        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRequest& request)
 {
-
-	// if (config.isTypeAllowed(request.getMimeType(), request.getUri()))
-	//     return (createResourceError(config, 415));
-
-	// if (request.getMethod() == POST && request.getBody().empty())
-	//     return (createResourceError(config, 400));
-
-	// Check "inputs" field (map) -> correct types
-		// 422 Unprocessable Entity
-	
-	// Check permissions 
-		// 401 Unauthorised or 403 Forbidden
-	
-	// Check duplicate ? Does the resource already exist? 
-		// 409 Conflict
-
-	// check amount of requests? 
-		// 429 too many requests
-	
-	// protect from sql injection
 	Cgi             cgi(config, request);
 	std::string     cgiOutput;
 
 	if (cgi.runCgi(cgiOutput, request) != 0)
 		return (createResourceError(config, 500));
-
-	// Create a Resource object with CGI output
 
 	Resource*       cgiResource = new Resource(200, cgiOutput);
 	cgiResource->setMimeType("text/html");
@@ -355,35 +327,6 @@ Resource*        HttpRequestInterpreter::createResourceCgi(Config& config, HttpR
 // Utils
 // ·············································································
 
-/*bool    HttpRequestInterpreter::isCgiRequest(Config& config, HttpRequest& request)
-{
-	const Path*                 pathPtr = config.getPath(request.getUri()); 
-	
-	if (pathPtr == NULL)
-	{   
-		Logger::logger()->log(LOG_DEBUG, "path from config is NULL, it's not a CGI request"); 
-		return (false);
-	}
-	
-	Path                        realPath = *pathPtr;
-	std::vector<std::string>    pathComponents = realPath.getComponents();
-
-	for (size_t i = 0; i < pathComponents.size(); i++)
-	{
-		// Logger::logger()->log(LOG_DEBUG, "path component: " + pathComponents[i]);
-		if (pathComponents[i].find("cgi-bin") != std::string::npos || 
-				pathComponents[i].find(config.getCgiDir()) != std::string::npos ||
-				pathComponents[i].find(".php") != std::string::npos || 
-				pathComponents[i].find(".py") != std::string::npos || 
-				pathComponents[i].find(".cgi") != std::string::npos)
-		{
-			Logger::logger()->log(LOG_DEBUG, "It's a CGI request.");
-			return (true);
-		}
-	}
-	Logger::logger()->log(LOG_DEBUG, "It's not a CGI request.");
-	return (false); 
-}*/
 
 bool    HttpRequestInterpreter::isValidToken(std::string token)
 {
