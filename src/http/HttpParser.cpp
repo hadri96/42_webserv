@@ -134,15 +134,11 @@ void	HttpParser::parseHttpBody(void)
 	std::string								body = extractHttpBody(httpRequestRaw_);
 
     httpRequest_.setBody(body);
-	std::cout << "BODYBODYBODY : " << body << std::endl;
     if (httpRequest_.getMethod() == POST)
     {
 			parsedData = parsePostData(body);
         	httpRequest_.setInputsPost(parsedData);
     }
-
-
-
 }
 
 

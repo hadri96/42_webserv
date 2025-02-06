@@ -59,23 +59,6 @@ class	Config
 
 		const Path*						getPath(Uri uri) const;
 
-		/*
-		Methodes necessaires pour Interpreter:
-
-		bool		isAllowedMethod(HttpMethodType& method);
-		bool		isRedirection(Uri& uri);
-		Path&		getRedirection(Uri& uri);
-		{
-			gets redirection if there is one
-			if not gets path (in server) from uri
-		}
-		bool		hasReadPermissions(File& file);
-		bool		isDirectory(Uri& uri);
-		bool		directoryListing();
-		File		getIndexFile();
-		ConfigErrorPage	getConfigErrorPage(int errorCode);
-		*/
-
 
 	private:
 		// --- Private Attributes ---
