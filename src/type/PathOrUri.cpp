@@ -35,12 +35,6 @@ PathOrUri&	PathOrUri::operator=(const PathOrUri& rhs)
 	return (*this);
 }
 
-// --- Implicit conversion to Path ---
-// PathOrUri::operator Path() const
-// {
-// 	return Path(*this);
-// }
-
 // --- Implicit conversion to Uri ---
 PathOrUri::operator Uri() const
 {
@@ -154,7 +148,7 @@ std::vector<std::string> PathOrUri::split(const std::string& str)
 
 	while (std::getline(stream, part, delimiter))
 	{
-		if (!part.empty() && part != ".") // Skip empty parts and "."
+		if (!part.empty() && part != ".")
 			components.push_back(part);
 	}
 

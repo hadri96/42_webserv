@@ -9,30 +9,32 @@
 
 class HttpResponse
 {
-	public:
-		// --- Constructors and Destructor ---
-						HttpResponse();
+    public:
+        // Constructors & Destructor
+        				HttpResponse();
+        				HttpResponse(Resource* resource);
+        				~HttpResponse();
 
-						HttpResponse(Resource* resource);
+        // Copy Constructor
+        				HttpResponse(const HttpResponse& other);
 
-						~HttpResponse();
+        // Copy Assignment Operator
+        HttpResponse& 	operator=(const HttpResponse& other);
 
-		// --- Public Methods ---
-		// ··· Getters and utils ···  
-		std::string		getFullResponse() const;
-		std::string		getHeaders() const;
-	
-	private:
-		// --- Private Attributes ---
-		std::string		mimeType_;
-		std::string     statusLine_;
-		std::string     headers_;
-		std::string     body_;
-		std::string     fullResponse_;
+        // Public Methods
+        std::string 	getFullResponse() const;
+        std::string 	getHeaders() const;
 
-		// --- Private Methods ---
-		void			composeFullResponse();
+    private:
+        std::string 	mimeType_;
+        std::string 	statusLine_;
+        std::string 	headers_;
+        std::string 	body_;
+        std::string 	fullResponse_;
+
+        void 			composeFullResponse();
 };
+
 
 #endif
 

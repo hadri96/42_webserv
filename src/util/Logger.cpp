@@ -38,7 +38,6 @@ void	Logger::logTitle(LogLevel level, const std::string& title, int titleLevel) 
 				<< std::left << std::setw(width_) << getLevel(level)
 				<< decoration
 				<< " " << title << " "
-				//<< decoration
 				<< RESET
 				<< std::endl;
 }
@@ -55,15 +54,13 @@ void	Logger::logTitle(LogLevel level, const std::ostringstream& oss, int titleLe
 				<< std::left << std::setw(width_) << getLevel(level)
 				<< decoration
 				<< " " << oss.str() << " "
-				//<< decoration
 				<< RESET
 				<< std::endl;
 
     if (reset)
     {
-        // Reset the stream by clearing it
-        const_cast<std::ostringstream&>(oss).str("");   // Clear the string content
-        const_cast<std::ostringstream&>(oss).clear();   // Reset the stream's state
+        const_cast<std::ostringstream&>(oss).str("");
+        const_cast<std::ostringstream&>(oss).clear();
     }
 }
 
@@ -95,9 +92,8 @@ void	Logger::log(LogLevel level, const std::ostringstream& oss, bool reset) cons
 
 	if (reset)
     {
-        // Reset the stream by clearing it
-        const_cast<std::ostringstream&>(oss).str("");   // Clear the string content
-        const_cast<std::ostringstream&>(oss).clear();   // Reset the stream's state
+        const_cast<std::ostringstream&>(oss).str("");
+        const_cast<std::ostringstream&>(oss).clear();
     }
 
 	std::cout	<< RESET

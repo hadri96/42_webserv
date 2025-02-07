@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include "Logger.hpp"
 
 // =============================================================================
 // Constructors and Destructor
@@ -67,5 +68,6 @@ void	Client::assignRequest(HttpRequest request)
 
 void	Client::assignResponse(HttpResponse response)
 {
+	Logger::logger()->log(LOG_WARNING, "Assigning Response: " + response.getFullResponse());
 	currentResponse_ = response;
 }

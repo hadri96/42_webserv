@@ -19,15 +19,21 @@
 
 
 HttpResponse::HttpResponse()
+    : mimeType_(""), statusLine_(""), headers_(""), body_(""), fullResponse_("")
 {}
 
 HttpResponse::HttpResponse(Resource* resource)
 {
+    if (!resource)
+    {
+        
+    }
+
     // --- Generate status line ---
-    std::string httpVersion = "HTTP/1.1";
+    std::string         httpVersion = "HTTP/1.1";
     int code = resource->getCode();
 
-    HttpStatusCode statusCode;
+    HttpStatusCode      statusCode;
     statusLine_ = httpVersion + " " + toString(code) + " " + statusCode.getStatusLine(code) + "\r\n";
 
     // --- Generate headers ---
@@ -36,7 +42,6 @@ HttpResponse::HttpResponse(Resource* resource)
     mimeType_ = resource->getMimeType();
 	if (mimeType_.empty())
         mimeType_ = "text/html";
-		//mimeType_ = "application/octet-stream";
 
     body_ = resource->getBody();
 	
@@ -62,11 +67,49 @@ HttpResponse::HttpResponse(Resource* resource)
     Logger::logger()->logTitle(LOG_DEBUG, "HTTP Response (without body)");
     Logger::logger()->log(LOG_DEBUG, statusLine_ + headers_, false);
 
-	delete resource;
+	// delete resource;
 }
 
 HttpResponse::~HttpResponse()
 {}
+
+HttpResponse::HttpResponse(const HttpResponse& other)
+{
+    this->mimeType_ = other.mimeType_;
+    this->statusLine_ = other.statusLine_;
+    this->headers_ = other.headers_;
+    this->body_ = other.body_;
+    this->fullResponse_ = other.fullResponse_;
+}
+
+// =============================================================================
+// Assignment Operators
+// =============================================================================
+
+
+// Copy Assignment Operator
+HttpResponse& HttpResponse::operator=(const HttpResponse& other)
+{
+    if (this != &other)
+    {
+        std::cerr << "HttpResponse Copy Assignment Called" << std::endl;
+        std::cerr << "Copying from HttpResponse: statusLine = " << other.statusLine_ << std::endl;
+        std::cerr << "Headers: " << other.headers_ << std::endl;
+        std::cerr << "Body size: " << other.body_.size() << std::endl;
+
+        if (other.statusLine_.empty()) 
+        {
+            std::cerr << "ERROR: HttpResponse being copied has an EMPTY status line!" << std::endl;
+        }
+
+        this->mimeType_ = other.mimeType_;
+        this->statusLine_ = other.statusLine_;
+        this->headers_ = other.headers_;
+        this->body_ = other.body_;
+        this->fullResponse_ = other.fullResponse_;
+    }
+    return *this;
+}
 
 // =============================================================================
 // Public Methods

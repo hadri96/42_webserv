@@ -143,8 +143,9 @@ void	Server::start(void)
 
     if (setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &temp, sizeof(temp)) < 0) 
     {
-        std::cerr << "setsockopt(SO_REUSEADDR) failed" << std::endl;
-        exit(EXIT_FAILURE);
+        Logger::logger()->log(LOG_ERROR, "setsockopt(SO_REUSEADDR) failed");
+        stop();
+		// exit(EXIT_FAILURE);
     }
 
 	if (bind(fd_, (struct sockaddr *)&address_, addressLen_) < 0)
@@ -162,8 +163,9 @@ void	Server::start(void)
 
 	if (fcntl(fd_, F_SETFL, O_NONBLOCK | FD_CLOEXEC) == -1) 
 	{
-		std::cerr << "fcntl " << fd_ << " failed: " << strerror(errno) << std::endl;
-		exit(EXIT_FAILURE);
+		Logger::logger()->log(LOG_ERROR, "fcntl " + toString(fd_) + " failed.");
+		stop();
+		// exit(EXIT_FAILURE);
 	}
 }
 
@@ -259,95 +261,19 @@ void	Server::acceptClient(void)
 	registerClient(new Client(clientFd, clientIp, clientPort));
 }
 
-// --- handleClientRead ---
-// -> interprete la requete du client et l'ajoute au client->httpRequest
-/*void	Server::handleRequestFromClient(int clientFd)
+
+void Server::handleRequestFromClient(int clientFd) 
 {
-    char                buffer[1024] = {0};
-    int                 bytesRead;
-    Client              *client = getClient(clientFd);
-	std::string			httpRequestRaw;
-	HttpParser httpParser(httpRequestRaw);
-
-  
-    while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) -1, 0)) > 0)
-    {
-        httpRequestRaw.append(buffer);
-        if (httpRequestRaw.find("\r\n\r\n") != std::string::npos)
-			break ;
-    }
-
-	
-	Logger::logger()->logTitle(LOG_DEBUG, "HTTP Request");
-
-	HttpRequest request = httpParser.parse();
-	request.setRawRequest(httpRequestRaw); // REVISIT : make everything cleaner
-	client->assignRequest(request);
-
-	if (bytesRead < 0)
-		closeClientConnection(clientFd, "read error");
-
-	runInterpreter(request, clientFd);
-}*/
-
-/*void Server::handleRequestFromClient(int clientFd)
-{
-    char buffer[1024] = {0};
-    int bytesRead;
-    Client *client = getClient(clientFd);
-    std::string httpRequestRaw;
-    int totalBytesRead = 0;
-    
-    while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0)) > 0)
-    {
-        totalBytesRead += bytesRead;
-        httpRequestRaw.append(buffer, bytesRead);
-        if (httpRequestRaw.find("\r\n\r\n") != std::string::npos)
-            break;
-    }
-
-    HttpParser httpParser(httpRequestRaw);
-
-    Logger::logger()->logTitle(LOG_DEBUG, "HTTP Request");
-
-    HttpRequest request = httpParser.parse();
-    request.setRawRequest(httpRequestRaw); // REVISIT : make everything cleaner
-    client->assignRequest(request);
-
-    if (bytesRead < 0)
-        closeClientConnection(clientFd, "read error");
-
-    // Read the rest of the body if Content-Length header is present
-    std::string contentLengthStr = request.getHeader("Content-Length");
-    if (!contentLengthStr.empty())
-    {
-        int contentLength = toInt(contentLengthStr);
-        while (totalBytesRead < contentLength)
-        {
-            memset(buffer, 0, sizeof(buffer));
-            bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
-            if (bytesRead <= 0)
-                break;
-            totalBytesRead += bytesRead;
-            httpRequestRaw.append(buffer, bytesRead);
-        }
-    }
-
-    runInterpreter(request, clientFd);
-}*/
-
-void Server::handleRequestFromClient(int clientFd) {
     char 			buffer[1024] = {0};
     int 			bytesRead;
     Client* 		client = getClient(clientFd);
     std::string 	httpRequestRaw;
 
-    // Read headers
-    while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0)) > 0) {
+    while ((bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0)) > 0) 
+	{
         httpRequestRaw.append(buffer, bytesRead);
-        if (httpRequestRaw.find("\r\n\r\n") != std::string::npos) {
-            break; // End of headers
-        }
+        if (httpRequestRaw.find("\r\n\r\n") != std::string::npos) 
+            break;
     }
 
     HttpParser 		httpParser(httpRequestRaw);
@@ -363,19 +289,15 @@ void Server::handleRequestFromClient(int clientFd) {
             size_t 		contentLength = toInt(contentLengthStr);
             size_t 		bodyStartPos = httpRequestRaw.find("\r\n\r\n") + 4;
             size_t 		bodyBytesRead = httpRequestRaw.size() - bodyStartPos;
-
-            // Read remaining body data
+            // Read body
             while (bodyBytesRead < contentLength) 
 			{
                 bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
                 if (bytesRead <= 0) 
-				{
-                    break; // Error or connection closed
-                }
+                    break;
                 httpRequestRaw.append(buffer, bytesRead);
                 bodyBytesRead += bytesRead;
             }
-
             // Update the request body
             std::string body = httpRequestRaw.substr(bodyStartPos, contentLength);
             request.setBody(body);
@@ -383,9 +305,7 @@ void Server::handleRequestFromClient(int clientFd) {
     }
 
     if (bytesRead < 0) 
-	{
         closeClientConnection(clientFd, "read error");
-    }
 
     runInterpreter(request, clientFd);
 }
@@ -407,8 +327,6 @@ void	Server::runInterpreter(HttpRequest& request, int clientFd)
 		Logger::logger()->log(LOG_ERROR, e.what());
 	}
 }
-
-// --- sendResponseBuffer et handleClientWrite ---
 
 void    Server::sendResponseToClient(int clientFd)
 {
