@@ -18,14 +18,12 @@ class HttpMimeTypes
 		HttpMimeTypes&										operator=(const HttpMimeTypes& rhs);
 
 		// --- Public Methods ---
-		//void												addMimeType(HttpMimeType mimeType);
 
 		void												addMimeType(std::string, std::vector<std::string>);
 		std::string											getMimeType(const std::string& extension);
 
 	private:
 		// --- Private Attributes ---
-		//std::vector<HttpMimeType>	mimeTypes_;
 		std::map<std::string, std::vector<std::string> >	mimeTypes_;
 
 };

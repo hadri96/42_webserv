@@ -45,11 +45,18 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
 	HttpMethodType      method = request.getMethod();
 	HttpResponse        response;
 
-	if (!config.isMethodAllowed(method, request.getUri()))
-		 return (HttpResponse(createResourceError(config, 405)));
+	if (!config.isMethodAllowed(method, request.getUri())) 
+	{
+    	HttpResponse 	errorResponse(createResourceError(config, 405));
+    	return (errorResponse);
+	}
+
 
 	if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
-		 return (HttpResponse(createResourceError(config, 413)));
+	{
+		HttpResponse	errorResponse = HttpResponse(createResourceError(config, 413));
+		return (errorResponse);
+	}
 
 	switch (method)
 	{
@@ -67,7 +74,8 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
 			break;
 		case UNKNOWN:
 			Logger::logger()->log(LOG_WARNING, "Received UNKNOWN request method");
-			return (HttpResponse(createResourceError(config, 400)));
+			HttpResponse 	errorResponse(createResourceError(config, 400));
+			return (errorResponse);
 			break;
 	}
 	return (response);

@@ -56,7 +56,7 @@ class HttpRequest
 
 	private:
 		// --- Private Attributes ---
-		std::string             			rawRequest_; // REVISIT : USELESS ?
+		std::string             			rawRequest_;
 
 		HttpRequestLine         			requestLine_;
 		std::map<std::string, std::string>  headers_;

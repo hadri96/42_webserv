@@ -100,8 +100,6 @@ std::string	Path::read(void) const
 	std::string			path = *this;
     std::ifstream       fileStream(path.c_str());
 
-    /*if (fileStream.is_open())
-        Logger::logger()->log(LOG_INFO, "File opened: " + path);*/
     while (std::getline(fileStream, line))
         content.append(line, 0, line.length()).append("\n");
     fileStream.close();

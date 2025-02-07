@@ -16,41 +16,27 @@ inline std::string httpMethodToString(HttpMethodType method)
 {
     switch (method)
 	{
-        case GET: return ("GET");
-        case POST: return ("POST");
-        case DELETE: return ("DELETE");
-        default: return ("UNKNOWN");
+        case GET: 
+			return ("GET");
+        case POST: 
+			return ("POST");
+        case DELETE: 
+			return ("DELETE");
+        default: 
+			return ("UNKNOWN");
     }
 }
 
 // Convert string to HttpMethodType
 inline HttpMethodType stringToHttpMethod(const std::string& methodStr)
 {
-    if (methodStr == "GET") return (GET);
-	if (methodStr == "POST") return (POST);
-    if (methodStr == "DELETE") return (DELETE);   
+    if (methodStr == "GET") 
+		return (GET);
+	if (methodStr == "POST") 
+		return (POST);
+    if (methodStr == "DELETE") 
+		return (DELETE);   
     return (UNKNOWN);
 }
-
-/*
-// REVISIT : TO REMOVE ? 
-
-inline std::string HttpMethodTypeToString(HttpMethodType method)
-{
-	switch (method)
-	{
-		case GET:       
-			return "GET";
-		case POST:      
-			return "POST";
-		case DELETE:    
-			return "DELETE";
-		case UNDEFINED: 
-			return "UNDEFINED";
-		default:        
-			return "UNKNOWN";
-	}
-}
-*/
 
 #endif

@@ -26,19 +26,19 @@ Webserv::Webserv(const Webserv& other)
 
 Webserv::Webserv(const std::string& configFile)
 {
-	std::string content = Path(configFile).getAbsPath().read();
+	std::string 			content = Path(configFile).getAbsPath().read();
+	ConfigParser 			parser = ConfigParser(content);
 
-	ConfigParser parser = ConfigParser(content);
 	parser.parse();
 	parser.display();
 
-	ConfigInterpreter interpreter;
+	ConfigInterpreter 		interpreter;
 	interpreter.interpret(parser.getRoot());
 	interpreter.displayConfigs();
 
-	std::vector<Config> configs = interpreter.getConfigs();
-	Observer* o = new Observer;
-	std::vector<Server*> servers;
+	std::vector<Config> 	configs = interpreter.getConfigs();
+	Observer* 				o = new Observer;
+	std::vector<Server*> 	servers;
 
 	/*
 	const Location* foundLocation = configs[0].getLocation(Uri("/images"));

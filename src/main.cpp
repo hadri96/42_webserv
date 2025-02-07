@@ -15,7 +15,7 @@
 
 int	main(int argc, char** argv)
 {
-	std::string configPath;
+	std::string 	configPath;
 
 	if (argc == 1)
 		configPath = "conf/complex.conf";
