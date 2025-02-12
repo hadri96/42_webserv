@@ -51,7 +51,6 @@ HttpResponse   HttpRequestInterpreter::interpret(HttpRequest& request, Config& c
     	return (errorResponse);
 	}
 
-
 	if (!config.isSizeAllowed(request.getBodySize(), request.getUri()))
 	{
 		HttpResponse	errorResponse = HttpResponse(createResourceError(config, 413));

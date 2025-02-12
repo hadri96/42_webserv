@@ -282,7 +282,8 @@ void Server::handleRequestFromClient(int clientFd)
     client->assignRequest(request);
 
     // Read the body if it exists (POST requests)
-    if (request.getMethod() == POST) {
+    if (request.getMethod() == POST) 
+	{
         std::string contentLengthStr = request.getHeader("Content-Length");
         if (!contentLengthStr.empty()) 
 		{
