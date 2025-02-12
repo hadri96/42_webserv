@@ -267,7 +267,6 @@ void    Cgi::prepareCgiEnvironment(Config& config, HttpRequest& request)
 	
 	// Add CONTENT_LENGTH and CONTENT_TYPE for POST requests
 
-
     if (request.getMethod() == GET)
 	{
         env["QUERY_STRING"] = request.getQueryString();
@@ -278,33 +277,6 @@ void    Cgi::prepareCgiEnvironment(Config& config, HttpRequest& request)
         env["CONTENT_LENGTH"] = toString(request.getBody().size());
         env["CONTENT_TYPE"] = contentType;
     }
-
-	/*
-	if (request.getMethod() == POST)
-	{
-		env["CONTENT_LENGTH"] = toString(request.getBody().size());
-		std::string contentType = request.getHeader("Content-Type");
-		if (!contentType.empty())
-			env["CONTENT_TYPE"] = contentType;
-		else
-			env["CONTENT_TYPE"] = "application/x-www-form-urlencoded"; // Default
-	}
-	*/
-
-	/*if (request.getMethod() == POST)
-	{
-		env["CONTENT_LENGTH"] = toString(request.getBody().size());
-    	std::string contentType = request.getHeader("Content-Type");
-		if (contentType.find("multipart/form-data") != std::string::npos)
-		{
-			env["CONTENT_TYPE"] = "multipart/form-data";
-		} 
-		else
-		{
-			env["CONTENT_TYPE"] = contentType.empty() ? "application/x-www-form-urlencoded" : contentType;
-		}
-	}*/
-
 
 	cgiEnv_ = new char*[env.size() + 1];
 
@@ -326,7 +298,8 @@ void    Cgi::freeCgiEnv()
 	int	i = 0;
 	while (cgiEnv_[i])
 	{
-		delete (cgiEnv_[i++]);
+		delete[] cgiEnv_[i];
+		i++;
 	}
-	delete (cgiEnv_);
+	delete[] cgiEnv_;
 }
