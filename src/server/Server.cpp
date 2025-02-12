@@ -305,9 +305,9 @@ void Server::handleRequestFromClient(int clientFd)
     }
 
     if (bytesRead < 0) 
-        closeClientConnection(clientFd, "read error");
-
-    runInterpreter(request, clientFd);
+		closeClientConnection(clientFd, "read error");
+    else
+    	runInterpreter(request, clientFd);
 }
 
 void	Server::runInterpreter(HttpRequest& request, int clientFd)
