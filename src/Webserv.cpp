@@ -10,6 +10,8 @@
 #include "Observer.hpp"
 #include "Server.hpp"
 
+#include "ToString.hpp"
+
 #include <iostream>
 
 // =============================================================================
@@ -36,9 +38,12 @@ Webserv::Webserv(const std::string& configFile)
 	interpreter.interpret(parser.getRoot());
 	interpreter.displayConfigs();
 
-	std::vector<Config> 	configs = interpreter.getConfigs();
+	//std::vector<Config> 	configs = interpreter.getConfigs();
+	configs_ = interpreter.getConfigs();
+
+
 	Observer* 				o = new Observer;
-	std::vector<Server*> 	servers;
+	//std::vector<Server*> 	servers;
 
 	/*
 	const Location* foundLocation = configs[0].getLocation(Uri("/images"));
@@ -55,18 +60,25 @@ Webserv::Webserv(const std::string& configFile)
 
 	Logger::logger()->logTitle(LOG_INFO, "Starting servers from configuration file");
 
-	for (size_t i = 0; i != configs.size(); ++i)
+	for (size_t i = 0; i != configs_.size(); ++i)
 	{
-		servers.push_back(new Server(configs[i], o));
+		Server* existingServer = getServer(configs_[i].getHost(), configs_[i].getPort());
+		if (existingServer)
+		{
+			Logger::logger()->log(LOG_DEBUG, "Adding virtual host");;
+			existingServer->addVirtualHost(configs_[i]);
+		}
+		else
+			servers_.push_back(new Server(configs_[i], o));
 	}
 
 	std::ostringstream oss;
-	for (size_t i = 0; i != servers.size(); ++i)
+	for (size_t i = 0; i != servers_.size(); ++i)
 	{
-		oss << "Starting server no. " << (i + 1) << " : " << servers[i]->getInfoUrl();
+		oss << "Starting server no. " << (i + 1) << " : " << servers_[i]->getInfoUrl();
 		Logger::logger()->logTitle(LOG_INFO, oss, 2);
-		servers[i]->start();
-		o->addServerToMonitor(servers[i]);
+		servers_[i]->start();
+		o->addServerToMonitor(servers_[i]);
 	}
 	o->monitorEvents();
 }
@@ -82,4 +94,18 @@ Webserv&	Webserv::operator=(const Webserv& rhs)
 {
 	(void) rhs;
 	return (*this);
+}
+
+// =============================================================================
+// Private Methods
+// =============================================================================
+
+Server*		Webserv::getServer(const std::string& host, int port)
+{
+	for (size_t i = 0; i != servers_.size(); ++i)
+	{
+		if (servers_[i]->getInfoHostPort() == "[" + host + ":" + toString(port) + "]") // REVISIT : use another getter
+			return (servers_[i]);
+	}
+	return (0);
 }

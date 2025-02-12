@@ -211,6 +211,11 @@ void	Server::handleEvent(EventType event, int clientFd)
 	}
 }
 
+void	Server::addVirtualHost(Config& config)
+{
+	virtualHosts_.push_back(config);
+}
+
 // =============================================================================
 // Private Methods
 // =============================================================================

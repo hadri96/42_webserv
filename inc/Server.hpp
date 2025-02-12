@@ -47,10 +47,12 @@ class	Server
 		void					handleEvent(EventType event);
 		void					handleEvent(EventType event, int clientFd);
 
+		void					addVirtualHost(Config& config);
+
 	private:
 		// --- Private Attributes ---
 		Config					config_;
-		// std::vector<Config>		virtualHosts_;
+		std::vector<Config>		virtualHosts_;
 		Observer*				observer_;
 
 		int						fd_;
