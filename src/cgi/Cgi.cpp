@@ -28,6 +28,8 @@ Cgi::Cgi(Config& config, HttpRequest& request)
 	Path				phpScriptPath = *phpScript;
 	
 	phpScriptPath = phpScriptPath / uri;
+	// chdir somewhere here
+	
 	cgiExecutable_ = phpScriptPath.getAbsPath();
 
 	//cgiExecutable_ = Path("/www/cgi-bin/hello.php").getAbsPath();

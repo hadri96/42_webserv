@@ -57,8 +57,14 @@ Webserv::Webserv(const std::string& configFile)
 
 	for (size_t i = 0; i != configs.size(); ++i)
 	{
-		servers.push_back(new Server(configs[i], o));
+		// existingServer = getServer(configs[i].getHost(), configs[i].getPort())'
+		// if (existingServer)
+			// existingServer.addVirtualHost(configs[i])
+		// else 
+			servers.push_back(new Server(configs[i], o));
+
 	}
+
 
 	std::ostringstream oss;
 	for (size_t i = 0; i != servers.size(); ++i)

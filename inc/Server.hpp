@@ -50,7 +50,7 @@ class	Server
 	private:
 		// --- Private Attributes ---
 		Config					config_;
-		// std::vector<Config>		virtualHosts_;
+		std::vector<Config>		virtualHosts_;
 		Observer*				observer_;
 
 		int						fd_;
@@ -75,6 +75,9 @@ class	Server
 		void					sendResponseBuffer(int clientFd);
 
 		void					closeClientConnection(int clientFd, std::string message);
+
+		Config*					getConfigWithHost(std::string host);
+
 };
 
 #endif
