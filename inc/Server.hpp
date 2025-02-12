@@ -47,6 +47,8 @@ class	Server
 		void					handleEvent(EventType event);
 		void					handleEvent(EventType event, int clientFd);
 
+		void					addVirtualHost(Config& config);
+
 	private:
 		// --- Private Attributes ---
 		Config					config_;

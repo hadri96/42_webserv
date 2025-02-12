@@ -2,6 +2,10 @@
 # define WEBSERV_HPP
 
 #include <string>
+#include <vector>
+
+#include "Config.hpp"
+#include "Server.hpp"
 
 class	Webserv
 {
@@ -20,8 +24,13 @@ class	Webserv
 		// --- Public Methods ---
 		void		start(void);
 	private:
-		// c
-		// parseConfig(std::string File)
+		// --- Private Attributes ---
+		std::vector<Config> 	configs_;
+		std::vector<Server*> 	servers_;
+
+		// --- Private Methods ---
+		Server*		getServer(const std::string& host, int port);
+
 };
 
 #endif
