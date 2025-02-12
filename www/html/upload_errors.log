@@ -19,3 +19,5 @@
 2025-02-07 12:03:56 - ERROR: Upload failed for file: tree_1.jpg
 2025-02-07 12:04:28 - ERROR: Invalid file type:  for file: gfdgdfg
 2025-02-07 12:04:28 - ERROR: Upload failed for file: gfdgdfg
+2025-02-12 13:34:19 - ERROR: File already exists: en.subject.pdf
+2025-02-12 13:34:19 - ERROR: Upload failed for file: en.subject.pdf
