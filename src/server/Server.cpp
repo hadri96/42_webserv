@@ -324,7 +324,21 @@ void	Server::runInterpreter(HttpRequest& request, int clientFd)
 	Logger::logger()->log(LOG_DEBUG, "Run Interpreter");
 	try 
 	{
-		HttpResponse response = interpreter.interpret(request, config_);
+		HttpResponse response;
+
+		if (request.getHeader("Host") == config_.getHost())
+			response = interpreter.interpret(request, config_);
+		else
+		{
+			Config*	config = getConfigWithHost(request.getHeader("Host"));
+			if (config)
+				response = interpreter.interpret(request, *config);
+			else
+			{
+				Resource	resource(500);
+				response = HttpResponse(&resource);
+			}
+		}
 		client->assignResponse(response);
 		Logger::logger()->log(LOG_DEBUG, "response assigned to client");
 	}
@@ -365,4 +379,15 @@ void	Server::closeClientConnection(int clientFd, std::string message)
 	observer_->removeClientFromMonitor(clientFd);
 	Logger::logger()->log(LOG_DEBUG, "Closing client connection [fd = " + toString(clientFd) + "] : " + message);
 	close(clientFd);
+}
+
+
+Config*	Server::getConfigWithHost(std::string host)
+{
+	for (size_t i = 0; i < virtualHosts_.size(); i++)
+	{
+		if (virtualHosts_[i].getHost() == host)
+			return (&virtualHosts_[i]);
+	}
+	return (NULL);
 }
