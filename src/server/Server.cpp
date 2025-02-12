@@ -324,21 +324,16 @@ void	Server::runInterpreter(HttpRequest& request, int clientFd)
 	Logger::logger()->log(LOG_DEBUG, "Run Interpreter");
 	try 
 	{
-		HttpResponse response;
+		HttpResponse 	response;
+		std::string		hostHeader = request.getHeader("Host");
+		std::string		hostName = hostHeader.substr(0, hostHeader.find(':'));
+		Config*			config = getConfigWithHost(hostName);
 
-		if (request.getHeader("Host") == config_.getHost())
-			response = interpreter.interpret(request, config_);
+		if (config)
+			response = interpreter.interpret(request, *config);
 		else
-		{
-			Config*	config = getConfigWithHost(request.getHeader("Host"));
-			if (config)
-				response = interpreter.interpret(request, *config);
-			else
-			{
-				Resource	resource(500);
-				response = HttpResponse(&resource);
-			}
-		}
+			response = interpreter.interpret(request, config_);
+
 		client->assignResponse(response);
 		Logger::logger()->log(LOG_DEBUG, "response assigned to client");
 	}
@@ -386,8 +381,11 @@ Config*	Server::getConfigWithHost(std::string host)
 {
 	for (size_t i = 0; i < virtualHosts_.size(); i++)
 	{
-		if (virtualHosts_[i].getHost() == host)
+		Logger::logger()->log(LOG_DEBUG, "getConfigWithHost : " + virtualHosts_[i].getServerName());	
+		if (virtualHosts_[i].getServerName() == host)
+		{
 			return (&virtualHosts_[i]);
+		}
 	}
 	return (NULL);
 }
