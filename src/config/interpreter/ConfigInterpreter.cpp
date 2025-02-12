@@ -211,6 +211,16 @@ bool	ConfigInterpreter::isDirectiveValidInContext(std::string directive, std::ve
     return false;
 }
 
+bool	ConfigInterpreter::hasHostAndPort(const std::string& host, int port)
+{
+	for (size_t i = 0; i != configs_.size(); ++i)
+	{
+		if (configs_[i].getHost() == host && configs_[i].getPort() == port)
+			return (true);
+	}
+	return (false);
+}
+
 // =============================================================================
 // Handlers
 // =============================================================================
@@ -310,6 +320,9 @@ void	ConfigInterpreter::handleListen(ConfigParserNode* node)
 
 		if (p < 1 || p > 65535)
 			throw std::runtime_error("Directive `" + node->getName() + "` : port number must be between 1 and 65535");
+
+		if (hasHostAndPort(host, toInt(port)))
+			throw std::runtime_error("Directive `" + node->getName() + "` : server with host and port previously defined");
 		
 		configs_.back().setHost(host);
 		configs_.back().setPort(toInt(port));

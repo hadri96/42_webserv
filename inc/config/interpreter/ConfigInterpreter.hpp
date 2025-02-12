@@ -45,6 +45,7 @@ class	ConfigInterpreter
 		ConfigInterpreterRule*	getRule(std::vector<std::string>& context);
 
 		bool				checkNumberOfParameters(int has, int must);
+		bool				hasHostAndPort(const std::string& host, int port);
 
 		// --- Handlers ---
 		void				handleBlock(ConfigParserNode* node);
