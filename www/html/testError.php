@@ -1,3 +1,7 @@
 <?php
-	echo
+	//aksfjlfas
+	while (1)
+	{
+		echo "infinite ";
+	}
 ?>

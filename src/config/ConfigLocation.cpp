@@ -13,9 +13,7 @@ ConfigLocation::ConfigLocation(void) :
 	autoIndex_(false),
 	defaultFile_(),
 	uploadDirectory_(),
-	clientMaxBodySize_(-1),
-	isCgi_(false),
-	cgi_()
+	clientMaxBodySize_(-1)
 {}
 
 ConfigLocation::ConfigLocation(const ConfigLocation& other) :
@@ -26,9 +24,7 @@ ConfigLocation::ConfigLocation(const ConfigLocation& other) :
 	autoIndex_(other.autoIndex_),
 	defaultFile_(other.defaultFile_),
 	uploadDirectory_(other.uploadDirectory_),
-	clientMaxBodySize_(other.clientMaxBodySize_),
-	isCgi_(other.isCgi_),
-	cgi_(other.cgi_)
+	clientMaxBodySize_(other.clientMaxBodySize_)
 {}
 ConfigLocation::~ConfigLocation(void)
 {}
@@ -49,8 +45,6 @@ ConfigLocation&	ConfigLocation::operator=(const ConfigLocation& rhs)
 	autoIndex_ = rhs.autoIndex_;
 	defaultFile_ = rhs.defaultFile_;
 	uploadDirectory_ = rhs.uploadDirectory_;
-	isCgi_ = rhs.isCgi_;
-	cgi_ = rhs.cgi_;
 
 	return (*this);
 }
@@ -165,16 +159,6 @@ void	ConfigLocation::setUploadDirectory(const Path& uploadDirectory)
 	uploadDirectory_ = uploadDirectory;
 }
 
-void	ConfigLocation::setIsCgi(bool isCgi)
-{
-	isCgi_ = isCgi;
-}
-
-void	ConfigLocation::setCgi(const ConfigCgi& cgi)
-{
-	cgi_ = cgi;
-}
-
 void	ConfigLocation::addAllowedMethod(HttpMethodType method)
 {
 	allowedMethods_.push_back(method);
@@ -215,16 +199,6 @@ const Path&	ConfigLocation::getDefaultFile(void) const
 const Path&	ConfigLocation::getUploadDirectory(void) const
 {
 	return (uploadDirectory_);
-}
-
-bool	ConfigLocation::getIsCgi(void) const
-{
-	return (isCgi_);
-}
-
-const ConfigCgi&	ConfigLocation::getCgi(void) const
-{
-	return (cgi_);
 }
 
 const std::vector<HttpMethodType>&	ConfigLocation::getAllowedMethods(void) const

@@ -10,6 +10,9 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "Resource.hpp"
+#include "ResourceDefault.hpp"
+
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
@@ -20,7 +23,6 @@ Cgi::Cgi(void)
 Cgi::Cgi(Config& config, HttpRequest& request)
 {
 	char 	cwd[1024];
-
 	std::cout << getcwd(cwd, sizeof(cwd)) << std::endl;
 
 	Uri                 uri = request.getUri();
@@ -30,10 +32,11 @@ Cgi::Cgi(Config& config, HttpRequest& request)
 	phpScriptPath = phpScriptPath / uri;
 	// chdir somewhere here
 	
-	cgiExecutable_ = phpScriptPath.getAbsPath();
+	cgiScriptPath_ = phpScriptPath.getAbsPath();
+	cgiExecutable_ = config.getConfigCgi().getExecutable();
 
-	cgiScriptPath_ = Path("/usr/bin/php-cgi"); // php-cgi and not php
-	//cgiScriptPath_ = Path("/run/current-system/sw/bin/php-cgi");
+	std::cout << "cgi_executable : " << cgiExecutable_ << std::endl;
+	std::cout << "cgi_script_path : " << cgiScriptPath_ << std::endl;
 
 	prepareCgiEnvironment(config, request);
 }
@@ -48,14 +51,15 @@ Cgi::~Cgi()
 // Public Methods
 // =============================================================================
 
-int    Cgi::runCgi(std::string& output, HttpRequest& request) 
+Resource*    Cgi::runCgi(HttpRequest& request, Config& config) 
 {
+	(void) config;
+	std::string		output;
 	std::string		requestData = request.getBody(); // Just the body
 
 	int             pipe_stdin[2];  // Pipe for sending data to php-cgi's stdin
-	int             pipe_stdout[2]; // Pipe for receiving data from php-cgi's stdout
-	int				pipe_stderr[2]; // Pipe for receiving data from php-cgi's stderr
-
+	int             pipe_stdout[2]; // Pipe for receiving data from php-cgi's stdou
+	
 	std::string		cgiExecutableStr = cgiExecutable_;
 	std::string		cgiScriptPathStr = cgiScriptPath_;
 
@@ -63,8 +67,7 @@ int    Cgi::runCgi(std::string& output, HttpRequest& request)
 
 	// Create pipes
 	if (pipe(pipe_stdin) == -1 || 
-		pipe(pipe_stdout) == -1 ||
-		pipe(pipe_stderr) == -1)
+		pipe(pipe_stdout) == -1)
 	{
 		Logger::logger()->log(LOG_ERROR, "Pipe creation failed");
 		throw std::runtime_error("pipe");
@@ -78,30 +81,25 @@ int    Cgi::runCgi(std::string& output, HttpRequest& request)
 	if (pid == -1)
 	{
 		Logger::logger()->log(LOG_ERROR, "Fork failed");
+		return (new Resource(500));
 		throw std::runtime_error("fork");
 	}
 
 	if (pid == 0) // --- Child process (php-cgi) ---
 	{ 
-		Logger::logger()->log(LOG_DEBUG, "In child process, redirecting stdin, stdout and stderr");
+		Logger::logger()->log(LOG_DEBUG, "In child process, redirecting stdin and stdout");
 
 		// Redirect stdin and stdout
 		if (dup2(pipe_stdin[0], STDIN_FILENO) == -1)
 		{
 			Logger::logger()->log(LOG_ERROR, "dup2 stdin failed");
-			exit(1);
+			return (new Resource(500));
 		}
 
 		if (dup2(pipe_stdout[1], STDOUT_FILENO) == -1)
 		{
 			Logger::logger()->log(LOG_ERROR, "dup2 stdout failed");
-			exit(1);
-		}
-
-		if (dup2(pipe_stdout[1], STDERR_FILENO) == -1)
-		{
-			Logger::logger()->log(LOG_ERROR, "dup2 stderr failed");
-			exit(1);
+			return (new Resource(500));
 		}
 
 		// Close unused pipe ends
@@ -109,20 +107,47 @@ int    Cgi::runCgi(std::string& output, HttpRequest& request)
 		close(pipe_stdin[1]);
 		close(pipe_stdout[0]);
 		close(pipe_stdout[1]);
-		close(pipe_stderr[0]);
-		close(pipe_stderr[1]);
-
-		//Logger::logger()->log(LOG_DEBUG, "Executing php-cgi");
 		
-		// Execute php-cgi
-		char* args[3];
-		args[0] = const_cast<char*>(cgiScriptPathStr.c_str());
-		args[1] = const_cast<char*>(cgiExecutableStr.c_str());
-		args[2] = NULL;
+		// Execute php-cgi with extra parameters specified in config file 
+		// Step 1: Split the string by whitespaces
+		std::vector<std::string> argsVec;
+		std::string parameters = config.getConfigCgi().getParameters();
+		std::istringstream stream(parameters);
+		std::string word;
+		
+		while (stream >> word) {
+			argsVec.push_back(word);  // Store each word (argument)
+		}
+
+		// Step 2: Count the number of arguments (we add 3 for the executable, script path and NULL)
+		size_t count_of_args = argsVec.size() + 3;
+
+		// Step 3: Allocate memory for the arguments array
+		char* args[count_of_args];
+		
+		// Add the executable path
+		args[0] = const_cast<char*>(cgiExecutableStr.c_str());
+
+		// Add the arguments from the split string
+		for (size_t i = 0; i != argsVec.size(); ++i)
+		{
+			args[i + 1] = const_cast<char*>(argsVec[i].c_str());
+		}
+
+		// Add the script path as the second to last argument
+		args[count_of_args - 2] = const_cast<char*>(cgiScriptPathStr.c_str());
+
+		// Null-terminate the arguments array
+		args[count_of_args - 1] = NULL;
+
+		// Debugging output: printing the arguments
+		for (size_t i = 0; i < count_of_args; ++i) {
+			std::cout << "args[" << i << "]: " << args[i] << std::endl;
+		}
 
 		execve(args[0], args, cgiEnv_);
 		Logger::logger()->log(LOG_ERROR, "exec failed");
-		exit(1);
+		return (new Resource(500));
 	}
 	else // --- Parent process (webserv) ---
 	{ 
@@ -162,11 +187,12 @@ int    Cgi::runCgi(std::string& output, HttpRequest& request)
 		Logger::logger()->log(LOG_DEBUG, "Final output size: " + toString(output.size()) + " bytes");
 		Logger::logger()->log(LOG_DEBUG, "Sending response to client");
 
-		std::cout << "--- Output ---" << std::endl;
-		std::cout << output << std::endl;
-		std::cout << "--- /Output ---" << std::endl;
+		std::string outputHeaders = output.substr(0, output.find("\r\n\r\n"));
+		std::cout << "headers : " << outputHeaders << std::endl;
 	}
-	return (0);
+
+	std::string outputBody = output.substr(output.find("\r\n\r\n") + 4);
+	return (new Resource(200, outputBody));
 }
 
 
@@ -181,7 +207,7 @@ void    Cgi::prepareCgiEnvironment(Config& config, HttpRequest& request)
 	(void) config;
 
 	// Absolute path to script
-	env["SCRIPT_FILENAME"] = cgiExecutable_; // Use full filesystem path
+	env["SCRIPT_FILENAME"] = cgiScriptPath_; // Use full filesystem path
 	
 	// Required for PHP-CGI security check
 	env["REDIRECT_STATUS"] = "200";

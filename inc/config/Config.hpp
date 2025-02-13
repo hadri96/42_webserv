@@ -46,6 +46,9 @@ class	Config
 		void							addConfigLocation(const ConfigLocation& location);
 		std::vector<ConfigLocation>&	getConfigLocations(void);
 		const ConfigLocation*			getConfigLocation(Uri uri) const;
+
+		void							addConfigCgi(const ConfigCgi& cgi);
+		ConfigCgi&						getConfigCgi(void);
 						
 		bool							checkPathInConfig(Uri& uri, Path& outputPath) const;
 
@@ -72,6 +75,9 @@ class	Config
 		int								clientMaxBodySize_;
 
 		std::vector<ConfigLocation>		locations_;
+
+		ConfigCgi						cgi_;
+
 
 		// --- Private Methods ---
 	

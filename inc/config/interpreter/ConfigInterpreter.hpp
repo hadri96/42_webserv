@@ -61,6 +61,9 @@ class	ConfigInterpreter
 		void				handleRoot(ConfigParserNode* node);
 		void				handleAutoIndex(ConfigParserNode* node);
 		void				handleDeny(ConfigParserNode* node);
+
+		void				handleCgiExec(ConfigParserNode* node);
+		void				handleCgiParams(ConfigParserNode* node);
 };
 
 #endif

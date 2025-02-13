@@ -4,18 +4,13 @@
 // Constructors and Destructor
 // =============================================================================
 
-ConfigCgi::ConfigCgi(void) :
-	fileExtension_(".php"),
-	rootPath_(),
-	scriptPath_(),
-	workingDirectory_()
+ConfigCgi::ConfigCgi(void)
 {}
 
 ConfigCgi::ConfigCgi(const ConfigCgi& other) :
-	fileExtension_(other.fileExtension_),
-	rootPath_(other.rootPath_),
-	scriptPath_(other.scriptPath_),
-	workingDirectory_(other.workingDirectory_)
+	extensions_(other.extensions_),
+	executable_(other.executable_),
+	parameters_(other.parameters_)
 {}
 
 ConfigCgi::~ConfigCgi()
@@ -30,10 +25,9 @@ ConfigCgi&	ConfigCgi::operator=(const ConfigCgi& rhs)
 	if (this == &rhs)
 		return (*this);
 
-	fileExtension_ = rhs.fileExtension_;
-	rootPath_ = rhs.rootPath_;
-	scriptPath_ = rhs.scriptPath_;
-	workingDirectory_ = rhs.workingDirectory_;
+	extensions_ = rhs.extensions_;
+	executable_ = rhs.executable_;
+	parameters_ = rhs.parameters_;
 
 	return (*this);
 }
@@ -43,55 +37,44 @@ ConfigCgi&	ConfigCgi::operator=(const ConfigCgi& rhs)
 // =============================================================================
 
 // --- Setters ---
-
-void	ConfigCgi::setFileExtension(const std::string& fileExtension)
+void	ConfigCgi::setExecutable(Path executable)
 {
-	fileExtension_ = fileExtension;
+	executable_ = executable;
 }
 
-void	ConfigCgi::setRootPath(const Path& rootPath)
+void	ConfigCgi::setParameters(const std::string& parameters)
 {
-	rootPath_ = rootPath;
+	parameters_ = parameters;
 }
 
-void	ConfigCgi::setScriptPath(const Path& scriptPath)
+void	ConfigCgi::addExtension(const std::string& extension)
 {
-	scriptPath_ = scriptPath;
-}
-
-void	ConfigCgi::setWorkingDirectory(const Path& workingDirectory)
-{
-	workingDirectory_ = workingDirectory;
-}
-
-void	ConfigCgi::addAllowedMethod(HttpMethodType allowedMethod)
-{
-	allowedMethods_.push_back(allowedMethod);
+	extensions_.push_back(extension);
 }
 
 // --- Getters ---
-
-const std::string&	ConfigCgi::getFileExtension(void) const
+Path	ConfigCgi::getExecutable(void) const
 {
-	return (fileExtension_);
+	return (executable_);
 }
 
-const Path&	ConfigCgi::getRootPath(void) const
+std::string	ConfigCgi::getParameters(void) const
 {
-	return (rootPath_);
+	return (parameters_);
 }
 
-const Path&	ConfigCgi::getScriptPath(void) const
+std::vector<std::string> ConfigCgi::getExtensions(void) const
 {
-	return (scriptPath_);
+	return (extensions_);
 }
 
-const Path&	ConfigCgi::getWorkingDirectory(void) const
+#include <iostream>
+bool	ConfigCgi::hasExtension(const std::string& extension)
 {
-	return (workingDirectory_);
-}
-
-const std::vector<HttpMethodType>&	ConfigCgi::getAllowedMethods(void) const
-{
-	return (allowedMethods_);
+	for (size_t i = 0; i != extensions_.size(); ++i)
+	{
+		if (extensions_[i] == extension)
+			return (true);
+	}
+	return (false);
 }

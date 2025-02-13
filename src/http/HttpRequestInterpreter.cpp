@@ -227,7 +227,7 @@ Resource*	HttpRequestInterpreter::createResourceFile(Config& config, HttpRequest
 		return (createResourceError(config, 404));
 	}
 	
-	if (path.getExtension() == "php")
+	if (config.getConfigCgi().hasExtension(path.getExtension()))
 	{
 		Logger::logger()->log(LOG_DEBUG, "createResourceFile : the resource is a php script");
 		return (createResourceCgi(config, request));
@@ -321,18 +321,16 @@ Resource*	HttpRequestInterpreter::createResourceDirectory(Config& config, HttpRe
 Resource*        HttpRequestInterpreter::createResourceCgi(Config& config, HttpRequest& request)
 {
 	Cgi             cgi(config, request);
-	std::string     cgiOutput;
-	int				cgiProcessCode = cgi.runCgi(cgiOutput, request);
 
-	if (cgiProcessCode == 1)
+	/*if (cgiProcessCode == 1)
 		return (createResourceError(config, 500));
 	else if (cgiProcessCode == 2)
-		return (createResourceError(config, 408));
+		return (createResourceError(config, 408));*/
 
-	Resource*       cgiResource = new Resource(200, cgiOutput);
-	cgiResource->setMimeType("text/html");
+	
 
-	return (cgiResource);
+
+	return (cgi.runCgi(request, config));
 }
 
 // ·············································································

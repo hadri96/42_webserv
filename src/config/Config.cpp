@@ -27,7 +27,8 @@ Config::Config(const Config& other) :
 	errorPages_(other.errorPages_),
 	redirection_(other.redirection_),
 	clientMaxBodySize_(other.clientMaxBodySize_),
-	locations_(other.locations_)
+	locations_(other.locations_),
+	cgi_(other.cgi_)
 {}
 
 Config::~Config(void)
@@ -49,6 +50,7 @@ Config&	Config::operator=(const Config& rhs)
 	redirection_ = rhs.redirection_;
 	clientMaxBodySize_ = rhs.clientMaxBodySize_;
 	locations_ = rhs.locations_;
+	cgi_ = rhs.cgi_;
 
 	return (*this);
 }
@@ -95,6 +97,23 @@ void	Config::log(void)
 	Logger::logger()->log(LOG_DEBUG, oss);
 
 	oss << "  client max body size : " << getClientMaxBodySize();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	// Cgi
+	std::string extensions;
+	for (size_t i = 0; i != getConfigCgi().getExtensions().size(); ++i)
+	{
+		extensions.append(getConfigCgi().getExtensions()[i]);
+		if (i != getConfigCgi().getExtensions().size() - 1)
+			extensions.append(" ");
+	}
+	oss << "  cgi_extensions : " << extensions;
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	oss << "  cgi_exec : " << getConfigCgi().getExecutable();
+	Logger::logger()->log(LOG_DEBUG, oss);
+
+	oss << "  cgi_params : " << getConfigCgi().getParameters();
 	Logger::logger()->log(LOG_DEBUG, oss);
 
 	// Error pages
@@ -155,6 +174,11 @@ void	Config::addConfigLocation(const ConfigLocation& location)
 	locations_.push_back(location);
 }
 
+void	Config::addConfigCgi(const ConfigCgi& cgi)
+{
+	cgi_ = cgi;
+}
+
 // --- Getters ---
 
 const std::string&	Config::getHost(void) const
@@ -175,6 +199,11 @@ const std::string&	Config::getServerName(void) const
 ConfigRedirection&	Config::getConfigRedirection(void)
 {
 	return (redirection_);
+}
+
+ConfigCgi&	Config::getConfigCgi(void)
+{
+	return (cgi_);
 }
 
 int	Config::getClientMaxBodySize(void) const

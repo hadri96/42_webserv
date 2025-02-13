@@ -17,14 +17,13 @@ class Cgi
 						~Cgi();
 
 		// --- Public Methods ---
-		int				runCgi(std::string& output, HttpRequest& request);
+		Resource*		runCgi(HttpRequest& request, Config& config);
 
 	private:
 		// --- Private Attributes ---
 		char**			cgiEnv_;
 		Path			cgiScriptPath_;
 		Path			cgiExecutable_;
-
 
 		// --- Private Methods ---
 		void			prepareCgiEnvironment(Config& config, HttpRequest& request);
