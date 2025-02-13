@@ -286,7 +286,6 @@ void Server::handleRequestFromClient(int clientFd)
     request.setRawRequest(httpRequestRaw);
     client->assignRequest(request);
 
-    // Read the body if it exists (POST requests)
     if (request.getMethod() == POST) 
 	{
         std::string contentLengthStr = request.getHeader("Content-Length");
@@ -295,8 +294,8 @@ void Server::handleRequestFromClient(int clientFd)
             size_t 		contentLength = toInt(contentLengthStr);
             size_t 		bodyStartPos = httpRequestRaw.find("\r\n\r\n") + 4;
             size_t 		bodyBytesRead = httpRequestRaw.size() - bodyStartPos;
-            // Read body
-            while (bodyBytesRead < contentLength) 
+            
+			while (bodyBytesRead < contentLength) 
 			{
                 bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
                 if (bytesRead <= 0) 
@@ -304,14 +303,15 @@ void Server::handleRequestFromClient(int clientFd)
                 httpRequestRaw.append(buffer, bytesRead);
                 bodyBytesRead += bytesRead;
             }
-            // Update the request body
             std::string body = httpRequestRaw.substr(bodyStartPos, contentLength);
             request.setBody(body);
         }
     }
 
     if (bytesRead < 0) 
-		closeClientConnection(clientFd, "read error");
+		closeClientConnection(clientFd, "read error (recv function)");
+	else if (bytesRead == 0)
+		closeClientConnection(clientFd, "request terminated");
     else
     	runInterpreter(request, clientFd);
 }
@@ -321,7 +321,6 @@ void	Server::runInterpreter(HttpRequest& request, int clientFd)
 	HttpRequestInterpreter 		interpreter = HttpRequestInterpreter(this);
 	Client* 					client = getClient(clientFd);
 
-	Logger::logger()->log(LOG_DEBUG, "Run Interpreter");
 	try 
 	{
 		HttpResponse 	response;
@@ -335,7 +334,6 @@ void	Server::runInterpreter(HttpRequest& request, int clientFd)
 			response = interpreter.interpret(request, config_);
 
 		client->assignResponse(response);
-		Logger::logger()->log(LOG_DEBUG, "response assigned to client");
 	}
 	catch (std::exception& e)
 	{
@@ -359,20 +357,24 @@ void    Server::sendResponseToClient(int clientFd)
         sent = send(clientFd, (fullResponse.c_str() + bytesSent), chunkSize, MSG_NOSIGNAL);
         if (sent < 0) 
         {
-			Logger::logger()->log(LOG_DEBUG, "error in send function");
             closeClientConnection(clientFd, "Error in send() function.");
             return;
         }
+		if (sent == 0)
+		{
+			Logger::logger()->log(LOG_INFO, "finished sending response to client");
+			return;
+		}
         bytesSent += sent;
     }
-	Logger::logger()->log(LOG_DEBUG, "finished sending response to client");
+	Logger::logger()->log(LOG_INFO, "finished sending response to client");
 }
 
 void	Server::closeClientConnection(int clientFd, std::string message)
 {
 	unregisterClient(getClient(clientFd));
 	observer_->removeClientFromMonitor(clientFd);
-	Logger::logger()->log(LOG_DEBUG, "Closing client connection [fd = " + toString(clientFd) + "] : " + message);
+	Logger::logger()->log(LOG_INFO, "Closing client connection [fd = " + toString(clientFd) + "] : " + message);
 	close(clientFd);
 }
 

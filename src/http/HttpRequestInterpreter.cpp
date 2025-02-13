@@ -322,9 +322,12 @@ Resource*        HttpRequestInterpreter::createResourceCgi(Config& config, HttpR
 {
 	Cgi             cgi(config, request);
 	std::string     cgiOutput;
+	int				cgiProcessCode = cgi.runCgi(cgiOutput, request);
 
-	if (cgi.runCgi(cgiOutput, request) != 0)
+	if (cgiProcessCode == 1)
 		return (createResourceError(config, 500));
+	else if (cgiProcessCode == 2)
+		return (createResourceError(config, 408));
 
 	Resource*       cgiResource = new Resource(200, cgiOutput);
 	cgiResource->setMimeType("text/html");
