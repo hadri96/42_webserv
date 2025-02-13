@@ -223,9 +223,6 @@ void        HttpRequest::log()
 
     Logger::logger()->log(LOG_DEBUG, headersLog);
 
-    if (inputs_.empty())
-        Logger::logger()->log(LOG_DEBUG, "inputs empty !!!");
-
     std::string             inputsLog = "inputs : \n";
 
     for (it = inputs_.begin(); it != inputs_.end(); ++it)

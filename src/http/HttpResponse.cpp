@@ -92,11 +92,6 @@ HttpResponse& HttpResponse::operator=(const HttpResponse& other)
 {
     if (this != &other)
     {
-        std::cerr << "HttpResponse Copy Assignment Called" << std::endl;
-        std::cerr << "Copying from HttpResponse: statusLine = " << other.statusLine_ << std::endl;
-        std::cerr << "Headers: " << other.headers_ << std::endl;
-        std::cerr << "Body size: " << other.body_.size() << std::endl;
-
         if (other.statusLine_.empty()) 
         {
             std::cerr << "ERROR: HttpResponse being copied has an EMPTY status line!" << std::endl;
