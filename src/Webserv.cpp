@@ -85,7 +85,13 @@ Webserv::Webserv(const std::string& configFile)
 }
 
 Webserv::~Webserv(void)
-{}
+{
+	for (size_t i = 0; servers_.size(); ++i)
+	{
+		delete servers_[i];
+	}
+	servers_.clear();
+}
 
 // =============================================================================
 // Operators Overload

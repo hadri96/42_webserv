@@ -19,6 +19,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include <sstream> // std::ostringstream
 #include "Logger.hpp"
@@ -47,24 +48,30 @@ ConfigInterpreter::ConfigInterpreter(void) :
 
 	// --- Context : root, http, server ---
 	const char* context3[]		= {"root", "http", "server", 0};
-	const char*	blocks3[]		= {"location", 0};
+	const char*	blocks3[]		= {"location", "cgi", 0};
 	const char* directives3[]	= {"server_name", "listen", "error_page", "client_max_body_size", 0};
 
 	// --- Context : root, http, server, location ---
 	const char* context4[]		= {"root", "http", "server", "location", 0};
 	const char* blocks4[]		= {"limit_except", 0};
 	const char* directives4[]	= {"root", "autoindex", "index", "return", "client_max_body_size", 0};
+
+	// --- Context : root, http, server, cgi ---
+	const char* context5[]		= {"root", "http", "server", "cgi", 0};
+	const char* blocks5[]		= {0};
+	const char* directives5[]	= {"cgi_exec", "cgi_params", 0};
 	
 	// --- Context : root, http, server, location, limit_except ---
-	const char* context5[]		= {"root", "http", "server", "location", "limit_except", 0};
-	const char* blocks5[]		= {0};
-	const char* directives5[]	= {"deny", 0};
+	const char* context6[]		= {"root", "http", "server", "location", "limit_except", 0};
+	const char* blocks6[]		= {0};
+	const char* directives6[]	= {"deny", 0};
 
 	addRule(ConfigInterpreterRule(context1, blocks1, directives1));
 	addRule(ConfigInterpreterRule(context2, blocks2, directives2));
 	addRule(ConfigInterpreterRule(context3, blocks3, directives3));
 	addRule(ConfigInterpreterRule(context4, blocks4, directives4));
 	addRule(ConfigInterpreterRule(context5, blocks5, directives5));
+	addRule(ConfigInterpreterRule(context6, blocks6, directives6));
 
 	for (size_t i = 0; i != rules_.size(); ++i)
 	{
@@ -132,8 +139,6 @@ void	ConfigInterpreter::displayConfigs(void)
 		//std::cout << C_BLU << configs_[i] << RESET << std::endl;
 		configs_[i].log();
 	}
-
-
 }
 
 // =============================================================================
@@ -234,7 +239,6 @@ bool	ConfigInterpreter::hasDuplicateConfig(void)
 // Handlers
 // =============================================================================
 
-
 void	ConfigInterpreter::handleBlock(ConfigParserNode* node)
 {
 	Config& currentConfig = configs_.back();
@@ -255,6 +259,33 @@ void	ConfigInterpreter::handleBlock(ConfigParserNode* node)
 		
 		ConfigLocation& currentLocation = currentConfig.getConfigLocations().back();
 		currentLocation.setUri(Uri(node->getParameters()[0]));
+	}
+	else if (node->getName() == "cgi")
+	{
+		ConfigCgi newCgi;
+		size_t parametersCount = node->getParameters().size();
+
+		if (parametersCount < 1)
+			throw std::runtime_error("Block `" + node->getName() + "` : wrong number of parameter ; must have at least one parameter");
+		
+		for (size_t i = 0; i != parametersCount; ++i)
+		{
+			std::string current = node->getParameters()[i];
+		
+			if (current[0] && current[0] != '.')
+				throw std::runtime_error(node->getName() + " : extension must have exactly one dot at the beginning");
+
+
+			current = current.substr(1);
+			for (size_t i = 0; i != current.length(); ++i)
+			{
+				if (current[i] == '.')
+					throw std::runtime_error(node->getName() + " : extension must have exactly one dot at the beginning");
+			}
+			
+			newCgi.addExtension(current);
+		}
+		currentConfig.addConfigCgi(newCgi);
 	}
 	else if (node->getName() == "limit_except")
 	{
@@ -293,6 +324,10 @@ void	ConfigInterpreter::handleDirective(ConfigParserNode* node, const std::strin
 		handleIndex(node);
 	else if (node->getName() == "deny")
 		handleDeny(node);
+	else if (node->getName() == "cgi_exec")
+		handleCgiExec(node);
+	else if (node->getName() == "cgi_params")
+		handleCgiParams(node);
 }
 
 // --- Directive handlers ---
@@ -475,4 +510,33 @@ void	ConfigInterpreter::handleAutoIndex(ConfigParserNode* node)
 void	ConfigInterpreter::handleDeny(ConfigParserNode* node)
 {
 	(void) node;
+}
+
+void	ConfigInterpreter::handleCgiExec(ConfigParserNode* node)
+{
+	Config& currentConfig = configs_.back();
+	ConfigCgi& currentCgi = currentConfig.getConfigCgi();
+
+	if (node->getParameters().size() != 1)
+		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
+
+	currentCgi.setExecutable(Path(node->getParameters()[0]));
+}
+
+void	ConfigInterpreter::handleCgiParams(ConfigParserNode* node)
+{
+	Config& currentConfig = configs_.back();
+	ConfigCgi& currentCgi = currentConfig.getConfigCgi();
+
+	if (node->getParameters().size() < 1)
+		throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have at least one parameter");
+
+	std::string parameters;
+	for (size_t i = 0; i != node->getParameters().size(); ++i)
+	{
+		parameters.append(node->getParameters()[i]);
+		if (i != node->getParameters().size() - 1)
+			parameters.append(" ");
+	}
+	currentCgi.setParameters(parameters);
 }

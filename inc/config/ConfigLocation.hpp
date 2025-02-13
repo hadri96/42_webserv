@@ -5,9 +5,9 @@
 # include <vector>
 
 # include "Uri.hpp"
+# include "Path.hpp"
 # include "HttpMethodType.hpp"
 # include "ConfigRedirection.hpp"
-# include "ConfigCgi.hpp"
 
 class	ConfigLocation
 {
@@ -32,8 +32,6 @@ class	ConfigLocation
 
 	void								setDefaultFile(const Path& defaultFile);
 	void								setUploadDirectory(const Path& uploadDirectory);
-	void								setIsCgi(bool isCgi);
-	void								setCgi(const ConfigCgi& cgi);
 	void								addAllowedMethod(HttpMethodType method);
 
 	const Uri&							getUri(void) const;
@@ -43,8 +41,6 @@ class	ConfigLocation
 	bool								getAutoIndex(void) const;
 	const Path&							getDefaultFile(void) const;
 	const Path&							getUploadDirectory(void) const;
-	bool								getIsCgi(void) const;
-	const ConfigCgi&					getCgi(void) const;
 	const std::vector<HttpMethodType>&	getAllowedMethods(void) const;
 
 	void								setClientMaxBodySize(int clientMaxBodySize);
@@ -58,7 +54,7 @@ class	ConfigLocation
 	private:
 		// --- Private Attributes ---
 		Uri								uri_; // = uriSegment_;
-		Path							rootPath_; 
+		Path							rootPath_;
 
 		std::vector<HttpMethodType>		allowedMethods_;
 
@@ -69,9 +65,6 @@ class	ConfigLocation
 		Path							uploadDirectory_;
 
 		int								clientMaxBodySize_;
-
-		bool							isCgi_;
-		ConfigCgi						cgi_;
 };
 
 //std::ostream&							operator<<(std::ostream&, Location& object);
