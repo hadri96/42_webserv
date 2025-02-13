@@ -45,6 +45,7 @@ class	ConfigInterpreter
 		ConfigInterpreterRule*	getRule(std::vector<std::string>& context);
 
 		bool				checkNumberOfParameters(int has, int must);
+		bool				hasDuplicateConfig(void);
 
 		// --- Handlers ---
 		void				handleBlock(ConfigParserNode* node);

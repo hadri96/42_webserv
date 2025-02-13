@@ -183,6 +183,9 @@ void	ConfigInterpreter::interpret(
 		// --- Handle directive ---
 		handleDirective(node, parent);
 	}
+
+	if (hasDuplicateConfig())
+		throw std::runtime_error("Duplicate server block found (same host, port and server_name)"); // REVISIT : need to free memory
 }
 
 ConfigInterpreterRule*	ConfigInterpreter::getRule(std::vector<std::string>& context)
@@ -211,6 +214,22 @@ bool	ConfigInterpreter::isDirectiveValidInContext(std::string directive, std::ve
     return false;
 }
 
+bool	ConfigInterpreter::hasDuplicateConfig(void)
+{
+	if (currentConfig_ < 1)
+		return (false);
+
+	size_t current = currentConfig_;
+	size_t previous = currentConfig_ - 1;
+
+	if (configs_[current].getHost() == configs_[previous].getHost() && 
+		configs_[current].getPort() == configs_[previous].getPort() &&
+		configs_[current].getServerName() == configs_[previous].getServerName())
+		return (true);
+
+	return (false);
+}
+
 // =============================================================================
 // Handlers
 // =============================================================================
@@ -219,15 +238,17 @@ bool	ConfigInterpreter::isDirectiveValidInContext(std::string directive, std::ve
 void	ConfigInterpreter::handleBlock(ConfigParserNode* node)
 {
 	Config& currentConfig = configs_.back();
+
 	if (node->getName() == "server")
 	{
+		++currentConfig_;
 		Config newConfig;
 		configs_.push_back(newConfig);
 	}
 	else if (node->getName() == "location")
 	{
 		if (node->getParameters().size() != 1)
-			throw std::runtime_error("Directive `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
+			throw std::runtime_error("Block `" + node->getName() + "` : wrong number of parameter ; must have one parameter");
 
 		ConfigLocation newLocation;
 		currentConfig.addConfigLocation(newLocation);
@@ -286,7 +307,6 @@ void	ConfigInterpreter::handleServerName(ConfigParserNode* node)
 }
 void	ConfigInterpreter::handleListen(ConfigParserNode* node)
 {
-	(void) node;
 	//std::cout << "handleListen..." << std::endl;
 
 	if (node->getParameters().size() != 1)
