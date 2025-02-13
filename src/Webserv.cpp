@@ -58,8 +58,6 @@ Webserv::Webserv(const std::string& configFile)
 	}
 	*/
 
-	Logger::logger()->logTitle(LOG_INFO, "Starting servers from configuration file");
-
 	for (size_t i = 0; i != configs_.size(); ++i)
 	{
 		Server* existingServer = getServer(configs_[i].getHost(), configs_[i].getPort());
@@ -72,7 +70,9 @@ Webserv::Webserv(const std::string& configFile)
 			servers_.push_back(new Server(configs_[i], o));
 	}
 
+	checkForInvalidServer();
 
+	Logger::logger()->logTitle(LOG_INFO, "Starting servers from configuration file");
 	std::ostringstream oss;
 	for (size_t i = 0; i != servers_.size(); ++i)
 	{
@@ -109,4 +109,18 @@ Server*		Webserv::getServer(const std::string& host, int port)
 			return (servers_[i]);
 	}
 	return (0);
+}
+
+void	Webserv::checkForInvalidServer(void)
+{
+	size_t serverCount = servers_.size();
+
+	if (serverCount < 1)
+		throw std::runtime_error("Configuration : must have at least one server block and one listen directive");
+
+	for (size_t i = 0; i != serverCount; ++i)
+	{
+		if (servers_[i]->getInfoHostPort() == "[localhost:0]")
+			throw std::runtime_error("Configuration : found a server block with no listen directive");
+	}
 }
