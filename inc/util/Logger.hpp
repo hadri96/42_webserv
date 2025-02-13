@@ -32,6 +32,7 @@ class	Logger
 		std::string		getCurrentTime(void) const;
 		std::string		getLevel(LogLevel level) const;
 		std::string		getColor(int level) const;
+		static void		destroy(void);
 
 	public:
 		// --- Public Methods ---

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <ctime>
+#include <cstdlib>
 
 #include "Colors.hpp"
 #include "Logger.hpp"
@@ -15,6 +16,9 @@ int		Logger::width_ = 10;
 Logger::Logger()
 {}
 
+Logger::~Logger()
+{}
+
 // =============================================================================
 // Public Methods
 // =============================================================================
@@ -22,7 +26,11 @@ Logger::Logger()
 Logger*	Logger::logger(void)
 {
 	if (logger_ == 0)
+	{
 		logger_ = new Logger();
+		std::atexit(destroy);
+	}
+		
 	return (logger_);
 }
 // --- Title ---
@@ -148,4 +156,10 @@ std::string	Logger::getLevel(LogLevel level) const
 		default:
 			return ("[UNKNOWN]");
 	}
+}
+
+void	Logger::destroy(void)
+{
+	delete logger_;
+	logger_ = 0;
 }
