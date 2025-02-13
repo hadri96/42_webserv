@@ -330,7 +330,8 @@ void	ConfigInterpreter::handleListen(ConfigParserNode* node)
 
 		if (p < 1 || p > 65535)
 			throw std::runtime_error("Directive `" + node->getName() + "` : port number must be between 1 and 65535");
-		
+
+	
 		configs_.back().setHost(host);
 		configs_.back().setPort(toInt(port));
 	}
