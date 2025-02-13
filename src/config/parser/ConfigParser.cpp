@@ -33,7 +33,8 @@ ConfigParser::ConfigParser(const std::string& input) :
 
 ConfigParser::~ConfigParser(void)
 {
-	//delete root_;
+	delete root_;
+	root_ = 0;
 	delete lexer_;
 }
 
@@ -77,7 +78,6 @@ void	ConfigParser::display(void)
 	Logger::logger()->logTitle(LOG_DEBUG, "Parsing the configuration file");
 	displayBlock(root_);
 }
-
 
 // =============================================================================
 // Private Methods

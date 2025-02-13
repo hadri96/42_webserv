@@ -23,7 +23,13 @@ ConfigParserBlock::ConfigParserBlock(const std::string& name, const std::vector<
 {}
 
 ConfigParserBlock::~ConfigParserBlock(void)
-{}
+{
+    for (size_t i = 0; i < nodes_.size(); ++i)
+    {
+        delete nodes_[i];
+    }
+    nodes_.clear();
+}
 
 // =============================================================================
 // Operators Overload
