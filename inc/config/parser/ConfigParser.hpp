@@ -26,6 +26,7 @@ class	ConfigParser
 		// --- Public Methods ---
 		void				parse(void);
 		void				display(void);
+		void				destroy(void);
 	
 	private:
 		// --- Private Attributes ---
