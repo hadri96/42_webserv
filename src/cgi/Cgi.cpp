@@ -30,9 +30,13 @@ Cgi::Cgi(Config& config, HttpRequest& request)
 	Path				phpScriptPath = *phpScript;
 	
 	phpScriptPath = phpScriptPath / uri;
+
+	
 	// chdir somewhere here
 	
 	cgiScriptPath_ = phpScriptPath.getAbsPath();
+
+
 	cgiExecutable_ = config.getConfigCgi().getExecutable();
 
 	std::cout << "cgi_executable : " << cgiExecutable_ << std::endl;
@@ -62,6 +66,11 @@ Resource*    Cgi::runCgi(HttpRequest& request, Config& config)
 	
 	std::string		cgiExecutableStr = cgiExecutable_;
 	std::string		cgiScriptPathStr = cgiScriptPath_;
+
+	Path				currentDir = currentDir.getAbsPath();
+
+	Path workingDir = cgiScriptPath_.getParent();
+	chdir(std::string(workingDir).c_str());
 
 	Logger::logger()->log(LOG_DEBUG, "Creating pipes");
 
@@ -110,12 +119,13 @@ Resource*    Cgi::runCgi(HttpRequest& request, Config& config)
 		
 		// Execute php-cgi with extra parameters specified in config file 
 		// Step 1: Split the string by whitespaces
-		std::vector<std::string> argsVec;
-		std::string parameters = config.getConfigCgi().getParameters();
-		std::istringstream stream(parameters);
-		std::string word;
+		std::vector<std::string> 	argsVec;
+		std::string 				parameters = config.getConfigCgi().getParameters();
+		std::istringstream 			stream(parameters);
+		std::string 				word;
 		
-		while (stream >> word) {
+		while (stream >> word) 
+		{
 			argsVec.push_back(word);  // Store each word (argument)
 		}
 
@@ -141,7 +151,8 @@ Resource*    Cgi::runCgi(HttpRequest& request, Config& config)
 		args[count_of_args - 1] = NULL;
 
 		// Debugging output: printing the arguments
-		for (size_t i = 0; i < count_of_args; ++i) {
+		for (size_t i = 0; i < count_of_args; ++i) 
+		{
 			std::cout << "args[" << i << "]: " << args[i] << std::endl;
 		}
 
@@ -174,14 +185,13 @@ Resource*    Cgi::runCgi(HttpRequest& request, Config& config)
 
 		while ((bytes_read = read(pipe_stdout[0], buffer, sizeof(buffer))) > 0)
 		{
-			Logger::logger()->log(LOG_DEBUG, "Read" +  toString(bytes_read) + " bytes from child process");
+			Logger::logger()->log(LOG_DEBUG, "Read " +  toString(bytes_read) + " bytes from child process");
 			output.append(buffer, bytes_read);
 		}
 
 		close(pipe_stdout[0]);
 
 		Logger::logger()->log(LOG_DEBUG, "Waiting for child process to finish");
-		// Wait for the php-cgi process to finish
 		waitpid(pid, 0, 0);
 
 		Logger::logger()->log(LOG_DEBUG, "Final output size: " + toString(output.size()) + " bytes");
@@ -192,6 +202,7 @@ Resource*    Cgi::runCgi(HttpRequest& request, Config& config)
 	}
 
 	std::string outputBody = output.substr(output.find("\r\n\r\n") + 4);
+	chdir(std::string(currentDir).c_str());
 	return (new Resource(200, outputBody));
 }
 

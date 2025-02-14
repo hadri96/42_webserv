@@ -6,7 +6,7 @@ INCLUDES = -I inc -I inc/config -I inc/config/lexer -I inc/config/parser -I inc/
 
 CC = c++
 
-CFLAGS = -Wall -Wextra -Werror $(INCLUDES) -std=c++98
+CFLAGS = -Wall -Wextra -Werror $(INCLUDES) -std=c++98 -g
 
 UNAME_S := $(shell uname -s)
 

@@ -322,14 +322,6 @@ Resource*        HttpRequestInterpreter::createResourceCgi(Config& config, HttpR
 {
 	Cgi             cgi(config, request);
 
-	/*if (cgiProcessCode == 1)
-		return (createResourceError(config, 500));
-	else if (cgiProcessCode == 2)
-		return (createResourceError(config, 408));*/
-
-	
-
-
 	return (cgi.runCgi(request, config));
 }
 
