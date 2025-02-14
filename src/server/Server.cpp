@@ -370,6 +370,7 @@ void    Server::sendResponseToClient(int clientFd)
 	Logger::logger()->log(LOG_INFO, "finished sending response to client");
 }
 
+
 void	Server::closeClientConnection(int clientFd, std::string message)
 {
 	unregisterClient(getClient(clientFd));
