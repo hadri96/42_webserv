@@ -14,26 +14,30 @@
 #include <csignal>  // For signal handling
 #include <cstdlib>  // For exit()
 
-void signalHandler(int signal) 
-{
-    std::cout << "\nSignal received: " << signal << ". Cleaning up...\n";
+// Global variable to track the status
+int gMustStop = 0;
 
-    // Free your allocated memory here.
-    // Example: If you have allocated memory dynamically:
-    // delete[] myAllocatedMemory;
-    
-    // Close sockets or other resources if applicable.
-    // Example: close(socket_fd);
-    
-    // Exit the program gracefully.
-    std::exit(signal);
+// Signal handler for SIGINT (Ctrl+C)
+void handleSigInt(int sig)
+{
+	std::cout << "Stopping the server..." << std::endl;
+	(void) sig;
+	gMustStop = 1;
 }
 
+// Signal handler for SIGQUIT (Ctrl+D or other quit signal)
+void handleSigQuit(int sig)
+{
+	std::cout << "Stopping the server..." << std::endl;
+	(void) sig;
+	gMustStop = 1;
+}
 
 int	main(int argc, char** argv)
 {
-	std::signal(SIGINT, signalHandler);  // SIGINT is triggered by Ctrl+C
-    std::signal(SIGTERM, signalHandler); // SIGTERM for termination signals
+	// Set signal handlers
+    signal(SIGINT, handleSigInt);   // Handle Ctrl+C
+    signal(SIGQUIT, handleSigQuit); // Handle Ctrl+D
 
 	std::string 	configPath;
 
@@ -45,6 +49,8 @@ int	main(int argc, char** argv)
 	try
 	{
 		Webserv webserv(configPath);
+		Logger::destroy();
+		std::cout << "--- Position : end of main ---" << std::endl;
 	}
 	catch(const std::exception& e)
 	{

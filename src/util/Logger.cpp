@@ -28,7 +28,6 @@ Logger*	Logger::logger(void)
 	if (logger_ == 0)
 	{
 		logger_ = new Logger();
-		std::atexit(destroy);
 	}
 		
 	return (logger_);
@@ -160,6 +159,8 @@ std::string	Logger::getLevel(LogLevel level) const
 
 void	Logger::destroy(void)
 {
-	delete logger_;
+	std::cout << "Logger : destroy method called" << std::endl;
+	if (logger_)
+		delete logger_;
 	logger_ = 0;
 }

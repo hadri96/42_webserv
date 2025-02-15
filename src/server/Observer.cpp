@@ -4,6 +4,8 @@
 #include "Logger.hpp"
 #include "ToString.hpp"
 
+#include "Global.hpp"
+
 // =============================================================================
 // Constructors and Destructor
 // =============================================================================
@@ -43,7 +45,7 @@ void	Observer::removeClientFromMonitor(int fd)
 
 void	Observer::monitorEvents(void)
 {
-	while (true)
+	while (!gMustStop)
 	{
 		int count = poll(fds_.data(), fds_.size(), -1);
 		
@@ -83,8 +85,8 @@ void	Observer::monitorEvents(void)
 			}
 		}
 	}
+	std::cout << "--- Position : observer loop stopped ---" << std::endl;
 }
-
 
 // =============================================================================
 // Private Methods
@@ -101,7 +103,6 @@ void	Observer::updatePollEvent(int clientFd, short newEvents)
 		}
 	}
 }
-
 
 bool	Observer::isServer(int fd)
 {
