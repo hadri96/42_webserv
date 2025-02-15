@@ -38,25 +38,10 @@ Webserv::Webserv(const std::string& configFile)
 	interpreter.interpret(parser.getRoot());
 	interpreter.displayConfigs();
 
-	//std::vector<Config> 	configs = interpreter.getConfigs();
 	configs_ = interpreter.getConfigs();
-
+	parser.destroy();
 
 	Observer* 				o = new Observer;
-	//std::vector<Server*> 	servers;
-
-	/*
-	const Location* foundLocation = configs[0].getLocation(Uri("/images"));
-	if (!foundLocation)
-	{
-		std::cout << "LOCATION NOT FOUND\n\n";
-	}
-	else
-	{
-		std::cout << "LOCATION FOUND\n\n";
-		std::cout << foundLocation->getRootPath().getPath();
-	}
-	*/
 
 	for (size_t i = 0; i != configs_.size(); ++i)
 	{
@@ -82,13 +67,28 @@ Webserv::Webserv(const std::string& configFile)
 		o->addServerToMonitor(servers_[i]);
 	}
 	o->monitorEvents();
+	if (o)
+	{
+		delete o;
+		o = 0;
+	}
 }
 
 Webserv::~Webserv(void)
 {
+	std::cout << "Webserv : destructor called" << std::endl;
+
+	if (servers_.size() == 0)
+		return ;
+
 	for (size_t i = 0; servers_.size(); ++i)
 	{
-		delete servers_[i];
+		if (servers_[i])
+		{
+			delete servers_[i];
+			servers_[i] = 0;
+		}		
+			
 	}
 	servers_.clear();
 }

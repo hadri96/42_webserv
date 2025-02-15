@@ -229,7 +229,6 @@ void	Server::unregisterClient(Client* client)
 {
 	if (client)
 	{
-		delete client;
 		for (std::vector<Client*>::iterator it = clients_.begin(); it != clients_.end(); ++it)
 		{
 			if (*it == client)
@@ -238,6 +237,7 @@ void	Server::unregisterClient(Client* client)
 				break ;
 			}
 		}
+		delete client;
 	}
 }
 

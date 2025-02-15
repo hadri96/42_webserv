@@ -19,7 +19,9 @@ ConfigLexer::ConfigLexer(const std::string& input) :
 {}
 
 ConfigLexer::~ConfigLexer(void)
-{}
+{
+	std::cout << "ConfigLexer : destructor called" << std::endl;
+}
 
 // =============================================================================
 // Operators Overload

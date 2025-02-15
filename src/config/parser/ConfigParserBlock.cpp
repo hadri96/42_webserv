@@ -26,7 +26,12 @@ ConfigParserBlock::~ConfigParserBlock(void)
 {
     for (size_t i = 0; i < nodes_.size(); ++i)
     {
-        delete nodes_[i];
+		if (nodes_[i])
+		{
+			delete nodes_[i];
+			nodes_[i] = 0;
+		}
+        	
     }
     nodes_.clear();
 }

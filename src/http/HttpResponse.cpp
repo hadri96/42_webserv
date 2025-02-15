@@ -67,7 +67,11 @@ HttpResponse::HttpResponse(Resource* resource)
     Logger::logger()->logTitle(LOG_DEBUG, "HTTP Response (without body)");
     Logger::logger()->log(LOG_DEBUG, statusLine_ + headers_, false);
 
-	delete resource;
+    if (resource)
+    {
+        delete resource;
+        resource = 0;
+    }	
 }
 
 HttpResponse::~HttpResponse()

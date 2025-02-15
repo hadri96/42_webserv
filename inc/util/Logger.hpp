@@ -32,7 +32,6 @@ class	Logger
 		std::string		getCurrentTime(void) const;
 		std::string		getLevel(LogLevel level) const;
 		std::string		getColor(int level) const;
-		static void		destroy(void);
 
 	public:
 		// --- Public Methods ---
@@ -43,6 +42,7 @@ class	Logger
 		void			log(LogLevel level, const std::string& message, bool prefix = true) const;
 		void			log(LogLevel level, const std::ostringstream& oss, bool reset = true) const;
 		// void			logStream(std::stringstream ss);
+		static void		destroy(void);
 };
 
 #endif

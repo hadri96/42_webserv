@@ -33,9 +33,8 @@ ConfigParser::ConfigParser(const std::string& input) :
 
 ConfigParser::~ConfigParser(void)
 {
-	delete root_;
-	root_ = 0;
-	delete lexer_;
+	std::cout << "ConfigParser : destructor called" << std::endl;
+	destroy();
 }
 
 // =============================================================================
@@ -77,6 +76,18 @@ void	ConfigParser::display(void)
 {
 	Logger::logger()->logTitle(LOG_DEBUG, "Parsing the configuration file");
 	displayBlock(root_);
+}
+
+void	ConfigParser::destroy(void)
+{
+
+	std::cout << "ConfigParser : destroy method called" << std::endl;
+	if (lexer_)
+		delete lexer_;
+	if (!root_)
+		return ;
+	delete root_;
+	root_ = 0;
 }
 
 // =============================================================================
