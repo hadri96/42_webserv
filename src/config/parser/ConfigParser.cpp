@@ -83,11 +83,15 @@ void	ConfigParser::destroy(void)
 
 	std::cout << "ConfigParser : destroy method called" << std::endl;
 	if (lexer_)
+	{
 		delete lexer_;
-	if (!root_)
-		return ;
-	delete root_;
-	root_ = 0;
+		lexer_ = 0;
+	}
+	if (root_)
+    {
+        delete root_;
+        root_ = 0;
+    }
 }
 
 // =============================================================================

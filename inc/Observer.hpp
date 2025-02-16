@@ -22,8 +22,8 @@ class	Server;
 class	Observer
 {
 	private:
-		std::vector<pollfd> fds_;
-		std::vector<Server*> servers_;
+		std::vector<pollfd>		fds_;
+		std::vector<Server*>	servers_;
 
 		bool				isServer(int fd);
 		void				updatePollEvent(int clientFd, short newEvents);
