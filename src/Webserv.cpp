@@ -78,10 +78,7 @@ Webserv::~Webserv(void)
 {
 	std::cout << "Webserv : destructor called" << std::endl;
 
-	if (servers_.size() == 0)
-		return ;
-
-	for (size_t i = 0; servers_.size(); ++i)
+	for (size_t i = 0; i != servers_.size(); ++i)
 	{
 		if (servers_[i])
 		{

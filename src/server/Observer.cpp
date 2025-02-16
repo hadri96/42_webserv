@@ -47,7 +47,9 @@ void	Observer::monitorEvents(void)
 {
 	while (!gMustStop)
 	{
-		int count = poll(fds_.data(), fds_.size(), -1);
+		int count = 0;
+		if (!fds_.empty())
+			count = poll(fds_.data(), fds_.size(), -1);
 		
 		if (count < 0)
 		{
