@@ -53,7 +53,8 @@ void	Observer::monitorEvents(void)
 		
 		if (count < 0)
 		{
-			Logger::logger()->log(LOG_ERROR, "Polling error");
+			if (!gMustStop)
+				Logger::logger()->log(LOG_ERROR, "Polling error");
 			break;
 		}
 
