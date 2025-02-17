@@ -28,7 +28,7 @@ Server::Server(void) :
 	fd_(0),
 	host_("0.0.0.0"),
 	port_(80),
-	maxConnections_(1024)
+	maxConnections_(512)
 {}
 
 Server::Server(const Server& other) : 
@@ -44,7 +44,7 @@ Server::Server(std::string host, int port, Observer* observer) :
 	fd_(0),
 	host_(host),
 	port_(port),
-	maxConnections_(1024)
+	maxConnections_(512)
 {
 	Logger::logger()->log(LOG_INFO, "Created a server block " + getInfoHostPort());
 }
@@ -155,6 +155,7 @@ void	Server::start(void)
 	}
 
 	// --- Listen ---
+	maxConnections_ = 1024; // REVISIT : add worker_connections in events block ?
 	if (listen(fd_, maxConnections_) < 0)
 	{
 		Logger::logger()->log(LOG_ERROR, "Listen failed");
