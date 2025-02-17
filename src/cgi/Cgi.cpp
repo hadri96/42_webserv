@@ -180,13 +180,22 @@ Resource*    Cgi::runCgi(HttpRequest& request, Config& config)
 		Logger::logger()->log(LOG_DEBUG, "Reading response from child process");
 
 		// Read the response from php-cgi's stdout
-		char buffer[4096];
-		ssize_t bytes_read;
+		char 		buffer[4096];
+		ssize_t 	bytes_read;
+		time_t 		startTime = time(NULL);
+        const int 	timeout = 2;
+
 
 		while ((bytes_read = read(pipe_stdout[0], buffer, sizeof(buffer))) > 0)
 		{
 			Logger::logger()->log(LOG_DEBUG, "Read " +  toString(bytes_read) + " bytes from child process");
 			output.append(buffer, bytes_read);
+			if (time(NULL) - startTime > timeout) 
+			{
+                Logger::logger()->log(LOG_ERROR, "Timeout reading from child process");
+                kill(pid, SIGKILL);
+				return (new Resource(408));			
+			}
 		}
 
 		close(pipe_stdout[0]);
