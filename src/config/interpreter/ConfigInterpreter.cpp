@@ -190,7 +190,10 @@ void	ConfigInterpreter::interpret(
 	}
 
 	if (hasDuplicateConfig())
+	{
+		Logger::destroy();
 		throw std::runtime_error("Duplicate server block found (same host, port and server_name)"); // REVISIT : need to free memory
+	}
 }
 
 ConfigInterpreterRule*	ConfigInterpreter::getRule(std::vector<std::string>& context)

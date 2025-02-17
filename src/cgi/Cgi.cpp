@@ -57,7 +57,6 @@ Cgi::~Cgi()
 
 Resource*    Cgi::runCgi(HttpRequest& request, Config& config) 
 {
-	(void) config;
 	std::string		output;
 	std::string		requestData = request.getBody(); // Just the body
 
@@ -67,7 +66,8 @@ Resource*    Cgi::runCgi(HttpRequest& request, Config& config)
 	std::string		cgiExecutableStr = cgiExecutable_;
 	std::string		cgiScriptPathStr = cgiScriptPath_;
 
-	Path				currentDir = currentDir.getAbsPath();
+	Path			currentDir("/");
+	currentDir = currentDir.getAbsPath();
 
 	Path workingDir = cgiScriptPath_.getParent();
 	chdir(std::string(workingDir).c_str());
@@ -189,13 +189,13 @@ Resource*    Cgi::runCgi(HttpRequest& request, Config& config)
 		while ((bytes_read = read(pipe_stdout[0], buffer, sizeof(buffer))) > 0)
 		{
 			Logger::logger()->log(LOG_DEBUG, "Read " +  toString(bytes_read) + " bytes from child process");
-			output.append(buffer, bytes_read);
 			if (time(NULL) - startTime > timeout) 
 			{
                 Logger::logger()->log(LOG_ERROR, "Timeout reading from child process");
                 kill(pid, SIGKILL);
 				return (new Resource(408));			
 			}
+			output.append(buffer, bytes_read);
 		}
 
 		close(pipe_stdout[0]);

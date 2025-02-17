@@ -40,8 +40,8 @@ Webserv::Webserv(const std::string& configFile)
 
 	configs_ = interpreter.getConfigs();
 	parser.destroy();
-
-	Observer* 				o = new Observer;
+	
+	observer_ = new Observer;
 
 	for (size_t i = 0; i != configs_.size(); ++i)
 	{
@@ -52,10 +52,12 @@ Webserv::Webserv(const std::string& configFile)
 			existingServer->addVirtualHost(configs_[i]);
 		}
 		else
-			servers_.push_back(new Server(configs_[i], o));
+			servers_.push_back(new Server(configs_[i], observer_));
 	}
 
 	checkForInvalidServer();
+
+	
 
 	Logger::logger()->logTitle(LOG_INFO, "Starting servers from configuration file");
 	std::ostringstream oss;
@@ -64,30 +66,15 @@ Webserv::Webserv(const std::string& configFile)
 		oss << "Starting server no. " << (i + 1) << " : " << servers_[i]->getInfoUrl();
 		Logger::logger()->logTitle(LOG_INFO, oss, 2);
 		servers_[i]->start();
-		o->addServerToMonitor(servers_[i]);
+		observer_->addServerToMonitor(servers_[i]);
 	}
-	o->monitorEvents();
-	if (o)
-	{
-		delete o;
-		o = 0;
-	}
+	observer_->monitorEvents();
 }
 
 Webserv::~Webserv(void)
 {
 	std::cout << "Webserv : destructor called" << std::endl;
-
-	for (size_t i = 0; i != servers_.size(); ++i)
-	{
-		if (servers_[i])
-		{
-			delete servers_[i];
-			servers_[i] = 0;
-		}		
-			
-	}
-	servers_.clear();
+	destroy();
 }
 
 // =============================================================================
@@ -98,6 +85,28 @@ Webserv&	Webserv::operator=(const Webserv& rhs)
 {
 	(void) rhs;
 	return (*this);
+}
+
+void	Webserv::destroy(void)
+{
+	std::cout << "Webserv : destroy method called" << std::endl;
+	for (size_t i = 0; i != servers_.size(); ++i)
+	{
+		if (servers_[i])
+		{
+			delete servers_[i];
+			servers_[i] = 0;
+		}		
+			
+	}
+	servers_.clear();
+
+	if (observer_)
+	{
+		delete observer_;
+		std::cout << "Deleting observer" << std::endl;
+		observer_ = 0;
+	}
 }
 
 // =============================================================================
@@ -119,11 +128,19 @@ void	Webserv::checkForInvalidServer(void)
 	size_t serverCount = servers_.size();
 
 	if (serverCount < 1)
+	{
+		Logger::destroy();
+		destroy();
 		throw std::runtime_error("Configuration : must have at least one server block and one listen directive");
+	}
 
 	for (size_t i = 0; i != serverCount; ++i)
 	{
 		if (servers_[i]->getInfoHostPort() == "[localhost:0]")
+		{
+			Logger::destroy();
+			destroy();
 			throw std::runtime_error("Configuration : found a server block with no listen directive");
+		}
 	}
 }

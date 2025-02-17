@@ -161,6 +161,8 @@ void	Logger::destroy(void)
 {
 	std::cout << "Logger : destroy method called" << std::endl;
 	if (logger_)
+	{
 		delete logger_;
 	logger_ = 0;
+	}
 }

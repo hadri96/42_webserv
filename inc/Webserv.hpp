@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "Observer.hpp"
 #include "Config.hpp"
 #include "Server.hpp"
 
@@ -23,8 +24,11 @@ class	Webserv
 
 		// --- Public Methods ---
 		void					start(void);
+		void					destroy(void);
+
 	private:
 		// --- Private Attributes ---
+		Observer* 				observer_;
 		std::vector<Config> 	configs_;
 		std::vector<Server*> 	servers_;
 

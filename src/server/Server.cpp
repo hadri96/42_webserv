@@ -59,7 +59,17 @@ Server::Server(Config& config, Observer* observer) :
 }
 
 Server::~Server(void)
-{}
+{
+	for (size_t i = 0; i != clients_.size(); ++i)
+	{
+		if (clients_[i])
+		{
+			delete clients_[i];
+			clients_[i] = 0;
+		}
+	}
+	clients_.clear();
+}
 
 // =============================================================================
 // Operators Overload
@@ -234,11 +244,13 @@ void	Server::unregisterClient(Client* client)
 		{
 			if (*it == client)
 			{
+				//delete client;
+				delete *it;
 				clients_.erase(it);
 				break ;
 			}
 		}
-		delete client;
+		
 	}
 }
 
